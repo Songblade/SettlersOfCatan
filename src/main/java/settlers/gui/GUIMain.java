@@ -1,7 +1,10 @@
 package settlers.gui;
 
 import settlers.Player;
+import settlers.Resource;
 import settlers.board.*;
+
+import java.util.HashMap;
 
 public interface GUIMain {
     /**
@@ -61,4 +64,11 @@ public interface GUIMain {
      * @param from the player who @to is stealing from
      */
     public void playerStoleFromPlayer(Player to, Player from);
+
+    /**
+     * Triggered by GUIPlayer whenever he is forced to discard resources due to the thief
+     * @param player the player who is discarding resources
+     * @param resources the resources which the player wishes to discard
+     */
+    public void playerDiscardedResources(Player player, HashMap<Resource,Integer> resources);
 }

@@ -1,5 +1,6 @@
 package settlers.gui;
 
+import settlers.Player;
 import settlers.board.*;
 
 public interface GUIPlayer {
@@ -42,5 +43,9 @@ public interface GUIPlayer {
      */
     public void placeCity(Vertex vertex);
 
-    
+    /**
+     * Triggered whenever the player requests to move the thief
+     * @param hex the hexagon which the player wants to move the thief to
+     */
+    public void placeThief(Hex hex);
 }
