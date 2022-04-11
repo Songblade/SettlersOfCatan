@@ -1,6 +1,6 @@
 package settlers.board;
 
-import settlers.Resource;
+import settlers.card.Resource;
 
 public interface Hex {
 
