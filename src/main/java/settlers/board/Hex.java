@@ -1,6 +1,21 @@
 package settlers.board;
 
+import settlers.Resource;
+
 public interface Hex {
+
+    /**
+     *
+     * @return the Hex's die number, equals to 7 if this is the desert
+     */
+    int getNumber();
+
+    /**
+     * @return the resource players in adjacent vertices get when rolling the Hex's die number
+     * WOOD means forest, WHEAT means field, ORE means mountain, BRICK means quarry, SHEEP means pasture
+     * MISC means desert, and means that no resource should be given to the player
+     */
+    Resource getResource();
 
     /**
      *
