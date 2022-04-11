@@ -40,7 +40,7 @@ public interface Vertex {
     Player getPlayer();
 
     /**
-     * @param player that owns this Settlement or City
+     * @param player that owns this Settlement
      * @throws IllegalArgumentException if a different player already has this city
      */
     void setPlayer(Player player);
