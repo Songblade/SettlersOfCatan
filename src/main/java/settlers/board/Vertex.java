@@ -1,6 +1,7 @@
 package settlers.board;
 
 import settlers.Player;
+import settlers.card.Resource;
 
 public interface Vertex {
 
@@ -32,6 +33,17 @@ public interface Vertex {
      * @throws IllegalArgumentException if this position's edge is already set
      */
     void setEdge(Edge edge, int position);
+
+    /**
+     * @return the resource of the 2:1 port, MISC for a 3:1 port, or null if there is no port
+     */
+    Resource getPort();
+
+    /**
+     * @param resource of the 2:1 port being added, or MISC for a 3:1 port
+     * @throws IllegalArgumentException if resource is null
+     */
+    void setPort(Resource resource);
 
     /**
      * The player defaults as null until it is changed
