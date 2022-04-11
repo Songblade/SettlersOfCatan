@@ -31,6 +31,4 @@ public interface GUIMain {
      * @param vertex the vertex where the player wants a settlement upgraded to a city
      */
     public void playerBuildCity(Player player, Vertex vertex);
-
-    
 }
