@@ -1,7 +1,7 @@
 package settlers.gui;
 
 import settlers.Player;
-import settlers.Resource;
+import settlers.card.Resource;
 import settlers.board.*;
 
 import java.util.HashMap;
