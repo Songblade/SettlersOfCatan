@@ -87,7 +87,7 @@ public class BoardImpl implements Board {
      * @return a resource in resource quantities which is available to be placed
      */
     private Resource getAvailableResource(){
-
+        return Resource.BRICK;
     }
 
     /**
