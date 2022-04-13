@@ -124,15 +124,58 @@ public class BoardImpl implements Board {
     }
 
     /**
+     * Gets the index of hex in hexes
+     * @param hex the hex we want the index of
+     * @return the index of hex in hexes
+     */
+    private int getHexIndex(Hex hex){
+        for(int i = 0; i < hexes.length; i++){
+            if(hex.equals(hexes[i])){
+                return i;
+            }
+        }
+
+        throw new IllegalArgumentException("Requested Hex doesn't exist on board");
+    }
+
+    /**
+     * Gets all hexes adjacent to hex
+     * @param hex the hex which we want all hexes adjacent to
+     * @return all hexes adjacent to hex
+     */
+    private HashSet<Hex> getAdjacentHexes(Hex hex){
+        HashSet<Hex> adjacentHexes = new HashSet<>();
+        int hexIndex = getHexIndex(hex);
+        return adjacentHexes;
+
+       /** if(hexIndex < 3){
+
+        }else if(hexIndex < 7){
+
+        }else if(hexIndex < 12){
+
+        }else if(hexIndex < 16){
+
+        }else{
+
+        }**/
+    }
+
+    /**
      * places the priority numbers
      * @return a set of indicies in hexes of tiles which numbers were placed on
      */
     private HashSet<Hex> placePriorityNumbers(){
         HashSet<Hex> placedHexes = new HashSet<>();
         ArrayList<Hex> validHexes = makeArrayListCopyOfHexes(new HashSet<Hex>());
+        Random rng = new Random();
 
         for(Integer number : priorityTileNumbers){
-            
+            int validHexesNumberPlacementIndex = rng.nextInt(validHexes.size());
+            Hex hex = validHexes.get(validHexesNumberPlacementIndex);
+            placedHexes.add(hex);
+            validHexes.remove(hex);
+            validHexes.removeAll(getAdjacentHexes(hex));
         }
 
         return placedHexes;
