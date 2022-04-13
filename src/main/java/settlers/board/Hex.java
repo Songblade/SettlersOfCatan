@@ -6,6 +6,13 @@ public interface Hex {
 
     /**
      *
+     * @param number the number we wish to set this object's number to
+     * Sets the hex's number to number. Should only be called once
+     */
+    void setNumber(int number);
+
+    /**
+     *
      * @return the Hex's die number, equals to 7 if this is the desert
      */
     int getNumber();

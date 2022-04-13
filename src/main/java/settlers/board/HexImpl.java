@@ -6,8 +6,18 @@ public class HexImpl implements Hex{
     private Resource resource;
     private int number = 7;
 
+
     public HexImpl(Resource resource){
         this.resource = resource;
+    }
+
+    /**
+     *
+     * @param number the number we wish to set this object's number to
+     * Sets the hex's number to number. Should only be called once
+     */
+    public void setNumber(int number){
+        this.number = number;
     }
 
     /**

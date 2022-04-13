@@ -3,6 +3,7 @@ package settlers.board;
 import settlers.card.Resource;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -73,6 +74,10 @@ public class BoardImpl implements Board {
         array.add(12);
     }
 
+    /**
+     * Gets the number of tiles which haven't been placed
+     * @return the number of tiles which haven't been placed
+     */
     private int getQuantityOfRemailingTiles(){
         int quantityOfAvailableTiles = 0;
         for(Resource resource : tileResourceQuantities.keySet()){
@@ -87,16 +92,64 @@ public class BoardImpl implements Board {
      * @return a resource in resource quantities which is available to be placed
      */
     private Resource getAvailableResource(){
-        return Resource.BRICK;
+        Random rng = new Random();
+        int resourceIndicator = rng.nextInt(getQuantityOfRemailingTiles());
+
+        int index = 0;
+        for(Resource resource : tileResourceQuantities.keySet()){
+            index += tileResourceQuantities.get(resource);
+            if(index > resourceIndicator){
+                return resource;
+            }
+        }
+
+        throw new IllegalStateException("Could not get resource with given RNG bounds");
+    }
+
+    /**
+     * Makes a copy of hexes as an ArrayList
+     * @param toExclude a set of items to exclude from the copy
+     * @return a copy of hexes as an ArrayList
+     */
+    private ArrayList<Hex> makeArrayListCopyOfHexes(HashSet<Hex> toExclude){
+        ArrayList<Hex> hexList = new ArrayList<>();
+
+        for(Hex hex : hexes){
+            if(!toExclude.contains(hex)) {
+                hexList.add(hex);
+            }
+        }
+
+        return hexList;
+    }
+
+    /**
+     * places the priority numbers
+     * @return a set of indicies in hexes of tiles which numbers were placed on
+     */
+    private HashSet<Hex> placePriorityNumbers(){
+        HashSet<Hex> placedHexes = new HashSet<>();
+        ArrayList<Hex> validHexes = makeArrayListCopyOfHexes(new HashSet<Hex>());
+
+        for(Integer number : priorityTileNumbers){
+            
+        }
+
+        return placedHexes;
     }
 
     /**
      * generates hexes and puts them in "hexes"
      */
     private void generateHexes(){
+        //Generates 19 hexagons with random resources
         for(int i = 0; i < 19; i++){
-            hexes[i] = new HexImpl(Resource.BRICK);
+            hexes[i] = new HexImpl(getAvailableResource());
         }
+
+        //Sets priority numbers
+
+        //Sets other numbers
     }
 
     /**
