@@ -22,7 +22,7 @@ public class VertexImpl implements Vertex {
      */
     @Override
     public Vertex[] getAdjacentVertices() {
-        return adjVertices;
+        return Arrays.copyOf(adjVertices, adjVertices.length);
     }
 
     /**
@@ -51,7 +51,7 @@ public class VertexImpl implements Vertex {
      */
     @Override
     public Edge[] getEdges() {
-        return adjEdges;
+        return Arrays.copyOf(adjEdges, adjEdges.length);
     }
 
     /**
@@ -67,7 +67,7 @@ public class VertexImpl implements Vertex {
         if (edge == null) {
             throw new IllegalArgumentException("edge is null");
         }
-        if (adjVertices[position] != null) {
+        if (adjEdges[position] != null) {
             throw new IllegalStateException("Position " + position + " already has an edge");
         }
         // if the slot is open to put a vertex, put it there
@@ -111,7 +111,7 @@ public class VertexImpl implements Vertex {
 
     /**
      * @param player that owns this Settlement
-     * @throws IllegalArgumentException if a different player already has this city
+     * @throws IllegalStateException if a different player already has this city
      */
     @Override
     public void setPlayer(Player player) {

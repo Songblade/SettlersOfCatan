@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import settlers.Player;
 import settlers.card.Resource;
 
-import java.util.Objects;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VertexTest {
@@ -91,13 +89,13 @@ public class VertexTest {
         assertArrayEquals(result, vertex.getEdges());
         result[0] = edge0;
         vertex.setEdge(edge0, 0);
-        assertArrayEquals(result, vertex.getAdjacentVertices());
+        assertArrayEquals(result, vertex.getEdges());
         result[1] = edge1;
         vertex.setEdge(edge1, 1);
-        assertArrayEquals(result, vertex.getAdjacentVertices());
+        assertArrayEquals(result, vertex.getEdges());
         result[2] = edge2;
         vertex.setEdge(edge2, 2);
-        assertArrayEquals(result, vertex.getAdjacentVertices());
+        assertArrayEquals(result, vertex.getEdges());
     }
 
     // get edges throws when we already have 3 edges
@@ -132,9 +130,13 @@ public class VertexTest {
         TestEdge edge1 = new TestEdge(1);
         result[1] = edge1;
         vertex.setEdge(edge1, 1);
-        assertArrayEquals(result, vertex.getAdjacentVertices());
+        assertArrayEquals(result, vertex.getEdges());
         assertThrows(IllegalStateException.class, () -> vertex.setEdge(new TestEdge(3), 1));
     }
+
+    // make sure getPort works correctly, with both null, regular, and MISC
+
+    //
 
 }
 

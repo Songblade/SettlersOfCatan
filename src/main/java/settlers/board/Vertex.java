@@ -54,7 +54,7 @@ public interface Vertex {
 
     /**
      * @param player that owns this Settlement
-     * @throws IllegalArgumentException if a different player already has this city
+     * @throws IllegalStateException if a different player already has this city
      */
     void setPlayer(Player player);
 
