@@ -15,9 +15,9 @@ public interface Vertex {
      *
      * @param vertex being set adjacent to the Vertex
      * @param position from 0 to 3, where the vertex is set, where 0 is the upper left, increasing clockwise
-     * @throws IllegalArgumentException if this position's vertex is already set
+     * @throws IllegalStateException if this position's vertex is already set
      */
-    void setVertices(Vertex vertex, int position);
+    void setVertex(Vertex vertex, int position);
 
     /**
      *
@@ -30,7 +30,7 @@ public interface Vertex {
      *
      * @param edge the adjacent edge being added
      * @param position from 0 to 3, where the edge is set, where 0 is the upper left, increasing clockwise
-     * @throws IllegalArgumentException if this position's edge is already set
+     * @throws IllegalStateException if this position's edge is already set
      */
     void setEdge(Edge edge, int position);
 
@@ -42,6 +42,7 @@ public interface Vertex {
     /**
      * @param resource of the 2:1 port being added, or MISC for a 3:1 port
      * @throws IllegalArgumentException if resource is null
+     * @throws IllegalStateException if there is already a port
      */
     void setPort(Resource resource);
 

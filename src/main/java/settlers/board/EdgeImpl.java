@@ -2,6 +2,8 @@ package settlers.board;
 
 import settlers.Player;
 
+import java.util.Objects;
+
 public class EdgeImpl implements Edge{
 
     private Player player;
@@ -23,5 +25,18 @@ public class EdgeImpl implements Edge{
     @Override
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EdgeImpl edge = (EdgeImpl) o;
+        return Objects.equals(player, edge.player);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(player);
     }
 }
