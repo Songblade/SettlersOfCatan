@@ -12,6 +12,7 @@ public class VertexImpl implements Vertex {
     private Edge[] adjEdges; // adjacent edges
     private Resource port; // if you would get a port by building a settlement here, this is what you would get
     private Player player; // if a player built a settlement or city here, this is that player
+    private boolean isCity; // if this is a city or not, starts false by default
 
     public VertexImpl() {
         adjVertices = new Vertex[3];
@@ -130,18 +131,22 @@ public class VertexImpl implements Vertex {
      */
     @Override
     public boolean isCity() {
-        return false;
+        return isCity;
     }
 
     /**
      * Turns this settlement into a city
-     *
-     * @throws IllegalArgumentException if this is already a City
-     * @throws IllegalStateException    if this is not a Settlement
+     * @throws IllegalStateException if this is not a Settlement (either empty or city)
      */
     @Override
     public void makeCity() {
-
+        if (player == null) {
+            throw new IllegalStateException("There is no settlement here");
+        }
+        if (isCity) {
+            throw new IllegalStateException("There is already a city here");
+        }
+        isCity = true;
     }
 
     @Override

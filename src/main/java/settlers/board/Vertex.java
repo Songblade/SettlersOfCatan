@@ -66,8 +66,7 @@ public interface Vertex {
 
     /**
      * Turns this settlement into a city
-     * @throws IllegalArgumentException if this is already a City
-     * @throws IllegalStateException if this is not a Settlement
+     * @throws IllegalStateException if this is not a Settlement (either empty or city)
      */
     void makeCity();
 

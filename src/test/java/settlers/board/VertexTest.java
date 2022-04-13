@@ -187,6 +187,38 @@ public class VertexTest {
         assertThrows(IllegalStateException.class, () -> vertex.setPlayer(new TestPlayer()));
     }
 
+    // city methods
+    // tests that isCity returns false when empty or settlement, and true when city
+    @Test
+    public void isCityWorks() {
+        Vertex vertex = new VertexImpl();
+        assertFalse(vertex.isCity());
+        Player example = new TestPlayer();
+        vertex.setPlayer(example);
+        assertFalse(vertex.isCity());
+        vertex.makeCity();
+        assertTrue(vertex.isCity());
+    }
+
+    // makeCity throws when empty
+    @Test
+    public void makeCityThrowsEmpty() {
+        Vertex vertex = new VertexImpl();
+        assertFalse(vertex.isCity());
+        assertThrows(IllegalStateException.class, vertex::makeCity);
+    }
+
+    // makeCity throws when already a city
+    @Test
+    public void makeCityThrowsCity() {
+        Vertex vertex = new VertexImpl();
+        vertex.setPlayer(new TestPlayer());
+        vertex.makeCity();
+        assertThrows(IllegalStateException.class, vertex::makeCity);
+    }
+
+
+
 }
 
 // this class is so I can distinguish between the different edges on each side
