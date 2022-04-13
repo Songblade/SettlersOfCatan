@@ -73,6 +73,38 @@ public interface Main {
      */
     void buildDevelopmentCard(Player player);
 
+    /**
+     * Makes the player use a development card
+     * @param player playing the card
+     * @param development card being played
+     * @throws IllegalArgumentException if the development card is of type VICTORY_POINT
+     * @throws IllegalStateException if the player does not have that development card
+     * I may decide to make the effects of the card decided by the enum directly
+     */
+    void playDevelopmentCard(Player player, DevelopmentCard development);
+
+    /**
+     * Checks if this trade with the bank would work
+     * @param player considering the trade
+     * @param resourceGiven resource type that would be given
+     * @param resourceNumber number of resources that would be given
+     * @return true if the player can make this trade, false if the player lacks the port or resources
+     */
+    boolean canTrade(Player player, Resource resourceGiven, int resourceNumber);
+
+    /**
+     * This simulates a trade with the bank, updating the Player appropriately
+     * @param player doing the trade
+     * @param resourceGiven resource type being given
+     * @param resourceNumber number of that resource being given
+     * @param resourceGotten resource type being received
+     * @throws IllegalArgumentException if canTrade() returns false
+     */
+    void trade(Player player, Resource resourceGiven, int resourceNumber, Resource resourceGotten);
+
+    // If we decide to implement Player to Player trading,
+    // I will add versions of canTrade() and trade() for that
+
 }
 
 enum Building {
