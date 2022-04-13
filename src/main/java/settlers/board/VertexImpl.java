@@ -10,7 +10,8 @@ public class VertexImpl implements Vertex {
 
     private Vertex[] adjVertices; // adjacent vertices
     private Edge[] adjEdges; // adjacent edges
-    private Resource port;
+    private Resource port; // if you would get a port by building a settlement here, this is what you would get
+    private Player player; // if a player built a settlement or city here, this is that player
 
     public VertexImpl() {
         adjVertices = new Vertex[3];
@@ -106,7 +107,7 @@ public class VertexImpl implements Vertex {
      */
     @Override
     public Player getPlayer() {
-        return null;
+        return player;
     }
 
     /**
@@ -115,7 +116,13 @@ public class VertexImpl implements Vertex {
      */
     @Override
     public void setPlayer(Player player) {
-
+        if (player == null) {
+            throw new IllegalArgumentException("Player is null");
+        }
+        if (this.player != null) {
+            throw new IllegalStateException("This vertex is already occupied");
+        }
+        this.player = player;
     }
 
     /**

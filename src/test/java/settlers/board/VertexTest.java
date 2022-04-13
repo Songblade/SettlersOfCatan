@@ -2,7 +2,11 @@ package settlers.board;
 
 import org.junit.jupiter.api.Test;
 import settlers.Player;
+import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
+
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -162,6 +166,27 @@ public class VertexTest {
         assertThrows(IllegalStateException.class, () -> vertex.setPort(Resource.MISC));
     }
 
+    // Vertex player methods
+    // check that getPlayer works, and that starts null
+    @Test
+    public void getPlayerWorks() {
+        Vertex vertex = new VertexImpl();
+        assertNull(vertex.getPlayer());
+        Player example = new TestPlayer();
+        vertex.setPlayer(example);
+        assertEquals(example, vertex.getPlayer());
+    }
+
+    // check that setPlayer throws when already a player there
+    @Test
+    public void getPlayerThrows() {
+        Vertex vertex = new VertexImpl();
+        assertNull(vertex.getPlayer());
+        Player example = new TestPlayer();
+        vertex.setPlayer(example);
+        assertThrows(IllegalStateException.class, () -> vertex.setPlayer(new TestPlayer()));
+    }
+
 }
 
 // this class is so I can distinguish between the different edges on each side
@@ -197,4 +222,78 @@ class TestEdge implements Edge {
         TestEdge edge = (TestEdge) o;
         return this.id == edge.id;
     }
+}
+
+class TestPlayer implements Player {
+
+    /**
+     * @return an unmodifiable Map containing the player's resource cards and quantity of each
+     */
+    @Override
+    public Map<Resource, Integer> getResources() {
+        return null;
+    }
+
+    /**
+     * @param resource to give to the player
+     */
+    @Override
+    public void addResource(Resource resource) {
+
+    }
+
+    /**
+     * @param resources to be removed from the player's hand
+     * @return true if the removal was successful, false if it was not
+     * If the removal is not successful for one resource, the player's hand will not be changed
+     */
+    @Override
+    public boolean removeResources(Map<Resource, Integer> resources) {
+        return false;
+    }
+
+    /**
+     * @return an unmodifiable Map containing the player's development cards and quantity of each
+     */
+    @Override
+    public Map<DevelopmentCard, Integer> getDevelopmentCards() {
+        return null;
+    }
+
+    /**
+     * @param development card being added to the player's hand
+     */
+    @Override
+    public void addDevelopmentCard(DevelopmentCard development) {
+
+    }
+
+    /**
+     * @param development card being removed from the player's hand
+     * @return true if the removal was successful, false if he never had the card
+     * @throws IllegalArgumentException if the card is a VICTORY_POINT
+     */
+    @Override
+    public boolean removeDevelopmentCard(DevelopmentCard development) {
+        return false;
+    }
+
+    /**
+     * @return an unmodifiable list of resources the player has 2:1 ports for
+     * MISC means the player has a 3:1 port
+     */
+    @Override
+    public Set<Resource> getPorts() {
+        return null;
+    }
+
+    /**
+     * @param resource of the 2:1 port being added, or MISC if it is a 3:1 port
+     * @return true if the port was added, false if the player already had it
+     */
+    @Override
+    public boolean addPort(Resource resource) {
+        return false;
+    }
+
 }
