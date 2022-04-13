@@ -8,13 +8,17 @@ public class HexImpl implements Hex{
 
 
     public HexImpl(Resource resource){
+        if (resource == null) {
+            throw new IllegalArgumentException("resource is null");
+        }
         this.resource = resource;
     }
 
     /**
-     *
-     * @param number the number we wish to set this object's number to
-     * Sets the hex's number to number. Should only be called once
+     * Sets the hex's number to number
+     * @param number we wish to set this object's number to
+     * @throws IllegalStateException if the hex already has a number
+     * @throws IllegalArgumentException if the number is out of bounds
      */
     public void setNumber(int number){
         this.number = number;
@@ -34,7 +38,7 @@ public class HexImpl implements Hex{
      * MISC means desert, and means that no resource should be given to the player
      */
     public Resource getResource(){
-        return Resource.BRICK;
+        return resource;
     }
 
     /**

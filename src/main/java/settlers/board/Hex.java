@@ -5,9 +5,10 @@ import settlers.card.Resource;
 public interface Hex {
 
     /**
-     *
-     * @param number the number we wish to set this object's number to
-     * Sets the hex's number to number. Should only be called once
+     * Sets the hex's number to number
+     * @param number we wish to set this object's number to
+     * @throws IllegalStateException if the hex already has a number
+     * @throws IllegalArgumentException if the number is out of bounds
      */
     void setNumber(int number);
 
