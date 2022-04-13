@@ -134,9 +134,33 @@ public class VertexTest {
         assertThrows(IllegalStateException.class, () -> vertex.setEdge(new TestEdge(3), 1));
     }
 
-    // make sure getPort works correctly, with both null, regular, and MISC
+    // make sure getPort works correctly, with both null and regular
+    @Test
+    public void getPortWorks() {
+        Vertex vertex = new VertexImpl();
+        assertNull(vertex.getPort());
+        vertex.setPort(Resource.WOOD);
+        assertEquals(Resource.WOOD, vertex.getPort());
+    }
 
-    //
+    // get port works with MISC
+    @Test
+    public void getPortWorksMISC() {
+        Vertex vertex = new VertexImpl();
+        assertNull(vertex.getPort());
+        vertex.setPort(Resource.MISC);
+        assertEquals(Resource.MISC, vertex.getPort());
+    }
+
+    // setPort throws when already a port
+    @Test
+    public void setPortThrows() {
+        Vertex vertex = new VertexImpl();
+        assertNull(vertex.getPort());
+        vertex.setPort(Resource.MISC);
+        assertThrows(IllegalStateException.class, () -> vertex.setPort(Resource.WOOD));
+        assertThrows(IllegalStateException.class, () -> vertex.setPort(Resource.MISC));
+    }
 
 }
 
