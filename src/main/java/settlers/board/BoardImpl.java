@@ -9,11 +9,14 @@ import java.util.Random;
 
 public class BoardImpl implements Board {
 
-    Hex[] hexes;
-    Vertex[] vertices;
-    Hashtable<Resource,Integer> tileResourceQuantities;
-    ArrayList<Integer> priorityTileNumbers;
-    ArrayList<Integer> otherTileNumbers;
+    private Hex[] hexes;
+    private Vertex[] vertices;
+    private Hashtable<Resource,Integer> tileResourceQuantities;
+    private ArrayList<Integer> priorityTileNumbers;
+    private ArrayList<Integer> otherTileNumbers;
+
+    //Constants
+    private final int[] hexColumnBeginningIndices = {0,3,7,12,16};
 
     public BoardImpl(){
         //Creates empty tables of hexes and vertices
@@ -139,6 +142,19 @@ public class BoardImpl implements Board {
     }
 
     /**
+     * Tests to see where @index's position in its column is
+     * @param index
+     * @return 1 if index is on top of a column, 0 if it is in the middle, and -1 if it is at the bottom
+     */
+    private int getPlacementOnColumn(int index){
+        for(int number: hexColumnBeginningIndices){
+            if(index == number)return 1;
+            if(index + 1 == number || index >= hexes.length)return -1;
+        }
+        return 0;
+    }
+
+    /**
      * Gets all hexes adjacent to hex
      * @param hex the hex which we want all hexes adjacent to
      * @return all hexes adjacent to hex
@@ -146,19 +162,19 @@ public class BoardImpl implements Board {
     private HashSet<Hex> getAdjacentHexes(Hex hex){
         HashSet<Hex> adjacentHexes = new HashSet<>();
         int hexIndex = getHexIndex(hex);
+
+        //Adds the hex above hex if this isn't a top hex, and the hex below hex if this isn't a bottom hex
+        int hexColumnPlacement = getPlacementOnColumn(hexIndex);
+
+        if(hexColumnPlacement != 1){
+            adjacentHexes.add(hexes[hexIndex - 1]);
+        }
+
+        if(hexColumnPlacement != -1) {
+            adjacentHexes.add(hexes[hexIndex + 1]);
+        }
+
         return adjacentHexes;
-
-       /** if(hexIndex < 3){
-
-        }else if(hexIndex < 7){
-
-        }else if(hexIndex < 12){
-
-        }else if(hexIndex < 16){
-
-        }else{
-
-        }**/
     }
 
     /**
