@@ -4,7 +4,7 @@ import settlers.card.Resource;
 
 public class HexImpl implements Hex{
     private Resource resource;
-    private int number = 7;
+    private int number = -1;
 
 
     public HexImpl(Resource resource){

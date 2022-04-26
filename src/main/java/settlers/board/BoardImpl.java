@@ -2,10 +2,7 @@ package settlers.board;
 
 import settlers.card.Resource;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Random;
+import java.util.*;
 
 public class BoardImpl implements Board {
 
@@ -26,8 +23,8 @@ public class BoardImpl implements Board {
 
         //Sets up hexagon varubles
         tileResourceQuantities = new Hashtable<>();
-        priorityTileNumbers = new ArrayList<>();
-        otherTileNumbers = new ArrayList<>();
+        priorityTileNumbers = new ArrayList<Integer>();
+        otherTileNumbers = new ArrayList<Integer>();
         setupHexQuantities(tileResourceQuantities);
         setupPriorityNumbers(priorityTileNumbers);
         setupOtherNumbers(otherTileNumbers);
@@ -115,7 +112,7 @@ public class BoardImpl implements Board {
      * @param toExclude a set of items to exclude from the copy
      * @return a copy of hexes as an ArrayList
      */
-    private ArrayList<Hex> makeArrayListCopyOfHexes(HashSet<Hex> toExclude){
+    private ArrayList<Hex> generateArrayListCopyOfHexes(HashSet<Hex> toExclude){
         ArrayList<Hex> hexList = new ArrayList<>();
 
         for(Hex hex : hexes){
@@ -149,7 +146,7 @@ public class BoardImpl implements Board {
      */
     private int getColumn(int index){
         for(int i = 1; i < hexColumnBeginningIndices.length; i++){
-            if(i < hexColumnBeginningIndices[i])return i - 1;
+            if(index < hexColumnBeginningIndices[i])return i - 1;
         }
         return hexColumnBeginningIndices.length - 1;
     }
@@ -202,13 +199,13 @@ public class BoardImpl implements Board {
         addHexToSet(getHexByRowAndColumn(row + 1, column),adjacentHexes);
 
         //Adds the hexes diagonal to @hex
-        if(columnLengths[column - 1] > columnLengths[column]){
+        if(column != 0 && columnLengths[column - 1] > columnLengths[column]){
             addHexToSet(getHexByRowAndColumn(row - 1, column - 1),adjacentHexes);
         }else{
             addHexToSet(getHexByRowAndColumn(row + 1, column - 1),adjacentHexes);
         }
 
-        if(columnLengths[column + 1] > columnLengths[column]){
+        if(column != columnLengths.length - 1 && columnLengths[column + 1] > columnLengths[column]){
             addHexToSet(getHexByRowAndColumn(row - 1, column + 1),adjacentHexes);
         }else{
             addHexToSet(getHexByRowAndColumn(row + 1, column + 1),adjacentHexes);
@@ -218,23 +215,37 @@ public class BoardImpl implements Board {
     }
 
     /**
+     * @return A set of all tiles with numbers placed on them
+     */
+    private HashSet<Hex> getTilesWithNumbers(){
+        HashSet<Hex> tilesWithNumbers = new HashSet<>();
+
+        for(Hex hex : hexes){
+            if(hex.getNumber() != - 1){
+                tilesWithNumbers.add(hex);
+            }
+        }
+
+        return tilesWithNumbers;
+    }
+
+    /**
      * places the priority numbers
      * @return a set of indicies in hexes of tiles which numbers were placed on
      */
-    private HashSet<Hex> placePriorityNumbers(){
-        HashSet<Hex> placedHexes = new HashSet<>();
-        ArrayList<Hex> validHexes = makeArrayListCopyOfHexes(new HashSet<Hex>());
+    private void placeNumbers(ArrayList<Integer> numbers, boolean removeAdjacentHexes){
+        ArrayList<Hex> validHexes = generateArrayListCopyOfHexes(getTilesWithNumbers());
         Random rng = new Random();
 
-        for(Integer number : priorityTileNumbers){
+        //For every tile number in numbers, set the number of a random valid tile to that number,
+        //then remove the tile (and all adjacent tiles if removeAdjacentTiles is true) from the list of valid numbers.
+        for(Integer number : numbers){
             int validHexesNumberPlacementIndex = rng.nextInt(validHexes.size());
             Hex hex = validHexes.get(validHexesNumberPlacementIndex);
-            placedHexes.add(hex);
+            hex.setNumber(number);
             validHexes.remove(hex);
-            validHexes.removeAll(getAdjacentHexes(hex));
+            if(removeAdjacentHexes) validHexes.removeAll(getAdjacentHexes(hex));
         }
-
-        return placedHexes;
     }
 
     /**
@@ -246,23 +257,30 @@ public class BoardImpl implements Board {
             hexes[i] = new HexImpl(getAvailableResource());
         }
 
+        //Sets the desert to 1
+        for(int i = 0; i < 19; i++){
+            if(hexes[i].getResource() == Resource.MISC)hexes[i].setNumber(1);
+        }
+
         //Sets priority numbers
+        placeNumbers(priorityTileNumbers,true);
 
         //Sets other numbers
+        placeNumbers(otherTileNumbers,false);
     }
 
     /**
      * @return a length-19 array containing all the Hexes
      */
     public Hex[] getHexes(){
-        return new Hex[1];
+        return Arrays.copyOf(hexes,19);
     }
 
     /**
      * @return a length-54 array containing all the Vertices
      */
     public Vertex[] getVertices(){
-        return new Vertex[1];
+        return Arrays.copyOf(vertices,54);
     }
 
     // I don't have any setters here, because they will be set by the constructor
