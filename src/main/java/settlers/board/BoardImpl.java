@@ -17,6 +17,7 @@ public class BoardImpl implements Board {
 
     //Constants
     private final int[] hexColumnBeginningIndices = {0,3,7,12,16};
+    private final int[] columnLengths = {3,4,5,4,3};
 
     public BoardImpl(){
         //Creates empty tables of hexes and vertices
@@ -142,18 +143,47 @@ public class BoardImpl implements Board {
     }
 
     /**
-     * Tests to see where @index's position in its column is
-     * @param index
-     * @return 1 if index is on top of a column, 0 if it is in the middle, and -1 if it is at the bottom
+     * Returns the column of a hex based on its index
+     * @param index the index of the hex
+     * @return the column of the hex
      */
-    private int getPlacementOnColumn(int index){
-        for(int number: hexColumnBeginningIndices){
-            if(index == number)return 1;
-            if(index + 1 == number || index >= hexes.length)return -1;
+    private int getColumn(int index){
+        for(int i = 1; i < hexColumnBeginningIndices.length; i++){
+            if(i < hexColumnBeginningIndices[i])return i - 1;
         }
-        return 0;
+        return hexColumnBeginningIndices.length - 1;
     }
 
+    /**
+     * Returns the row of a hex based on its index
+     * @param index
+     * @return the row of the hex
+     */
+    private int getRow(int index){
+        return index - hexColumnBeginningIndices[getColumn(index)];
+    }
+
+    /**
+     * Returns the hex at position @row, @column. Protects against searching out of bounds
+     * @param row
+     * @param column
+     * @return
+     */
+    private Hex getHexByRowAndColumn(int row, int column){
+        if(column < 0 || column >= hexColumnBeginningIndices.length) return null;
+        if(row < 0 || row >= columnLengths[row]) return null;
+        return hexes[hexColumnBeginningIndices[column] + row];
+    }
+
+    /**
+     * Adds @hex to @hexSet with null protection
+     * @param hex
+     * @param hexSet
+     */
+    private void addHexToSet(Hex hex, HashSet<Hex> hexSet){
+        if(hex == null)return;
+        hexSet.add(hex);
+    }
     /**
      * Gets all hexes adjacent to hex
      * @param hex the hex which we want all hexes adjacent to
@@ -162,16 +192,26 @@ public class BoardImpl implements Board {
     private HashSet<Hex> getAdjacentHexes(Hex hex){
         HashSet<Hex> adjacentHexes = new HashSet<>();
         int hexIndex = getHexIndex(hex);
+        int row = getRow(hexIndex);
+        int column = getColumn(hexIndex);
 
-        //Adds the hex above hex if this isn't a top hex, and the hex below hex if this isn't a bottom hex
-        int hexColumnPlacement = getPlacementOnColumn(hexIndex);
+        //Adds the hexes above, below, and to the left and right of @hex to adjacentHexes
+        addHexToSet(getHexByRowAndColumn(row, column + 1),adjacentHexes);
+        addHexToSet(getHexByRowAndColumn(row, column - 1),adjacentHexes);
+        addHexToSet(getHexByRowAndColumn(row - 1, column),adjacentHexes);
+        addHexToSet(getHexByRowAndColumn(row + 1, column),adjacentHexes);
 
-        if(hexColumnPlacement != 1){
-            adjacentHexes.add(hexes[hexIndex - 1]);
+        //Adds the hexes diagonal to @hex
+        if(columnLengths[column - 1] > columnLengths[column]){
+            addHexToSet(getHexByRowAndColumn(row - 1, column - 1),adjacentHexes);
+        }else{
+            addHexToSet(getHexByRowAndColumn(row + 1, column - 1),adjacentHexes);
         }
 
-        if(hexColumnPlacement != -1) {
-            adjacentHexes.add(hexes[hexIndex + 1]);
+        if(columnLengths[column + 1] > columnLengths[column]){
+            addHexToSet(getHexByRowAndColumn(row - 1, column + 1),adjacentHexes);
+        }else{
+            addHexToSet(getHexByRowAndColumn(row + 1, column + 1),adjacentHexes);
         }
 
         return adjacentHexes;
