@@ -2,18 +2,19 @@ package settlers.board;
 
 import settlers.card.Resource;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Random;
+import java.util.*;
 
 public class BoardImpl implements Board {
 
-    Hex[] hexes;
-    Vertex[] vertices;
-    Hashtable<Resource,Integer> tileResourceQuantities;
-    ArrayList<Integer> priorityTileNumbers;
-    ArrayList<Integer> otherTileNumbers;
+    private Hex[] hexes;
+    private Vertex[] vertices;
+    private Hashtable<Resource,Integer> tileResourceQuantities;
+    private ArrayList<Integer> priorityTileNumbers;
+    private ArrayList<Integer> otherTileNumbers;
+
+    //Constants
+    private final int[] hexColumnBeginningIndices = {0,3,7,12,16};
+    private final int[] columnLengths = {3,4,5,4,3};
 
     public BoardImpl(){
         //Creates empty tables of hexes and vertices
@@ -22,11 +23,14 @@ public class BoardImpl implements Board {
 
         //Sets up hexagon varubles
         tileResourceQuantities = new Hashtable<>();
-        priorityTileNumbers = new ArrayList<>();
-        otherTileNumbers = new ArrayList<>();
+        priorityTileNumbers = new ArrayList<Integer>();
+        otherTileNumbers = new ArrayList<Integer>();
         setupHexQuantities(tileResourceQuantities);
         setupPriorityNumbers(priorityTileNumbers);
         setupOtherNumbers(otherTileNumbers);
+
+        //Generates hexes
+        generateHexes();
     }
 
     /**
@@ -34,10 +38,10 @@ public class BoardImpl implements Board {
      * @param table the table containing all resources
      */
     private void setupHexQuantities(Hashtable<Resource,Integer> table){
-        table.put(Resource.WOOD,3);
+        table.put(Resource.WOOD,4);
         table.put(Resource.BRICK,3);
-        table.put(Resource.WHEAT,3);
-        table.put(Resource.SHEEP,3);
+        table.put(Resource.WHEAT,4);
+        table.put(Resource.SHEEP,4);
         table.put(Resource.ORE,3);
         table.put(Resource.MISC,1);
     }
@@ -78,7 +82,7 @@ public class BoardImpl implements Board {
      * Gets the number of tiles which haven't been placed
      * @return the number of tiles which haven't been placed
      */
-    private int getQuantityOfRemailingTiles(){
+    private int getQuantityOfRemainingTiles(){
         int quantityOfAvailableTiles = 0;
         for(Resource resource : tileResourceQuantities.keySet()){
             quantityOfAvailableTiles += tileResourceQuantities.get(resource);
@@ -93,12 +97,13 @@ public class BoardImpl implements Board {
      */
     private Resource getAvailableResource(){
         Random rng = new Random();
-        int resourceIndicator = rng.nextInt(getQuantityOfRemailingTiles());
+        int resourceIndicator = rng.nextInt(getQuantityOfRemainingTiles());
 
         int index = 0;
         for(Resource resource : tileResourceQuantities.keySet()){
             index += tileResourceQuantities.get(resource);
             if(index > resourceIndicator){
+                tileResourceQuantities.put(resource,tileResourceQuantities.get(resource) - 1);
                 return resource;
             }
         }
@@ -111,7 +116,7 @@ public class BoardImpl implements Board {
      * @param toExclude a set of items to exclude from the copy
      * @return a copy of hexes as an ArrayList
      */
-    private ArrayList<Hex> makeArrayListCopyOfHexes(HashSet<Hex> toExclude){
+    private ArrayList<Hex> generateArrayListCopyOfHexes(HashSet<Hex> toExclude){
         ArrayList<Hex> hexList = new ArrayList<>();
 
         for(Hex hex : hexes){
@@ -124,18 +129,139 @@ public class BoardImpl implements Board {
     }
 
     /**
+     * Gets the index of hex in hexes
+     * @param hex the hex we want the index of
+     * @return the index of hex in hexes
+     */
+    private int getHexIndex(Hex hex){
+        for(int i = 0; i < hexes.length; i++){
+            if(hex.equals(hexes[i])){
+                return i;
+            }
+        }
+
+        throw new IllegalArgumentException("Requested Hex doesn't exist on board");
+    }
+
+    /**
+     * Returns the column of a hex based on its index
+     * @param index the index of the hex
+     * @return the column of the hex
+     */
+    private int getColumn(int index){
+        for(int i = 1; i < hexColumnBeginningIndices.length; i++){
+            if(index < hexColumnBeginningIndices[i])return i - 1;
+        }
+        return hexColumnBeginningIndices.length - 1;
+    }
+
+    /**
+     * Returns the row of a hex based on its index
+     * @param index
+     * @return the row of the hex
+     */
+    private int getRow(int index){
+        return index - hexColumnBeginningIndices[getColumn(index)];
+    }
+
+    /**
+     * Returns the hex at position @row, @column. Protects against searching out of bounds
+     * @param row
+     * @param column
+     * @return
+     */
+    private Hex getHexByRowAndColumn(int row, int column){
+        if(column < 0 || column >= hexColumnBeginningIndices.length) return null;
+        if(row < 0 || row >= columnLengths[column]) return null;
+        return hexes[hexColumnBeginningIndices[column] + row];
+    }
+
+    /**
+     * Adds @hex to @hexSet with null protection
+     * @param hex
+     * @param hexSet
+     */
+    private void addHexToSet(Hex hex, HashSet<Hex> hexSet){
+        if(hex == null)return;
+        hexSet.add(hex);
+    }
+    /**
+     * Gets all hexes adjacent to hex
+     * @param hex the hex which we want all hexes adjacent to
+     * @return all hexes adjacent to hex
+     */
+    private HashSet<Hex> getAdjacentHexes(Hex hex){
+        HashSet<Hex> adjacentHexes = new HashSet<>();
+        int hexIndex = getHexIndex(hex);
+        int row = getRow(hexIndex);
+        int column = getColumn(hexIndex);
+
+        //Adds the hexes above, below, and to the left and right of @hex to adjacentHexes
+        addHexToSet(getHexByRowAndColumn(row, column + 1),adjacentHexes);
+        addHexToSet(getHexByRowAndColumn(row, column - 1),adjacentHexes);
+        addHexToSet(getHexByRowAndColumn(row - 1, column),adjacentHexes);
+        addHexToSet(getHexByRowAndColumn(row + 1, column),adjacentHexes);
+
+        //Adds the hexes diagonal to @hex
+        if(column != 0 && columnLengths[column - 1] < columnLengths[column]){
+            addHexToSet(getHexByRowAndColumn(row - 1, column - 1),adjacentHexes);
+        }else{
+            addHexToSet(getHexByRowAndColumn(row + 1, column - 1),adjacentHexes);
+        }
+
+        if(column != columnLengths.length - 1 && columnLengths[column + 1] < columnLengths[column]){
+            addHexToSet(getHexByRowAndColumn(row - 1, column + 1),adjacentHexes);
+        }else{
+            addHexToSet(getHexByRowAndColumn(row + 1, column + 1),adjacentHexes);
+        }
+
+        return adjacentHexes;
+    }
+
+    /**
+     * @return A set of all tiles with numbers placed on them
+     */
+    private HashSet<Hex> getTilesWithNumbers(){
+        HashSet<Hex> tilesWithNumbers = new HashSet<>();
+
+        for(Hex hex : hexes){
+            if(hex.getNumber() != - 1){
+                tilesWithNumbers.add(hex);
+            }
+        }
+
+        return tilesWithNumbers;
+    }
+
+    /**
      * places the priority numbers
      * @return a set of indicies in hexes of tiles which numbers were placed on
      */
-    private HashSet<Hex> placePriorityNumbers(){
-        HashSet<Hex> placedHexes = new HashSet<>();
-        ArrayList<Hex> validHexes = makeArrayListCopyOfHexes(new HashSet<Hex>());
+    private void placeNumbers(ArrayList<Integer> numbers, boolean removeAdjacentHexes){
+        ArrayList<Hex> validHexes = generateArrayListCopyOfHexes(getTilesWithNumbers());
+        Random rng = new Random();
 
-        for(Integer number : priorityTileNumbers){
-            
+        //For every tile number in numbers, set the number of a random valid tile to that number,
+        //then remove the tile (and all adjacent tiles if removeAdjacentTiles is true) from the list of valid numbers.
+        int startingSize = validHexes.size();
+        for(Integer number : numbers){
+            /**
+             * Try catch is test
+             */
+            try {
+                int validHexesNumberPlacementIndex = rng.nextInt(validHexes.size());
+                Hex hex = validHexes.get(validHexesNumberPlacementIndex);
+                hex.setNumber(number);
+                validHexes.remove(hex);
+                if(removeAdjacentHexes) validHexes.removeAll(getAdjacentHexes(hex));
+                //Test Code
+                HashSet<Integer> ah = new HashSet<>();
+                for(Hex adjacentHex : getAdjacentHexes(hex)){ ah.add(getHexIndex(adjacentHex));}
+                //throw new IllegalStateException(getHexIndex(hex)+ " is adjacent to " + ah.toString() + ". It is the " + getRow(getHexIndex(hex)) + " element of the " + getColumn(getHexIndex(hex)) + " column");
+            }catch (IllegalArgumentException e){
+                throw new IllegalArgumentException("starting size was: " + startingSize);
+            }
         }
-
-        return placedHexes;
     }
 
     /**
@@ -147,23 +273,30 @@ public class BoardImpl implements Board {
             hexes[i] = new HexImpl(getAvailableResource());
         }
 
+        //Sets the desert to 1
+        for(int i = 0; i < 19; i++){
+            if(hexes[i].getResource() == Resource.MISC)hexes[i].setNumber(1);
+        }
+
         //Sets priority numbers
+        placeNumbers(priorityTileNumbers,true);
 
         //Sets other numbers
+        placeNumbers(otherTileNumbers,false);
     }
 
     /**
      * @return a length-19 array containing all the Hexes
      */
     public Hex[] getHexes(){
-        return new Hex[1];
+        return Arrays.copyOf(hexes,19);
     }
 
     /**
      * @return a length-54 array containing all the Vertices
      */
     public Vertex[] getVertices(){
-        return new Vertex[1];
+        return Arrays.copyOf(vertices,54);
     }
 
     // I don't have any setters here, because they will be set by the constructor

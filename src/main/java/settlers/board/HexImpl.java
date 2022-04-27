@@ -4,21 +4,17 @@ import settlers.card.Resource;
 
 public class HexImpl implements Hex{
     private Resource resource;
-    private int number = 7;
+    private int number = -1;
 
 
     public HexImpl(Resource resource){
-        if (resource == null) {
-            throw new IllegalArgumentException("resource is null");
-        }
         this.resource = resource;
     }
 
     /**
-     * Sets the hex's number to number
-     * @param number we wish to set this object's number to
-     * @throws IllegalStateException if the hex already has a number
-     * @throws IllegalArgumentException if the number is out of bounds
+     *
+     * @param number the number we wish to set this object's number to
+     * Sets the hex's number to number. Should only be called once
      */
     public void setNumber(int number){
         this.number = number;
@@ -29,7 +25,7 @@ public class HexImpl implements Hex{
      * @return the Hex's die number, equals to 7 if this is the desert
      */
     public int getNumber(){
-        return 0;
+        return number;
     }
 
     /**
@@ -38,7 +34,7 @@ public class HexImpl implements Hex{
      * MISC means desert, and means that no resource should be given to the player
      */
     public Resource getResource(){
-        return resource;
+        return this.resource;
     }
 
     /**
