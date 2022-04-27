@@ -38,10 +38,10 @@ public class BoardImpl implements Board {
      * @param table the table containing all resources
      */
     private void setupHexQuantities(Hashtable<Resource,Integer> table){
-        table.put(Resource.WOOD,3);
+        table.put(Resource.WOOD,4);
         table.put(Resource.BRICK,3);
-        table.put(Resource.WHEAT,3);
-        table.put(Resource.SHEEP,3);
+        table.put(Resource.WHEAT,4);
+        table.put(Resource.SHEEP,4);
         table.put(Resource.ORE,3);
         table.put(Resource.MISC,1);
     }
@@ -103,6 +103,7 @@ public class BoardImpl implements Board {
         for(Resource resource : tileResourceQuantities.keySet()){
             index += tileResourceQuantities.get(resource);
             if(index > resourceIndicator){
+                tileResourceQuantities.put(resource,tileResourceQuantities.get(resource) - 1);
                 return resource;
             }
         }
