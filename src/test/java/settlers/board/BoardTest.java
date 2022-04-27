@@ -12,6 +12,15 @@ import java.util.HashMap;
 
 public class BoardTest{
 
+    @Test
+    public void createBoard(){
+        try{
+            Board board = new BoardImpl();
+        }catch (Throwable e){
+            e.printStackTrace();
+        }
+    }
+
     //Generates a lot of boards to test if there are any possible issues with board generation
     @Test
     public void createALotOfBoards(){
