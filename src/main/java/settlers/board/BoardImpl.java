@@ -13,15 +13,20 @@ public class BoardImpl implements Board {
     private ArrayList<Integer> otherTileNumbers;
 
     //Constants
-    private final int[] hexColumnBeginningIndices = {0,3,7,12,16};
     private final int[] columnLengths = {3,4,5,4,3};
+    private final int[] hexColumnBeginningIndices = calculateNewRowPositions(columnLengths);
+    private final int[] vertexColumnLengths = {3,4,4,5,5,6,6,5,5,4,4,3};
+    private final int[] vertexColumnBeginningIndices = calculateNewRowPositions(vertexColumnLengths);
 
+    /**
+     * Constructor
+     */
     public BoardImpl(){
         //Creates empty tables of hexes and vertices
         hexes = new Hex[19];
         vertices = new Vertex[54];
 
-        //Sets up hexagon varubles
+        //Sets up hexagon variables
         tileResourceQuantities = new Hashtable<>();
         priorityTileNumbers = new ArrayList<Integer>();
         otherTileNumbers = new ArrayList<Integer>();
@@ -31,6 +36,26 @@ public class BoardImpl implements Board {
 
         //Generates hexes
         generateHexes();
+
+        //Generates vertices
+        generateVertices();
+    }
+
+    /**
+     * Calculates the beginning positions of each row based on the length of each row
+     * @param lengths an array of the lengths of each row
+     * @return an array of the beginning positions of each row
+     */
+    private int[] calculateNewRowPositions(int[] lengths){
+        int[] newRowPositions = new int[lengths.length];
+        int counter = 0;
+
+        for(int i = 0; i < lengths.length; i++){
+            newRowPositions[i] = counter;
+            counter += lengths[i];
+        }
+
+        return newRowPositions;
     }
 
     /**
@@ -144,24 +169,24 @@ public class BoardImpl implements Board {
     }
 
     /**
-     * Returns the column of a hex based on its index
-     * @param index the index of the hex
-     * @return the column of the hex
+     * Returns the column of an item based on its index
+     * @param index the index of the item
+     * @return the column of the item
      */
-    private int getColumn(int index){
-        for(int i = 1; i < hexColumnBeginningIndices.length; i++){
-            if(index < hexColumnBeginningIndices[i])return i - 1;
+    private int getColumn(int index, int[] list){
+        for(int i = 1; i < list.length; i++){
+            if(index < list[i])return i - 1;
         }
-        return hexColumnBeginningIndices.length - 1;
+        return list.length - 1;
     }
 
     /**
-     * Returns the row of a hex based on its index
-     * @param index
-     * @return the row of the hex
+     * Returns the row of an item based on its index
+     * @param index the index of the item
+     * @return the row of the item
      */
-    private int getRow(int index){
-        return index - hexColumnBeginningIndices[getColumn(index)];
+    private int getRow(int index, int[] list){
+        return index - list[getColumn(index, list)];
     }
 
     /**
@@ -193,8 +218,8 @@ public class BoardImpl implements Board {
     private HashSet<Hex> getAdjacentHexes(Hex hex){
         HashSet<Hex> adjacentHexes = new HashSet<>();
         int hexIndex = getHexIndex(hex);
-        int row = getRow(hexIndex);
-        int column = getColumn(hexIndex);
+        int row = getRow(hexIndex, hexColumnBeginningIndices);
+        int column = getColumn(hexIndex, hexColumnBeginningIndices);
 
         //Adds the hexes above, below, and to the left and right of @hex to adjacentHexes
         addHexToSet(getHexByRowAndColumn(row, column + 1),adjacentHexes);
@@ -257,7 +282,7 @@ public class BoardImpl implements Board {
                 //Test Code
                 HashSet<Integer> ah = new HashSet<>();
                 for(Hex adjacentHex : getAdjacentHexes(hex)){ ah.add(getHexIndex(adjacentHex));}
-                //throw new IllegalStateException(getHexIndex(hex)+ " is adjacent to " + ah.toString() + ". It is the " + getRow(getHexIndex(hex)) + " element of the " + getColumn(getHexIndex(hex)) + " column");
+                //throw new IllegalStateException(getHexIndex(hex)+ " is adjacent to " + ah.toString() + ". It is the " + getHexRow(getHexIndex(hex)) + " element of the " + getHexColumn(getHexIndex(hex)) + " column");
             }catch (IllegalArgumentException e){
                 throw new IllegalArgumentException("starting size was: " + startingSize);
             }
@@ -275,7 +300,10 @@ public class BoardImpl implements Board {
 
         //Sets the desert to 1
         for(int i = 0; i < 19; i++){
-            if(hexes[i].getResource() == Resource.MISC)hexes[i].setNumber(1);
+            if(hexes[i].getResource() == Resource.MISC){
+                hexes[i].setNumber(1);
+                hexes[i].setThief(true);
+            }
         }
 
         //Sets priority numbers
@@ -283,6 +311,80 @@ public class BoardImpl implements Board {
 
         //Sets other numbers
         placeNumbers(otherTileNumbers,false);
+    }
+
+    /**
+     * Gets the index of vertex in vertices
+     * @param vertex the vertex we want the index of
+     * @return the index of vertex in vertices
+     */
+    private int getVertexIndex(Vertex vertex){
+        for(int i = 0; i < vertices.length; i++){
+            if(vertex.equals(vertices[i])){
+                return i;
+            }
+        }
+
+        throw new IllegalArgumentException("Requested Vertex doesn't exist on board");
+    }
+
+    /**
+     * Returns the hex at position @row, @column. Protects against searching out of bounds
+     * @param row
+     * @param column
+     * @return
+     */
+    private Vertex getVertexByRowAndColumn(int row, int column){
+        if(column < 0 || column >= vertexColumnBeginningIndices.length) return null;
+        if(row < 0 || row >= vertexColumnLengths[column]) return null;
+        return vertices[vertexColumnBeginningIndices[column] + row];
+    }
+
+    /**
+     * Maps the vertex to adjacent vertices
+     * @param vertex the vertex being mapped
+     */
+    private void mapVertex(Vertex vertex){
+        int index = getVertexIndex(vertex);
+        int row = getRow(index, vertexColumnBeginningIndices);
+        int column = getColumn(index, vertexColumnBeginningIndices);
+
+        if(getColumn(index,vertexColumnBeginningIndices) % 2 == 0){
+            vertex.setVertex(getVertexByRowAndColumn(row, column - 1), 0);
+
+            if(vertexColumnLengths[column + 1] > vertexColumnLengths[column]){
+                vertex.setVertex(getVertexByRowAndColumn(row + 1, column + 1), 1);
+                vertex.setVertex(getVertexByRowAndColumn(row, column + 1), 2);
+            }else{
+                vertex.setVertex(getVertexByRowAndColumn(row, column + 1), 1);
+                vertex.setVertex(getVertexByRowAndColumn(row - 1, column + 1), 2);
+            }
+        }else{
+            vertex.setVertex(getVertexByRowAndColumn(row, column + 1), 2);
+
+            if(vertexColumnLengths[column - 1] > vertexColumnLengths[column]){
+                vertex.setVertex(getVertexByRowAndColumn(row, column - 1), 0);
+                vertex.setVertex(getVertexByRowAndColumn(row + 1, column - 1), 1);
+            }else{
+                vertex.setVertex(getVertexByRowAndColumn(row - 1, column - 1), 0);
+                vertex.setVertex(getVertexByRowAndColumn(row, column - 1), 1);
+            }
+        }
+    }
+
+    /**
+     * Generates vertices and places them in "vertices"
+     */
+    private void generateVertices(){
+        //Generates the vertices
+        for(int i = 0; i < vertices.length; i++){
+            vertices[i] = new VertexImpl();
+        }
+
+        //Maps the vertices to other vertices
+        for(int i = 0; i < vertices.length; i++){
+            mapVertex(vertices[i]);
+        }
     }
 
     /**
@@ -298,6 +400,4 @@ public class BoardImpl implements Board {
     public Vertex[] getVertices(){
         return Arrays.copyOf(vertices,54);
     }
-
-    // I don't have any setters here, because they will be set by the constructor
 }

@@ -37,9 +37,6 @@ public class VertexImpl implements Vertex {
         if (position < 0 || position >= 3) {
             throw new IllegalArgumentException("position " + position + " is out of bounds");
         }
-        if (vertex == null) {
-            throw new IllegalArgumentException("vertex is null");
-        }
         if (adjVertices[position] != null) {
             throw new IllegalStateException("Position " + position + " already has a vertex");
         }
