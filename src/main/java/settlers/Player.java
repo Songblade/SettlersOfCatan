@@ -14,6 +14,7 @@ public interface Player {
 
     /**
      * @param resource to give to the player
+     * @throws IllegalArgumentException if resource is MISC
      */
     void addResource(Resource resource);
 
@@ -23,6 +24,11 @@ public interface Player {
      * If the removal is not successful for one resource, the player's hand will not be changed
      */
     boolean removeResources(Map<Resource, Integer> resources);
+
+    /**
+     * @return true if the player has more than 7 resource cards, false otherwise
+     */
+    boolean hasMoreThan7Cards();
 
     /**
      * @return an unmodifiable Map containing the player's development cards and quantity of each
@@ -42,7 +48,7 @@ public interface Player {
     boolean removeDevelopmentCard(DevelopmentCard development);
 
     /**
-     * @return an unmodifiable list of resources the player has 2:1 ports for
+     * @return an unmodifiable set of resources the player has 2:1 ports for
      * MISC means the player has a 3:1 port
      */
     Set<Resource> getPorts();

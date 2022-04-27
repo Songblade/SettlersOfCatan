@@ -1,0 +1,115 @@
+package settlers;
+
+import settlers.card.DevelopmentCard;
+import settlers.card.Resource;
+
+import java.util.*;
+
+public class PlayerImpl implements Player {
+
+    private Map<Resource, Integer> resources;
+    private int resourceCount; // defaults to 0, number of total resources
+    private Map<DevelopmentCard, Integer> vellies;
+    private Set<Resource> ports;
+
+    public PlayerImpl() {
+        resources = new HashMap<>();
+        vellies = new HashMap<>();
+        ports = new HashSet<>();
+    }
+
+    /**
+     * @return an unmodifiable Map containing the player's resource cards and quantity of each
+     */
+    @Override
+    public Map<Resource, Integer> getResources() {
+        return Collections.unmodifiableMap(resources);
+    }
+
+    /**
+     * @param resource to give to the player
+     * @throws IllegalArgumentException if resource is MISC
+     */
+    @Override
+    public void addResource(Resource resource) {
+        if (resource == Resource.MISC) {
+            throw new IllegalArgumentException("Players cannot have MISC resources");
+        }
+        // The following should update resources by 1
+        resources.put(resource, resources.getOrDefault(resource, 0) + 1);
+        resourceCount++;
+    }
+
+    /**
+     * @param resources to be removed from the player's hand
+     * @return true if the removal was successful, false if it was not
+     * If the removal is not successful for one resource, the player's hand will not be changed
+     */
+    @Override
+    public boolean removeResources(Map<Resource, Integer> resources) {
+        for (Resource resource : resources.keySet()) {
+            if (this.resources.getOrDefault(resource, 0) < resources.get(resource)) {
+                // if the player has fewer than what is being removed
+                return false; // without actually removing anything
+            }
+        }
+        for (Resource resource : resources.keySet()) {
+            // Subtracts the number being removed from the number the player has
+            this.resources.put(resource, this.resources.getOrDefault(resource, 0) - resources.get(resource));
+            resourceCount -= resources.get(resource); // decreases number of cards in hand
+        }
+        return true;
+    }
+
+    /**
+     * @return true if the player has more than 7 resource cards, false otherwise
+     */
+    @Override
+    public boolean hasMoreThan7Cards() {
+        return resourceCount > 7;
+    }
+
+    /**
+     * @return an unmodifiable Map containing the player's development cards and quantity of each
+     */
+    @Override
+    public Map<DevelopmentCard, Integer> getDevelopmentCards() {
+        return null;
+    }
+
+    /**
+     * @param development card being added to the player's hand
+     */
+    @Override
+    public void addDevelopmentCard(DevelopmentCard development) {
+
+    }
+
+    /**
+     * @param development card being removed from the player's hand
+     * @return true if the removal was successful, false if he never had the card
+     * @throws IllegalArgumentException if the card is a VICTORY_POINT
+     */
+    @Override
+    public boolean removeDevelopmentCard(DevelopmentCard development) {
+        return false;
+    }
+
+    /**
+     * @return an unmodifiable set of resources the player has 2:1 ports for
+     * MISC means the player has a 3:1 port
+     */
+    @Override
+    public Set<Resource> getPorts() {
+        return null;
+    }
+
+    /**
+     * @param resource of the 2:1 port being added, or MISC if it is a 3:1 port
+     * @return true if the port was added, false if the player already had it
+     */
+    @Override
+    public boolean addPort(Resource resource) {
+        return false;
+    }
+}
