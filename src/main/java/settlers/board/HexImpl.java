@@ -44,9 +44,6 @@ public class HexImpl implements Hex{
      * @throws IllegalStateException if number hasn't been set yet
      */
     public int getNumber(){
-        if (number == -1) {
-            throw new IllegalStateException("number has not been set yet");
-        }
         return number;
     }
 
@@ -71,7 +68,7 @@ public class HexImpl implements Hex{
     /**
      *
      * @param vertex being set adjacent to the Hex
-     * @param position from 0 to 6, where the vertex is set, where 0 is the upper left, increasing clockwise
+     * @param position from 0 to 6, where the vertex is set, where 0 is the upper left, increasing counterclockwise
      * @throws IllegalArgumentException if position > 5 or < 0
      * @throws IllegalStateException if position already has a vertex
      */

@@ -344,7 +344,7 @@ public class BoardImpl implements Board {
      * Maps the vertex to adjacent vertices
      * @param vertex the vertex being mapped
      */
-    private void mapVertex(Vertex vertex){
+    private void mapVertexToAdjacentVertices(Vertex vertex){
         int index = getVertexIndex(vertex);
         int row = getRow(index, vertexColumnBeginningIndices);
         int column = getColumn(index, vertexColumnBeginningIndices);
@@ -373,6 +373,34 @@ public class BoardImpl implements Board {
     }
 
     /**
+     * Maps the hex to adjacent vertices
+     * @param hex the hex being mapped
+     */
+    private void mapHexToAdjacentVertices(Hex hex){
+        int index = getHexIndex(hex);
+        int row = getRow(index, hexColumnBeginningIndices);
+        int column = getColumn(index, hexColumnBeginningIndices);
+        int vertexColumn = (column + 1) * 2;
+
+        hex.setVertex(getVertexByRowAndColumn(row, vertexColumn - 1),0);
+        hex.setVertex(getVertexByRowAndColumn(row + 1, vertexColumn - 1),2);
+        hex.setVertex(getVertexByRowAndColumn(row + 1, vertexColumn),3);
+        hex.setVertex(getVertexByRowAndColumn(row, vertexColumn),5);
+
+        if(vertexColumnLengths[vertexColumn - 1] > vertexColumnLengths[vertexColumn - 2]){
+            hex.setVertex(getVertexByRowAndColumn(row, vertexColumn - 2),1);
+        }else{
+            hex.setVertex(getVertexByRowAndColumn(row + 1, vertexColumn - 2),1);
+        }
+
+        if(vertexColumnLengths[vertexColumn] > vertexColumnLengths[vertexColumn + 1]){
+            hex.setVertex(getVertexByRowAndColumn(row, vertexColumn + 1),4);
+        }else{
+            hex.setVertex(getVertexByRowAndColumn(row + 1, vertexColumn + 1),4);
+        }
+    }
+
+    /**
      * Generates vertices and places them in "vertices"
      */
     private void generateVertices(){
@@ -383,7 +411,12 @@ public class BoardImpl implements Board {
 
         //Maps the vertices to other vertices
         for(int i = 0; i < vertices.length; i++){
-            mapVertex(vertices[i]);
+            mapVertexToAdjacentVertices(vertices[i]);
+        }
+
+        //Maps all hexes to vertices
+        for(int i = 0; i < hexes.length; i++){
+            mapHexToAdjacentVertices(hexes[i]);
         }
     }
 
