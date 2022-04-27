@@ -285,6 +285,14 @@ class TestPlayer implements Player {
     }
 
     /**
+     * @return true if the player has more than 7 resource cards, false otherwise
+     */
+    @Override
+    public boolean hasMoreThan7Cards() {
+        return false;
+    }
+
+    /**
      * @return an unmodifiable Map containing the player's development cards and quantity of each
      */
     @Override

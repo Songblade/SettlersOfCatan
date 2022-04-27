@@ -13,8 +13,8 @@ public interface Hex {
     void setNumber(int number);
 
     /**
-     *
-     * @return the Hex's die number, equals to 7 if this is the desert
+     * @return the Hex's die number, equals to 1 if this is the desert
+     * @throws IllegalStateException if number hasn't been set yet
      */
     int getNumber();
 
@@ -27,7 +27,7 @@ public interface Hex {
 
     /**
      *
-     * @return a length 6 array containing the vertices
+     * @return a length 6 array containing the vertices, new copy
      * Vertex 0 is the upper left, increases clockwise
      */
     Vertex[] getVertices();
@@ -35,7 +35,9 @@ public interface Hex {
     /**
      *
      * @param vertex being set adjacent to the Hex
-     * @param position from 0 to 6, where the vertex is set, where 0 is the upper left, increasing clockwise
+     * @param position from 0 to 5, where the vertex is set, where 0 is the upper left, increasing clockwise
+     * @throws IllegalArgumentException if position > 5 or < 0
+     * @throws IllegalStateException if position already has a vertex
      */
     void setVertex(Vertex vertex, int position);
 

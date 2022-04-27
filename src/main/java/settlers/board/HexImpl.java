@@ -2,9 +2,13 @@ package settlers.board;
 
 import settlers.card.Resource;
 
+import java.util.Arrays;
+
 public class HexImpl implements Hex{
     private final Resource resource;
     private int number;
+    private Vertex[] vertices;
+    private boolean hasThief; // default starts false
 
 
     public HexImpl(Resource resource){
@@ -12,7 +16,8 @@ public class HexImpl implements Hex{
             throw new IllegalArgumentException("Constructor is null");
         }
         this.resource = resource;
-        number = -1; // the default value, before it is set
+        this.number = -1; // the default value, before it is set
+        this.vertices = new Vertex[6];
     }
 
     /**
@@ -56,20 +61,28 @@ public class HexImpl implements Hex{
 
     /**
      *
-     * @return a length 6 array containing the vertices
+     * @return a length 6 array containing the vertices, new copy
      * Vertex 0 is the upper left, increases clockwise
      */
     public Vertex[] getVertices(){
-        return new Vertex[1];
+        return Arrays.copyOf(vertices, vertices.length);
     }
 
     /**
      *
      * @param vertex being set adjacent to the Hex
      * @param position from 0 to 6, where the vertex is set, where 0 is the upper left, increasing clockwise
+     * @throws IllegalArgumentException if position > 5 or < 0
+     * @throws IllegalStateException if position already has a vertex
      */
     public void setVertex(Vertex vertex, int position){
-        return;
+        if (position > 5 || position < 0) {
+            throw new IllegalArgumentException("position " + position + " is out of bounds");
+        }
+        if (vertices[position] != null) {
+            throw new IllegalStateException("position " + position + " already has a vertex");
+        }
+        vertices[position] = vertex;
     }
 
     /**
@@ -77,7 +90,7 @@ public class HexImpl implements Hex{
      * @return true if there is a robber on this Hex, false otherwise
      */
     public boolean hasThief(){
-        return true;
+        return hasThief;
     }
 
     /**
@@ -85,7 +98,7 @@ public class HexImpl implements Hex{
      * @param thiefIsHere sets whether the thief is here to this parameter
      */
     public void setThief(boolean thiefIsHere){
-        return;
+        hasThief = thiefIsHere;
     }
 
 }
