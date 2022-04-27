@@ -29,7 +29,7 @@ public class VertexImpl implements Vertex {
 
     /**
      * @param vertex   being set adjacent to the Vertex
-     * @param position from 0 to 3, where the vertex is set, where 0 is the upper left, increasing clockwise
+     * @param position from 0 to 3, where the vertex is set, where 0 is the upper left, increasing counterclockwise
      * @throws IllegalStateException if this position's vertex is already set
      */
     @Override
