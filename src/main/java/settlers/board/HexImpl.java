@@ -25,7 +25,7 @@ public class HexImpl implements Hex{
      * @return the Hex's die number, equals to 7 if this is the desert
      */
     public int getNumber(){
-        return 0;
+        return number;
     }
 
     /**
@@ -34,7 +34,7 @@ public class HexImpl implements Hex{
      * MISC means desert, and means that no resource should be given to the player
      */
     public Resource getResource(){
-        return Resource.BRICK;
+        return this.resource;
     }
 
     /**

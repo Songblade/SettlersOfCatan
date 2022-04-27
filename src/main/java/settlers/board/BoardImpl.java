@@ -28,6 +28,9 @@ public class BoardImpl implements Board {
         setupHexQuantities(tileResourceQuantities);
         setupPriorityNumbers(priorityTileNumbers);
         setupOtherNumbers(otherTileNumbers);
+
+        //Generates hexes
+        generateHexes();
     }
 
     /**
@@ -79,7 +82,7 @@ public class BoardImpl implements Board {
      * Gets the number of tiles which haven't been placed
      * @return the number of tiles which haven't been placed
      */
-    private int getQuantityOfRemailingTiles(){
+    private int getQuantityOfRemainingTiles(){
         int quantityOfAvailableTiles = 0;
         for(Resource resource : tileResourceQuantities.keySet()){
             quantityOfAvailableTiles += tileResourceQuantities.get(resource);
@@ -94,7 +97,7 @@ public class BoardImpl implements Board {
      */
     private Resource getAvailableResource(){
         Random rng = new Random();
-        int resourceIndicator = rng.nextInt(getQuantityOfRemailingTiles());
+        int resourceIndicator = rng.nextInt(getQuantityOfRemainingTiles());
 
         int index = 0;
         for(Resource resource : tileResourceQuantities.keySet()){
@@ -168,7 +171,7 @@ public class BoardImpl implements Board {
      */
     private Hex getHexByRowAndColumn(int row, int column){
         if(column < 0 || column >= hexColumnBeginningIndices.length) return null;
-        if(row < 0 || row >= columnLengths[row]) return null;
+        if(row < 0 || row >= columnLengths[column]) return null;
         return hexes[hexColumnBeginningIndices[column] + row];
     }
 
@@ -199,13 +202,13 @@ public class BoardImpl implements Board {
         addHexToSet(getHexByRowAndColumn(row + 1, column),adjacentHexes);
 
         //Adds the hexes diagonal to @hex
-        if(column != 0 && columnLengths[column - 1] > columnLengths[column]){
+        if(column != 0 && columnLengths[column - 1] < columnLengths[column]){
             addHexToSet(getHexByRowAndColumn(row - 1, column - 1),adjacentHexes);
         }else{
             addHexToSet(getHexByRowAndColumn(row + 1, column - 1),adjacentHexes);
         }
 
-        if(column != columnLengths.length - 1 && columnLengths[column + 1] > columnLengths[column]){
+        if(column != columnLengths.length - 1 && columnLengths[column + 1] < columnLengths[column]){
             addHexToSet(getHexByRowAndColumn(row - 1, column + 1),adjacentHexes);
         }else{
             addHexToSet(getHexByRowAndColumn(row + 1, column + 1),adjacentHexes);
@@ -239,12 +242,24 @@ public class BoardImpl implements Board {
 
         //For every tile number in numbers, set the number of a random valid tile to that number,
         //then remove the tile (and all adjacent tiles if removeAdjacentTiles is true) from the list of valid numbers.
+        int startingSize = validHexes.size();
         for(Integer number : numbers){
-            int validHexesNumberPlacementIndex = rng.nextInt(validHexes.size());
-            Hex hex = validHexes.get(validHexesNumberPlacementIndex);
-            hex.setNumber(number);
-            validHexes.remove(hex);
-            if(removeAdjacentHexes) validHexes.removeAll(getAdjacentHexes(hex));
+            /**
+             * Try catch is test
+             */
+            try {
+                int validHexesNumberPlacementIndex = rng.nextInt(validHexes.size());
+                Hex hex = validHexes.get(validHexesNumberPlacementIndex);
+                hex.setNumber(number);
+                validHexes.remove(hex);
+                if(removeAdjacentHexes) validHexes.removeAll(getAdjacentHexes(hex));
+                //Test Code
+                HashSet<Integer> ah = new HashSet<>();
+                for(Hex adjacentHex : getAdjacentHexes(hex)){ ah.add(getHexIndex(adjacentHex));}
+                //throw new IllegalStateException(getHexIndex(hex)+ " is adjacent to " + ah.toString() + ". It is the " + getRow(getHexIndex(hex)) + " element of the " + getColumn(getHexIndex(hex)) + " column");
+            }catch (IllegalArgumentException e){
+                throw new IllegalArgumentException("starting size was: " + startingSize);
+            }
         }
     }
 
