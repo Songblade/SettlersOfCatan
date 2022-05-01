@@ -12,10 +12,45 @@ import java.util.HashMap;
 
 public class BoardTest{
 
+    private String getAdjacentVerticesString(Vertex baseVertex, BoardImpl board){
+        String output = "[";
+
+        for(Vertex vertex : baseVertex.getAdjacentVertices()){
+            if(vertex != null) {
+                output += board.t(vertex) + ", ";
+            }
+        }
+
+        output += "]";
+
+        return output;
+    }
+
+    private String getAdjacentHexesString(Hex baseHex, BoardImpl board){
+        String output = "[";
+
+        for(Vertex vertex : baseHex.getVertices()){
+            if(vertex != null) {
+                output += board.t(vertex) + ", ";
+            }
+        }
+
+        output += "]";
+
+        return output;
+    }
+
     @Test
     public void createBoard(){
         try{
-            Board board = new BoardImpl();
+            BoardImpl board = new BoardImpl();
+            for(Vertex vertex : board.getVertices()){
+                System.out.println("Vertex: " + board.t(vertex) + " | Adjacent vertices: " + getAdjacentVerticesString(vertex, board));
+            }
+            System.out.println("-------------------------------------------------");
+            for (Hex hex : board.getHexes()){
+                System.out.println("Hex: " + board.t(hex) + " | Adjacent vertices: " + getAdjacentHexesString(hex, board));
+            }
         }catch (Throwable e){
             e.printStackTrace();
         }

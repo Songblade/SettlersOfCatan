@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="settlers.board.BoardTest" time="0.8" tests="3" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="settlers.board.BoardTest" time="0.879" tests="3" errors="0" skipped="0" failures="0">
   <properties>
     <property name="sun.desktop" value="windows"/>
     <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
@@ -17,7 +17,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-11.0.12\bin"/>
-    <property name="sun.java.command" value="C:\Users\Owner\AppData\Local\Temp\surefire15357534305343014748\surefirebooter4723400770788045845.jar C:\Users\Owner\AppData\Local\Temp\surefire15357534305343014748 2022-04-27T18-35-31_363-jvmRun1 surefire10747530690083259082tmp surefire_013368755804183148956tmp"/>
+    <property name="sun.java.command" value="C:\Users\Owner\AppData\Local\Temp\surefire1209253352839248996\surefirebooter5811470263456087483.jar C:\Users\Owner\AppData\Local\Temp\surefire1209253352839248996 2022-05-01T17-41-06_184-jvmRun1 surefire6334578198909461732tmp surefire_0671858025167294129tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="D:\CompSciAssignments\InProgress\SettlersOfCatan\target\test-classes;D:\CompSciAssignments\InProgress\SettlersOfCatan\target\classes;C:\Users\Owner\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.1\junit-jupiter-api-5.7.1.jar;C:\Users\Owner\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\Owner\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\Owner\.m2\repository\org\junit\platform\junit-platform-commons\1.7.1\junit-platform-commons-1.7.1.jar;C:\Users\Owner\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.1\junit-jupiter-engine-5.7.1.jar;C:\Users\Owner\.m2\repository\org\junit\platform\junit-platform-engine\1.7.1\junit-platform-engine-1.7.1.jar;C:\Users\Owner\.m2\repository\junit\junit\4.13\junit-4.13.jar;C:\Users\Owner\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\Owner\.m2\repository\org\junit\vintage\junit-vintage-engine\5.7.1\junit-vintage-engine-5.7.1.jar;C:\Users\Owner\.m2\repository\org\apache\maven\plugins\maven-surefire-plugin\3.0.0-M5\maven-surefire-plugin-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\maven-surefire-common\3.0.0-M5\maven-surefire-common-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-api\3.0.0-M5\surefire-api-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-logger-api\3.0.0-M5\surefire-logger-api-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-extensions-api\3.0.0-M5\surefire-extensions-api-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-booter\3.0.0-M5\surefire-booter-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-extensions-spi\3.0.0-M5\surefire-extensions-spi-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\maven-toolchain\3.0-alpha-2\maven-toolchain-3.0-alpha-2.jar;C:\Users\Owner\.m2\repository\org\apache\maven\shared\maven-artifact-transfer\0.11.0\maven-artifact-transfer-0.11.0.jar;C:\Users\Owner\.m2\repository\org\apache\maven\shared\maven-common-artifact-filters\3.0.1\maven-common-artifact-filters-3.0.1.jar;C:\Users\Owner\.m2\repository\org\apache\maven\maven-model\3.0\maven-model-3.0.jar;C:\Users\Owner\.m2\repository\org\apache\maven\maven-plugin-api\3.0\maven-plugin-api-3.0.jar;C:\Users\Owner\.m2\repository\org\sonatype\sisu\sisu-inject-plexus\1.4.2\sisu-inject-plexus-1.4.2.jar;C:\Users\Owner\.m2\repository\org\codehaus\plexus\plexus-classworlds\2.2.3\plexus-classworlds-2.2.3.jar;C:\Users\Owner\.m2\repository\org\sonatype\sisu\sisu-inject-bean\1.4.2\sisu-inject-bean-1.4.2.jar;C:\Users\Owner\.m2\repository\org\sonatype\sisu\sisu-guice\2.1.7\sisu-guice-2.1.7-noaop.jar;C:\Users\Owner\.m2\repository\org\apache\maven\shared\maven-shared-utils\3.1.0\maven-shared-utils-3.1.0.jar;C:\Users\Owner\.m2\repository\commons-io\commons-io\2.5\commons-io-2.5.jar;C:\Users\Owner\.m2\repository\commons-codec\commons-codec\1.11\commons-codec-1.11.jar;C:\Users\Owner\.m2\repository\org\codehaus\plexus\plexus-java\1.0.5\plexus-java-1.0.5.jar;C:\Users\Owner\.m2\repository\org\ow2\asm\asm\7.2\asm-7.2.jar;C:\Users\Owner\.m2\repository\com\thoughtworks\qdox\qdox\2.0-M9\qdox-2.0-M9.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-shared-utils\3.0.0-M4\surefire-shared-utils-3.0.0-M4.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -33,7 +33,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
-    <property name="surefire.real.class.path" value="C:\Users\Owner\AppData\Local\Temp\surefire15357534305343014748\surefirebooter4723400770788045845.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\Owner\AppData\Local\Temp\surefire1209253352839248996\surefirebooter5811470263456087483.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="11.0.12+8-LTS-237"/>
@@ -61,7 +61,83 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="55.0"/>
   </properties>
-  <testcase name="createBoard" classname="settlers.board.BoardTest" time="0.041"/>
-  <testcase name="ensureQuantitiesOfNumbersAndResourcesAreCorrect" classname="settlers.board.BoardTest" time="0.134"/>
-  <testcase name="createALotOfBoards" classname="settlers.board.BoardTest" time="0.599"/>
+  <testcase name="createBoard" classname="settlers.board.BoardTest" time="0.079">
+    <system-out><![CDATA[Vertex: 0 | Adjacent vertices: [4, 3, ]
+Vertex: 1 | Adjacent vertices: [5, 4, ]
+Vertex: 2 | Adjacent vertices: [6, 5, ]
+Vertex: 3 | Adjacent vertices: [0, 7, ]
+Vertex: 4 | Adjacent vertices: [0, 1, 8, ]
+Vertex: 5 | Adjacent vertices: [1, 2, 9, ]
+Vertex: 6 | Adjacent vertices: [2, 10, ]
+Vertex: 7 | Adjacent vertices: [3, 12, 11, ]
+Vertex: 8 | Adjacent vertices: [4, 13, 12, ]
+Vertex: 9 | Adjacent vertices: [5, 14, 13, ]
+Vertex: 10 | Adjacent vertices: [6, 15, 14, ]
+Vertex: 11 | Adjacent vertices: [7, 16, ]
+Vertex: 12 | Adjacent vertices: [7, 8, 17, ]
+Vertex: 13 | Adjacent vertices: [8, 9, 18, ]
+Vertex: 14 | Adjacent vertices: [9, 10, 19, ]
+Vertex: 15 | Adjacent vertices: [10, 20, ]
+Vertex: 16 | Adjacent vertices: [11, 22, 21, ]
+Vertex: 17 | Adjacent vertices: [12, 23, 22, ]
+Vertex: 18 | Adjacent vertices: [13, 24, 23, ]
+Vertex: 19 | Adjacent vertices: [14, 25, 24, ]
+Vertex: 20 | Adjacent vertices: [15, 26, 25, ]
+Vertex: 21 | Adjacent vertices: [16, 27, ]
+Vertex: 22 | Adjacent vertices: [16, 17, 28, ]
+Vertex: 23 | Adjacent vertices: [17, 18, 29, ]
+Vertex: 24 | Adjacent vertices: [18, 19, 30, ]
+Vertex: 25 | Adjacent vertices: [19, 20, 31, ]
+Vertex: 26 | Adjacent vertices: [20, 32, ]
+Vertex: 27 | Adjacent vertices: [21, 33, ]
+Vertex: 28 | Adjacent vertices: [22, 34, 33, ]
+Vertex: 29 | Adjacent vertices: [23, 35, 34, ]
+Vertex: 30 | Adjacent vertices: [24, 36, 35, ]
+Vertex: 31 | Adjacent vertices: [25, 37, 36, ]
+Vertex: 32 | Adjacent vertices: [26, 37, ]
+Vertex: 33 | Adjacent vertices: [27, 28, 38, ]
+Vertex: 34 | Adjacent vertices: [28, 29, 39, ]
+Vertex: 35 | Adjacent vertices: [29, 30, 40, ]
+Vertex: 36 | Adjacent vertices: [30, 31, 41, ]
+Vertex: 37 | Adjacent vertices: [31, 32, 42, ]
+Vertex: 38 | Adjacent vertices: [33, 43, ]
+Vertex: 39 | Adjacent vertices: [34, 44, 43, ]
+Vertex: 40 | Adjacent vertices: [35, 45, 44, ]
+Vertex: 41 | Adjacent vertices: [36, 46, 45, ]
+Vertex: 42 | Adjacent vertices: [37, 46, ]
+Vertex: 43 | Adjacent vertices: [38, 39, 47, ]
+Vertex: 44 | Adjacent vertices: [39, 40, 48, ]
+Vertex: 45 | Adjacent vertices: [40, 41, 49, ]
+Vertex: 46 | Adjacent vertices: [41, 42, 50, ]
+Vertex: 47 | Adjacent vertices: [43, 51, ]
+Vertex: 48 | Adjacent vertices: [44, 52, 51, ]
+Vertex: 49 | Adjacent vertices: [45, 53, 52, ]
+Vertex: 50 | Adjacent vertices: [46, 53, ]
+Vertex: 51 | Adjacent vertices: [47, 48, ]
+Vertex: 52 | Adjacent vertices: [48, 49, ]
+Vertex: 53 | Adjacent vertices: [49, 50, ]
+-------------------------------------------------
+Hex: 0 | Adjacent vertices: [3, 0, 4, 8, 12, 7, ]
+Hex: 1 | Adjacent vertices: [4, 1, 5, 9, 13, 8, ]
+Hex: 2 | Adjacent vertices: [5, 2, 6, 10, 14, 9, ]
+Hex: 3 | Adjacent vertices: [11, 7, 12, 17, 22, 16, ]
+Hex: 4 | Adjacent vertices: [12, 8, 13, 18, 23, 17, ]
+Hex: 5 | Adjacent vertices: [13, 9, 14, 19, 24, 18, ]
+Hex: 6 | Adjacent vertices: [14, 10, 15, 20, 25, 19, ]
+Hex: 7 | Adjacent vertices: [21, 16, 22, 28, 33, 27, ]
+Hex: 8 | Adjacent vertices: [22, 17, 23, 29, 34, 28, ]
+Hex: 9 | Adjacent vertices: [23, 18, 24, 30, 35, 29, ]
+Hex: 10 | Adjacent vertices: [24, 19, 25, 31, 36, 30, ]
+Hex: 11 | Adjacent vertices: [25, 20, 26, 32, 37, 31, ]
+Hex: 12 | Adjacent vertices: [33, 28, 34, 39, 43, 38, ]
+Hex: 13 | Adjacent vertices: [34, 29, 35, 40, 44, 39, ]
+Hex: 14 | Adjacent vertices: [35, 30, 36, 41, 45, 40, ]
+Hex: 15 | Adjacent vertices: [36, 31, 37, 42, 46, 41, ]
+Hex: 16 | Adjacent vertices: [43, 39, 44, 48, 51, 47, ]
+Hex: 17 | Adjacent vertices: [44, 40, 45, 49, 52, 48, ]
+Hex: 18 | Adjacent vertices: [45, 41, 46, 50, 53, 49, ]
+]]></system-out>
+  </testcase>
+  <testcase name="ensureQuantitiesOfNumbersAndResourcesAreCorrect" classname="settlers.board.BoardTest" time="0.113"/>
+  <testcase name="createALotOfBoards" classname="settlers.board.BoardTest" time="0.663"/>
 </testsuite>

@@ -270,10 +270,6 @@ public class BoardImpl implements Board {
         //then remove the tile (and all adjacent tiles if removeAdjacentTiles is true) from the list of valid numbers.
         int startingSize = validHexes.size();
         for(Integer number : numbers){
-            /**
-             * Try catch is test
-             */
-            try {
                 int validHexesNumberPlacementIndex = rng.nextInt(validHexes.size());
                 Hex hex = validHexes.get(validHexesNumberPlacementIndex);
                 hex.setNumber(number);
@@ -282,10 +278,6 @@ public class BoardImpl implements Board {
                 //Test Code
                 HashSet<Integer> ah = new HashSet<>();
                 for(Hex adjacentHex : getAdjacentHexes(hex)){ ah.add(getHexIndex(adjacentHex));}
-                //throw new IllegalStateException(getHexIndex(hex)+ " is adjacent to " + ah.toString() + ". It is the " + getHexRow(getHexIndex(hex)) + " element of the " + getHexColumn(getHexIndex(hex)) + " column");
-            }catch (IllegalArgumentException e){
-                throw new IllegalArgumentException("starting size was: " + startingSize);
-            }
         }
     }
 
@@ -433,4 +425,10 @@ public class BoardImpl implements Board {
     public Vertex[] getVertices(){
         return Arrays.copyOf(vertices,54);
     }
+
+    /**
+     * Test methods
+     */
+    public int t(Vertex vertex){return getVertexIndex(vertex);};
+    public int t(Hex hex){return getHexIndex(hex);};
 }

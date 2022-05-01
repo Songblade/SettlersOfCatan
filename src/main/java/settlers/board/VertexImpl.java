@@ -151,9 +151,10 @@ public class VertexImpl implements Vertex {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VertexImpl vertex = (VertexImpl) o;
-        return Arrays.equals(adjVertices, vertex.adjVertices) && Arrays.equals(adjEdges, vertex.adjEdges) && port == vertex.port;
+        //return Arrays.equals(adjVertices, vertex.adjVertices) && Arrays.equals(adjEdges, vertex.adjEdges) && port == vertex.port;
+        return this.hashCode() == vertex.hashCode();
     }
-
+    /**
     @Override
     public int hashCode() {
         int result = Objects.hash(port);
@@ -161,4 +162,5 @@ public class VertexImpl implements Vertex {
         result = 31 * result + Arrays.hashCode(adjEdges);
         return result;
     }
+    **/
 }

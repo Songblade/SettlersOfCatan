@@ -1,0 +1,4 @@
+# Created at 2022-05-01T17:41:06.711
+Boot Manifest-JAR contains absolute paths in classpath 'D:\CompSciAssignments\InProgress\SettlersOfCatan\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+
