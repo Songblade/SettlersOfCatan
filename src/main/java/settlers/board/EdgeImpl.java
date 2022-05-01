@@ -27,13 +27,7 @@ public class EdgeImpl implements Edge{
         this.player = player;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EdgeImpl edge = (EdgeImpl) o;
-        return Objects.equals(player, edge.player);
-    }
+    // I am not overriding .equals, because I want to have multiple roads of the same player
 
     @Override
     public int hashCode() {
