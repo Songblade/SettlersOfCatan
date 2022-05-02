@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="settlers.board.BoardTest" time="1.09" tests="3" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="settlers.board.BoardTest" time="1.105" tests="3" errors="0" skipped="0" failures="0">
   <properties>
     <property name="sun.desktop" value="windows"/>
     <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
@@ -17,7 +17,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-11.0.12\bin"/>
-    <property name="sun.java.command" value="C:\Users\Owner\AppData\Local\Temp\surefire2793208051281512205\surefirebooter1720977176428717952.jar C:\Users\Owner\AppData\Local\Temp\surefire2793208051281512205 2022-05-02T17-02-08_434-jvmRun1 surefire4758249011081606630tmp surefire_03018251852019860295tmp"/>
+    <property name="sun.java.command" value="C:\Users\Owner\AppData\Local\Temp\surefire15157069533687872486\surefirebooter7073330946866157021.jar C:\Users\Owner\AppData\Local\Temp\surefire15157069533687872486 2022-05-02T17-07-12_655-jvmRun1 surefire13553931022953970564tmp surefire_09823267864640372957tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="D:\CompSciAssignments\InProgress\SettlersOfCatan\target\test-classes;D:\CompSciAssignments\InProgress\SettlersOfCatan\target\classes;C:\Users\Owner\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.1\junit-jupiter-api-5.7.1.jar;C:\Users\Owner\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\Owner\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\Owner\.m2\repository\org\junit\platform\junit-platform-commons\1.7.1\junit-platform-commons-1.7.1.jar;C:\Users\Owner\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.1\junit-jupiter-engine-5.7.1.jar;C:\Users\Owner\.m2\repository\org\junit\platform\junit-platform-engine\1.7.1\junit-platform-engine-1.7.1.jar;C:\Users\Owner\.m2\repository\junit\junit\4.13\junit-4.13.jar;C:\Users\Owner\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\Owner\.m2\repository\org\junit\vintage\junit-vintage-engine\5.7.1\junit-vintage-engine-5.7.1.jar;C:\Users\Owner\.m2\repository\org\apache\maven\plugins\maven-surefire-plugin\3.0.0-M5\maven-surefire-plugin-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\maven-surefire-common\3.0.0-M5\maven-surefire-common-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-api\3.0.0-M5\surefire-api-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-logger-api\3.0.0-M5\surefire-logger-api-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-extensions-api\3.0.0-M5\surefire-extensions-api-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-booter\3.0.0-M5\surefire-booter-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-extensions-spi\3.0.0-M5\surefire-extensions-spi-3.0.0-M5.jar;C:\Users\Owner\.m2\repository\org\apache\maven\maven-toolchain\3.0-alpha-2\maven-toolchain-3.0-alpha-2.jar;C:\Users\Owner\.m2\repository\org\apache\maven\shared\maven-artifact-transfer\0.11.0\maven-artifact-transfer-0.11.0.jar;C:\Users\Owner\.m2\repository\org\apache\maven\shared\maven-common-artifact-filters\3.0.1\maven-common-artifact-filters-3.0.1.jar;C:\Users\Owner\.m2\repository\org\apache\maven\maven-model\3.0\maven-model-3.0.jar;C:\Users\Owner\.m2\repository\org\apache\maven\maven-plugin-api\3.0\maven-plugin-api-3.0.jar;C:\Users\Owner\.m2\repository\org\sonatype\sisu\sisu-inject-plexus\1.4.2\sisu-inject-plexus-1.4.2.jar;C:\Users\Owner\.m2\repository\org\codehaus\plexus\plexus-classworlds\2.2.3\plexus-classworlds-2.2.3.jar;C:\Users\Owner\.m2\repository\org\sonatype\sisu\sisu-inject-bean\1.4.2\sisu-inject-bean-1.4.2.jar;C:\Users\Owner\.m2\repository\org\sonatype\sisu\sisu-guice\2.1.7\sisu-guice-2.1.7-noaop.jar;C:\Users\Owner\.m2\repository\org\apache\maven\shared\maven-shared-utils\3.1.0\maven-shared-utils-3.1.0.jar;C:\Users\Owner\.m2\repository\commons-io\commons-io\2.5\commons-io-2.5.jar;C:\Users\Owner\.m2\repository\commons-codec\commons-codec\1.11\commons-codec-1.11.jar;C:\Users\Owner\.m2\repository\org\codehaus\plexus\plexus-java\1.0.5\plexus-java-1.0.5.jar;C:\Users\Owner\.m2\repository\org\ow2\asm\asm\7.2\asm-7.2.jar;C:\Users\Owner\.m2\repository\com\thoughtworks\qdox\qdox\2.0-M9\qdox-2.0-M9.jar;C:\Users\Owner\.m2\repository\org\apache\maven\surefire\surefire-shared-utils\3.0.0-M4\surefire-shared-utils-3.0.0-M4.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -33,7 +33,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
-    <property name="surefire.real.class.path" value="C:\Users\Owner\AppData\Local\Temp\surefire2793208051281512205\surefirebooter1720977176428717952.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\Owner\AppData\Local\Temp\surefire15157069533687872486\surefirebooter7073330946866157021.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="11.0.12+8-LTS-237"/>
@@ -61,61 +61,61 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="55.0"/>
   </properties>
-  <testcase name="createBoard" classname="settlers.board.BoardTest" time="0.106">
-    <system-out><![CDATA[Vertex: 0 | Adjacent vertices: [4, 3, ] | Adjacent edges: [1776374725, 389993238, ] | Port: MISC
-Vertex: 1 | Adjacent vertices: [5, 4, ] | Adjacent edges: [352598575, 1250142026, ] | Port: SHEEP
-Vertex: 2 | Adjacent vertices: [6, 5, ] | Adjacent edges: [20224131, 1261031890, ] | Port: None
-Vertex: 3 | Adjacent vertices: [0, 7, ] | Adjacent edges: [389993238, 2135449562, ] | Port: MISC
-Vertex: 4 | Adjacent vertices: [0, 1, 8, ] | Adjacent edges: [1776374725, 1250142026, 673586830, ] | Port: None
-Vertex: 5 | Adjacent vertices: [1, 2, 9, ] | Adjacent edges: [352598575, 1261031890, 225672073, ] | Port: SHEEP
-Vertex: 6 | Adjacent vertices: [2, 10, ] | Adjacent edges: [20224131, 139566260, ] | Port: None
-Vertex: 7 | Adjacent vertices: [3, 12, 11, ] | Adjacent edges: [2135449562, 903525611, 764419760, ] | Port: None
-Vertex: 8 | Adjacent vertices: [4, 13, 12, ] | Adjacent edges: [673586830, 1000966072, 1058609221, ] | Port: None
-Vertex: 9 | Adjacent vertices: [5, 14, 13, ] | Adjacent edges: [225672073, 1594138273, 1926004335, ] | Port: None
-Vertex: 10 | Adjacent vertices: [6, 15, 14, ] | Adjacent edges: [139566260, 95396809, 1912821769, ] | Port: MISC
-Vertex: 11 | Adjacent vertices: [7, 16, ] | Adjacent edges: [764419760, 151593342, ] | Port: MISC
-Vertex: 12 | Adjacent vertices: [7, 8, 17, ] | Adjacent edges: [903525611, 1058609221, 405215542, ] | Port: None
-Vertex: 13 | Adjacent vertices: [8, 9, 18, ] | Adjacent edges: [1000966072, 1926004335, 1617838096, ] | Port: None
-Vertex: 14 | Adjacent vertices: [9, 10, 19, ] | Adjacent edges: [1594138273, 1912821769, 138776324, ] | Port: None
-Vertex: 15 | Adjacent vertices: [10, 20, ] | Adjacent edges: [95396809, 1208442275, ] | Port: MISC
-Vertex: 16 | Adjacent vertices: [11, 22, 21, ] | Adjacent edges: [151593342, 1758008124, 2050339061, ] | Port: MISC
-Vertex: 17 | Adjacent vertices: [12, 23, 22, ] | Adjacent edges: [405215542, 1579957528, 750029115, ] | Port: None
-Vertex: 18 | Adjacent vertices: [13, 24, 23, ] | Adjacent edges: [1617838096, 214187874, 1528923159, ] | Port: None
-Vertex: 19 | Adjacent vertices: [14, 25, 24, ] | Adjacent edges: [138776324, 1683662486, 1823409783, ] | Port: None
-Vertex: 20 | Adjacent vertices: [15, 26, 25, ] | Adjacent edges: [1208442275, 1094523823, 384515747, ] | Port: None
-Vertex: 21 | Adjacent vertices: [16, 27, ] | Adjacent edges: [2050339061, 657736958, ] | Port: None
-Vertex: 22 | Adjacent vertices: [16, 17, 28, ] | Adjacent edges: [1758008124, 750029115, 867988177, ] | Port: None
-Vertex: 23 | Adjacent vertices: [17, 18, 29, ] | Adjacent edges: [1579957528, 1528923159, 443934570, ] | Port: None
-Vertex: 24 | Adjacent vertices: [18, 19, 30, ] | Adjacent edges: [214187874, 1823409783, 1428475041, ] | Port: None
-Vertex: 25 | Adjacent vertices: [19, 20, 31, ] | Adjacent edges: [1683662486, 384515747, 1345483087, ] | Port: None
-Vertex: 26 | Adjacent vertices: [20, 32, ] | Adjacent edges: [1094523823, 4766562, ] | Port: WOOD
-Vertex: 27 | Adjacent vertices: [21, 33, ] | Adjacent edges: [657736958, 892555958, ] | Port: None
-Vertex: 28 | Adjacent vertices: [22, 34, 33, ] | Adjacent edges: [867988177, 1182908789, 91912419, ] | Port: None
-Vertex: 29 | Adjacent vertices: [23, 35, 34, ] | Adjacent edges: [443934570, 1076641925, 1873091796, ] | Port: None
-Vertex: 30 | Adjacent vertices: [24, 36, 35, ] | Adjacent edges: [1428475041, 661119548, 1896622931, ] | Port: None
-Vertex: 31 | Adjacent vertices: [25, 37, 36, ] | Adjacent edges: [1345483087, 1401316767, 335708295, ] | Port: None
-Vertex: 32 | Adjacent vertices: [26, 37, ] | Adjacent edges: [4766562, 216856121, ] | Port: WOOD
-Vertex: 33 | Adjacent vertices: [27, 28, 38, ] | Adjacent edges: [892555958, 91912419, 480903748, ] | Port: BRICK
-Vertex: 34 | Adjacent vertices: [28, 29, 39, ] | Adjacent edges: [1182908789, 1873091796, 2095064787, ] | Port: None
-Vertex: 35 | Adjacent vertices: [29, 30, 40, ] | Adjacent edges: [1076641925, 1896622931, 2095486832, ] | Port: None
-Vertex: 36 | Adjacent vertices: [30, 31, 41, ] | Adjacent edges: [661119548, 335708295, 391183339, ] | Port: None
-Vertex: 37 | Adjacent vertices: [31, 32, 42, ] | Adjacent edges: [1401316767, 216856121, 1529115495, ] | Port: None
-Vertex: 38 | Adjacent vertices: [33, 43, ] | Adjacent edges: [480903748, 646910062, ] | Port: BRICK
-Vertex: 39 | Adjacent vertices: [34, 44, 43, ] | Adjacent edges: [2095064787, 1855610584, 2114289475, ] | Port: None
-Vertex: 40 | Adjacent vertices: [35, 45, 44, ] | Adjacent edges: [2095486832, 113411247, 1485891705, ] | Port: None
-Vertex: 41 | Adjacent vertices: [36, 46, 45, ] | Adjacent edges: [391183339, 1681920301, 837457281, ] | Port: None
-Vertex: 42 | Adjacent vertices: [37, 46, ] | Adjacent edges: [1529115495, 589273327, ] | Port: ORE
-Vertex: 43 | Adjacent vertices: [38, 39, 47, ] | Adjacent edges: [646910062, 2114289475, 2081652693, ] | Port: None
-Vertex: 44 | Adjacent vertices: [39, 40, 48, ] | Adjacent edges: [1855610584, 1485891705, 406765571, ] | Port: None
-Vertex: 45 | Adjacent vertices: [40, 41, 49, ] | Adjacent edges: [113411247, 837457281, 2107443224, ] | Port: None
-Vertex: 46 | Adjacent vertices: [41, 42, 50, ] | Adjacent edges: [1681920301, 589273327, 572145572, ] | Port: ORE
-Vertex: 47 | Adjacent vertices: [43, 51, ] | Adjacent edges: [2081652693, 1158676965, ] | Port: MISC
-Vertex: 48 | Adjacent vertices: [44, 52, 51, ] | Adjacent edges: [406765571, 725680028, 1040776996, ] | Port: None
-Vertex: 49 | Adjacent vertices: [45, 53, 52, ] | Adjacent edges: [2107443224, 1293680734, 138817329, ] | Port: WHEAT
-Vertex: 50 | Adjacent vertices: [46, 53, ] | Adjacent edges: [572145572, 609656250, ] | Port: None
-Vertex: 51 | Adjacent vertices: [47, 48, ] | Adjacent edges: [1158676965, 1040776996, ] | Port: MISC
-Vertex: 52 | Adjacent vertices: [48, 49, ] | Adjacent edges: [725680028, 138817329, ] | Port: WHEAT
-Vertex: 53 | Adjacent vertices: [49, 50, ] | Adjacent edges: [1293680734, 609656250, ] | Port: None
+  <testcase name="createBoard" classname="settlers.board.BoardTest" time="0.101">
+    <system-out><![CDATA[Vertex: 0 | Adjacent vertices: [4, 3, ] | Adjacent edges: [990897274, 539690370, ] | Port: MISC
+Vertex: 1 | Adjacent vertices: [5, 4, ] | Adjacent edges: [1617838096, 138776324, ] | Port: ORE
+Vertex: 2 | Adjacent vertices: [6, 5, ] | Adjacent edges: [1208442275, 1758008124, ] | Port: None
+Vertex: 3 | Adjacent vertices: [0, 7, ] | Adjacent edges: [539690370, 2050339061, ] | Port: MISC
+Vertex: 4 | Adjacent vertices: [0, 1, 8, ] | Adjacent edges: [990897274, 138776324, 1579957528, ] | Port: None
+Vertex: 5 | Adjacent vertices: [1, 2, 9, ] | Adjacent edges: [1617838096, 1758008124, 750029115, ] | Port: ORE
+Vertex: 6 | Adjacent vertices: [2, 10, ] | Adjacent edges: [1208442275, 214187874, ] | Port: None
+Vertex: 7 | Adjacent vertices: [3, 12, 11, ] | Adjacent edges: [2050339061, 1528923159, 1683662486, ] | Port: None
+Vertex: 8 | Adjacent vertices: [4, 13, 12, ] | Adjacent edges: [1579957528, 1823409783, 1094523823, ] | Port: None
+Vertex: 9 | Adjacent vertices: [5, 14, 13, ] | Adjacent edges: [750029115, 384515747, 657736958, ] | Port: None
+Vertex: 10 | Adjacent vertices: [6, 15, 14, ] | Adjacent edges: [214187874, 867988177, 443934570, ] | Port: BRICK
+Vertex: 11 | Adjacent vertices: [7, 16, ] | Adjacent edges: [1683662486, 1428475041, ] | Port: WOOD
+Vertex: 12 | Adjacent vertices: [7, 8, 17, ] | Adjacent edges: [1528923159, 1094523823, 1345483087, ] | Port: None
+Vertex: 13 | Adjacent vertices: [8, 9, 18, ] | Adjacent edges: [1823409783, 657736958, 4766562, ] | Port: None
+Vertex: 14 | Adjacent vertices: [9, 10, 19, ] | Adjacent edges: [384515747, 443934570, 892555958, ] | Port: None
+Vertex: 15 | Adjacent vertices: [10, 20, ] | Adjacent edges: [867988177, 1182908789, ] | Port: BRICK
+Vertex: 16 | Adjacent vertices: [11, 22, 21, ] | Adjacent edges: [1428475041, 91912419, 1076641925, ] | Port: WOOD
+Vertex: 17 | Adjacent vertices: [12, 23, 22, ] | Adjacent edges: [1345483087, 1873091796, 661119548, ] | Port: None
+Vertex: 18 | Adjacent vertices: [13, 24, 23, ] | Adjacent edges: [4766562, 1896622931, 1401316767, ] | Port: None
+Vertex: 19 | Adjacent vertices: [14, 25, 24, ] | Adjacent edges: [892555958, 335708295, 216856121, ] | Port: None
+Vertex: 20 | Adjacent vertices: [15, 26, 25, ] | Adjacent edges: [1182908789, 480903748, 2095064787, ] | Port: None
+Vertex: 21 | Adjacent vertices: [16, 27, ] | Adjacent edges: [1076641925, 2095486832, ] | Port: None
+Vertex: 22 | Adjacent vertices: [16, 17, 28, ] | Adjacent edges: [91912419, 661119548, 391183339, ] | Port: None
+Vertex: 23 | Adjacent vertices: [17, 18, 29, ] | Adjacent edges: [1873091796, 1401316767, 1529115495, ] | Port: None
+Vertex: 24 | Adjacent vertices: [18, 19, 30, ] | Adjacent edges: [1896622931, 216856121, 646910062, ] | Port: None
+Vertex: 25 | Adjacent vertices: [19, 20, 31, ] | Adjacent edges: [335708295, 2095064787, 1855610584, ] | Port: None
+Vertex: 26 | Adjacent vertices: [20, 32, ] | Adjacent edges: [480903748, 2114289475, ] | Port: MISC
+Vertex: 27 | Adjacent vertices: [21, 33, ] | Adjacent edges: [2095486832, 113411247, ] | Port: None
+Vertex: 28 | Adjacent vertices: [22, 34, 33, ] | Adjacent edges: [391183339, 1485891705, 1681920301, ] | Port: None
+Vertex: 29 | Adjacent vertices: [23, 35, 34, ] | Adjacent edges: [1529115495, 837457281, 589273327, ] | Port: None
+Vertex: 30 | Adjacent vertices: [24, 36, 35, ] | Adjacent edges: [646910062, 2081652693, 406765571, ] | Port: None
+Vertex: 31 | Adjacent vertices: [25, 37, 36, ] | Adjacent edges: [1855610584, 2107443224, 572145572, ] | Port: None
+Vertex: 32 | Adjacent vertices: [26, 37, ] | Adjacent edges: [2114289475, 1158676965, ] | Port: MISC
+Vertex: 33 | Adjacent vertices: [27, 28, 38, ] | Adjacent edges: [113411247, 1681920301, 725680028, ] | Port: SHEEP
+Vertex: 34 | Adjacent vertices: [28, 29, 39, ] | Adjacent edges: [1485891705, 589273327, 1040776996, ] | Port: None
+Vertex: 35 | Adjacent vertices: [29, 30, 40, ] | Adjacent edges: [837457281, 406765571, 1293680734, ] | Port: None
+Vertex: 36 | Adjacent vertices: [30, 31, 41, ] | Adjacent edges: [2081652693, 572145572, 138817329, ] | Port: None
+Vertex: 37 | Adjacent vertices: [31, 32, 42, ] | Adjacent edges: [2107443224, 1158676965, 609656250, ] | Port: None
+Vertex: 38 | Adjacent vertices: [33, 43, ] | Adjacent edges: [725680028, 1574877131, ] | Port: SHEEP
+Vertex: 39 | Adjacent vertices: [34, 44, 43, ] | Adjacent edges: [1040776996, 1894601438, 1231799381, ] | Port: None
+Vertex: 40 | Adjacent vertices: [35, 45, 44, ] | Adjacent edges: [1293680734, 1497377679, 1904783235, ] | Port: None
+Vertex: 41 | Adjacent vertices: [36, 46, 45, ] | Adjacent edges: [138817329, 1810458830, 2083999882, ] | Port: None
+Vertex: 42 | Adjacent vertices: [37, 46, ] | Adjacent edges: [609656250, 611520720, ] | Port: MISC
+Vertex: 43 | Adjacent vertices: [38, 39, 47, ] | Adjacent edges: [1574877131, 1231799381, 271800170, ] | Port: None
+Vertex: 44 | Adjacent vertices: [39, 40, 48, ] | Adjacent edges: [1894601438, 1904783235, 809300666, ] | Port: None
+Vertex: 45 | Adjacent vertices: [40, 41, 49, ] | Adjacent edges: [1497377679, 2083999882, 1984513847, ] | Port: None
+Vertex: 46 | Adjacent vertices: [41, 42, 50, ] | Adjacent edges: [1810458830, 611520720, 1241529534, ] | Port: MISC
+Vertex: 47 | Adjacent vertices: [43, 51, ] | Adjacent edges: [271800170, 1082309267, ] | Port: MISC
+Vertex: 48 | Adjacent vertices: [44, 52, 51, ] | Adjacent edges: [809300666, 402405659, 724608044, ] | Port: None
+Vertex: 49 | Adjacent vertices: [45, 53, 52, ] | Adjacent edges: [1984513847, 1621002296, 899543194, ] | Port: WHEAT
+Vertex: 50 | Adjacent vertices: [46, 53, ] | Adjacent edges: [1241529534, 1138697171, ] | Port: None
+Vertex: 51 | Adjacent vertices: [47, 48, ] | Adjacent edges: [1082309267, 724608044, ] | Port: MISC
+Vertex: 52 | Adjacent vertices: [48, 49, ] | Adjacent edges: [402405659, 899543194, ] | Port: WHEAT
+Vertex: 53 | Adjacent vertices: [49, 50, ] | Adjacent edges: [1621002296, 1138697171, ] | Port: None
 -------------------------------------------------
 Hex: 0 | Adjacent vertices: [3, 0, 4, 8, 12, 7, ]
 Hex: 1 | Adjacent vertices: [4, 1, 5, 9, 13, 8, ]
@@ -138,6 +138,6 @@ Hex: 17 | Adjacent vertices: [44, 40, 45, 49, 52, 48, ]
 Hex: 18 | Adjacent vertices: [45, 41, 46, 50, 53, 49, ]
 ]]></system-out>
   </testcase>
-  <testcase name="ensureQuantitiesOfNumbersAndResourcesAreCorrect" classname="settlers.board.BoardTest" time="0.167"/>
-  <testcase name="createALotOfBoards" classname="settlers.board.BoardTest" time="0.79"/>
+  <testcase name="ensureQuantitiesOfNumbersAndResourcesAreCorrect" classname="settlers.board.BoardTest" time="0.198"/>
+  <testcase name="createALotOfBoards" classname="settlers.board.BoardTest" time="0.782"/>
 </testsuite>
