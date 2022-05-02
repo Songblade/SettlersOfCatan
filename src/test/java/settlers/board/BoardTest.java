@@ -54,12 +54,20 @@ public class BoardTest{
         return output;
     }
 
+    private String getPortString(Vertex vertex){
+        if(vertex.getPort() != null){
+            return vertex.getPort().toString();
+        }else{
+            return "None";
+        }
+    }
+
     @Test
     public void createBoard(){
         try{
             BoardImpl board = new BoardImpl();
             for(Vertex vertex : board.getVertices()){
-                System.out.println("Vertex: " + board.t(vertex) + " | Adjacent vertices: " + getAdjacentVerticesString(vertex, board) + " | Adjacent edges: " + getAdjacentEdgesString(vertex, board));
+                System.out.println("Vertex: " + board.t(vertex) + " | Adjacent vertices: " + getAdjacentVerticesString(vertex, board) + " | Adjacent edges: " + getAdjacentEdgesString(vertex, board) + " | Port: " + getPortString(vertex));
             }
             System.out.println("-------------------------------------------------");
             for (Hex hex : board.getHexes()){

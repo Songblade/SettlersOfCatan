@@ -11,12 +11,14 @@ public class BoardImpl implements Board {
     private Hashtable<Resource,Integer> tileResourceQuantities;
     private ArrayList<Integer> priorityTileNumbers;
     private ArrayList<Integer> otherTileNumbers;
+    private ArrayList<Resource> portResources;
 
     //Constants
     private final int[] columnLengths = {3,4,5,4,3};
     private final int[] hexColumnBeginningIndices = calculateNewRowPositions(columnLengths);
     private final int[] vertexColumnLengths = {3,4,4,5,5,6,6,5,5,4,4,3};
     private final int[] vertexColumnBeginningIndices = calculateNewRowPositions(vertexColumnLengths);
+    private final int[][] portLocations = {{0,0,1},{1,1,2},{3,0,5},{6,1,2},{11,2,3},{12,0,5},{15,3,4},{16,4,5},{17,3,4}};
 
     /**
      * Constructor
@@ -30,9 +32,11 @@ public class BoardImpl implements Board {
         tileResourceQuantities = new Hashtable<>();
         priorityTileNumbers = new ArrayList<Integer>();
         otherTileNumbers = new ArrayList<Integer>();
+        portResources = new ArrayList<Resource>();
         setupHexQuantities(tileResourceQuantities);
         setupPriorityNumbers(priorityTileNumbers);
         setupOtherNumbers(otherTileNumbers);
+        setupPortResources(portResources);
 
         //Generates hexes
         generateHexes();
@@ -101,6 +105,19 @@ public class BoardImpl implements Board {
         array.add(11);
         array.add(11);
         array.add(12);
+    }
+
+    /**
+     * Where port resources are set
+     * @param array the table containing all port resources
+     */
+    private void setupPortResources(ArrayList<Resource> array){
+        array.add(Resource.WOOD);
+        array.add(Resource.BRICK);
+        array.add(Resource.SHEEP);
+        array.add(Resource.WHEAT);
+        array.add(Resource.ORE);
+        for(int i = 0; i < 4; i++)array.add(Resource.MISC);
     }
 
     /**
@@ -426,6 +443,15 @@ public class BoardImpl implements Board {
         }
     }
 
+    private void placePort(int[] location){
+        Hex hex = hexes[location[0]];
+        Random rng = new Random();
+        Resource resource = portResources.remove(rng.nextInt(portResources.size()));
+
+        hex.getVertices()[location[1]].setPort(resource);
+        hex.getVertices()[location[2]].setPort(resource);
+    }
+
     /**
      * Generates vertices and places them in "vertices"
      */
@@ -448,6 +474,11 @@ public class BoardImpl implements Board {
         //Maps all hexes to vertices
         for(int i = 0; i < hexes.length; i++){
             mapHexToAdjacentVertices(hexes[i]);
+        }
+
+        //Places all ports
+        for(int[] location : portLocations){
+            placePort(location);
         }
     }
 
