@@ -105,7 +105,7 @@ public class PlayerImpl implements Player {
      */
     @Override
     public Set<Resource> getPorts() {
-        return null;
+        return Collections.unmodifiableSet(ports);
     }
 
     /**
@@ -114,6 +114,6 @@ public class PlayerImpl implements Player {
      */
     @Override
     public boolean addPort(Resource resource) {
-        return false;
+        return ports.add(resource);
     }
 }

@@ -5,6 +5,7 @@ import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -240,6 +241,30 @@ public class PlayerTest {
         assertFalse(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
         player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
         assertTrue(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
+    }
+
+    // tests for port methods
+    // test that can add ports, and multiple, and returns true when added successfully
+    @Test
+    public void canAddPorts() {
+        HashSet<Resource> result = new HashSet<>();
+        assertEquals(result, player.getPorts());
+        assertTrue(player.addPort(Resource.WOOD));
+        result.add(Resource.WOOD);
+        assertEquals(result, player.getPorts());
+        assertTrue(player.addPort(Resource.MISC));
+        result.add(Resource.MISC);
+        assertEquals(result, player.getPorts());
+    }
+
+    // tests that returns false when already had
+    @Test
+    public void getPortsReturnsFalseWhenAlreadyHave() {
+        assertTrue(player.addPort(Resource.WOOD));
+        assertFalse(player.addPort(Resource.WOOD));
+        assertTrue(player.addPort(Resource.MISC));
+        assertFalse(player.addPort(Resource.WOOD));
+        assertFalse(player.addPort(Resource.MISC));
     }
 
 }
