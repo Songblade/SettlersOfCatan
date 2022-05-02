@@ -1,6 +1,7 @@
 package settlers;
 
 import org.junit.jupiter.api.Test;
+import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
 import java.util.HashMap;
@@ -182,5 +183,63 @@ public class PlayerTest {
         assertFalse(player.hasMoreThan7Cards());
     }
 
+    // testing development card methods (But not exception)
+
+    // test can add multiple vellies, both same and different types
+    @Test
+    public void canAddVellies() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        HashMap<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.KNIGHT, 1);
+        assertEquals(result, player.getDevelopmentCards());
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        result.put(DevelopmentCard.KNIGHT, 2);
+        assertEquals(result, player.getDevelopmentCards());
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        result.put(DevelopmentCard.MONOPOLY, 1);
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // test can remove a velly, and that returns true if you have it
+    @Test
+    public void canRemoveVellies() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.KNIGHT));
+        HashMap<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.KNIGHT, 0);
+        assertEquals(result, player.getDevelopmentCards());
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.MONOPOLY));
+        result.put(DevelopmentCard.KNIGHT, 1);
+        result.put(DevelopmentCard.MONOPOLY, 0);
+        assertEquals(result, player.getDevelopmentCards());
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.KNIGHT));
+        result.put(DevelopmentCard.KNIGHT, 0);
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // test that can't remove a point card, and return false
+    @Test
+    public void cantRemovePointCards() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
+        HashMap<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.KNIGHT, 1);
+        result.put(DevelopmentCard.VICTORY_POINT, 1);
+        assertEquals(result, player.getDevelopmentCards());
+        assertFalse(player.removeDevelopmentCard(DevelopmentCard.VICTORY_POINT));
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // tests that removing a card that you don't have returns false
+    @Test
+    public void cantRemoveAbsentCards() {
+        assertFalse(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        assertFalse(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
+    }
 
 }

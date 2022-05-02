@@ -74,7 +74,7 @@ public class PlayerImpl implements Player {
      */
     @Override
     public Map<DevelopmentCard, Integer> getDevelopmentCards() {
-        return null;
+        return Collections.unmodifiableMap(vellies);
     }
 
     /**
@@ -82,17 +82,21 @@ public class PlayerImpl implements Player {
      */
     @Override
     public void addDevelopmentCard(DevelopmentCard development) {
-
+        vellies.put(development, vellies.getOrDefault(development, 0) + 1);
     }
 
     /**
      * @param development card being removed from the player's hand
-     * @return true if the removal was successful, false if he never had the card
-     * @throws IllegalArgumentException if the card is a VICTORY_POINT
+     * @return true if the removal was successful, false if he never had the card or a point card
      */
     @Override
     public boolean removeDevelopmentCard(DevelopmentCard development) {
-        return false;
+        if (vellies.getOrDefault(development, 0) == 0 || development == DevelopmentCard.VICTORY_POINT) {
+            // if the player does not have or never did have the card, or if this is a point card
+            return false;
+        }
+        vellies.put(development, vellies.get(development) - 1);
+        return true;
     }
 
     /**
