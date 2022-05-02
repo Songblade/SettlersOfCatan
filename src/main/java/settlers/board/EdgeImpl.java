@@ -2,7 +2,7 @@ package settlers.board;
 
 import settlers.Player;
 
-import java.util.Objects;
+//import java.util.Objects;
 
 public class EdgeImpl implements Edge{
 
@@ -29,8 +29,8 @@ public class EdgeImpl implements Edge{
 
     // I am not overriding .equals, because I want to have multiple roads of the same player
 
-    /**@Override
+    /*@Override
     public int hashCode() {
         return Objects.hash(player);
-    }**/
+    }*/
 }

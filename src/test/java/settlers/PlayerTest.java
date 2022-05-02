@@ -1,9 +1,11 @@
 package settlers;
 
 import org.junit.jupiter.api.Test;
+import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -182,5 +184,87 @@ public class PlayerTest {
         assertFalse(player.hasMoreThan7Cards());
     }
 
+    // testing development card methods (But not exception)
+
+    // test can add multiple vellies, both same and different types
+    @Test
+    public void canAddVellies() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        HashMap<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.KNIGHT, 1);
+        assertEquals(result, player.getDevelopmentCards());
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        result.put(DevelopmentCard.KNIGHT, 2);
+        assertEquals(result, player.getDevelopmentCards());
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        result.put(DevelopmentCard.MONOPOLY, 1);
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // test can remove a velly, and that returns true if you have it
+    @Test
+    public void canRemoveVellies() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.KNIGHT));
+        HashMap<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.KNIGHT, 0);
+        assertEquals(result, player.getDevelopmentCards());
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.MONOPOLY));
+        result.put(DevelopmentCard.KNIGHT, 1);
+        result.put(DevelopmentCard.MONOPOLY, 0);
+        assertEquals(result, player.getDevelopmentCards());
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.KNIGHT));
+        result.put(DevelopmentCard.KNIGHT, 0);
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // test that can't remove a point card, and return false
+    @Test
+    public void cantRemovePointCards() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
+        HashMap<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.KNIGHT, 1);
+        result.put(DevelopmentCard.VICTORY_POINT, 1);
+        assertEquals(result, player.getDevelopmentCards());
+        assertFalse(player.removeDevelopmentCard(DevelopmentCard.VICTORY_POINT));
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // tests that removing a card that you don't have returns false
+    @Test
+    public void cantRemoveAbsentCards() {
+        assertFalse(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        assertFalse(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        assertTrue(player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING));
+    }
+
+    // tests for port methods
+    // test that can add ports, and multiple, and returns true when added successfully
+    @Test
+    public void canAddPorts() {
+        HashSet<Resource> result = new HashSet<>();
+        assertEquals(result, player.getPorts());
+        assertTrue(player.addPort(Resource.WOOD));
+        result.add(Resource.WOOD);
+        assertEquals(result, player.getPorts());
+        assertTrue(player.addPort(Resource.MISC));
+        result.add(Resource.MISC);
+        assertEquals(result, player.getPorts());
+    }
+
+    // tests that returns false when already had
+    @Test
+    public void getPortsReturnsFalseWhenAlreadyHave() {
+        assertTrue(player.addPort(Resource.WOOD));
+        assertFalse(player.addPort(Resource.WOOD));
+        assertTrue(player.addPort(Resource.MISC));
+        assertFalse(player.addPort(Resource.WOOD));
+        assertFalse(player.addPort(Resource.MISC));
+    }
 
 }

@@ -42,8 +42,7 @@ public interface Player {
 
     /**
      * @param development card being removed from the player's hand
-     * @return true if the removal was successful, false if he never had the card
-     * @throws IllegalArgumentException if the card is a VICTORY_POINT
+     * @return true if the removal was successful, false if he never had the card or a point card
      */
     boolean removeDevelopmentCard(DevelopmentCard development);
 
