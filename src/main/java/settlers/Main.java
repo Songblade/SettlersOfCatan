@@ -3,6 +3,7 @@ package settlers;
 import settlers.board.*;
 import settlers.card.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -98,7 +99,6 @@ public interface Main {
      * @param resourceGiven resource type being given
      * @param resourceNumber number of that resource being given
      * @param resourceGotten resource type being received
-     * @throws IllegalArgumentException if canTrade() returns false
      */
     void trade(Player player, Resource resourceGiven, int resourceNumber, Resource resourceGotten);
 
@@ -123,6 +123,10 @@ enum Building {
     }
 
     private final Map<Resource, Integer> resources;
+
+    public Map<Resource, Integer> getResources() {
+        return Collections.unmodifiableMap(resources);
+    }
 
 
 }
