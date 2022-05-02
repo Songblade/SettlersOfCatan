@@ -393,6 +393,40 @@ public class BoardImpl implements Board {
     }
 
     /**
+     * Gets the index of a specified vertex in another vertex's connections
+     * @param vertex the vertex you are searching in
+     * @param searchFor the vertex you are searching for
+     * @return the index of the vertex you are searching for in vertex.getAdjacentVerticies
+     */
+    private int getVertexRelationshipIndex(Vertex vertex, Vertex searchFor){
+        for(int i = 0; i < 3; i++){
+            if(vertex != null && vertex.getAdjacentVertices()[i] != null && vertex.getAdjacentVertices()[i].equals(searchFor)){
+                return i;
+            }
+        }
+
+        throw new IllegalStateException("Vertices " + vertex + " and " + searchFor + " are not next to each other.");
+    }
+
+    /**
+     * Maps the edges of vertex
+     * @param vertex the vertex whose edges we are mapping
+     */
+    private void mapEdges(Vertex vertex){
+        for(int i = 0; i < 3; i++){
+            Vertex otherVertex = vertex.getAdjacentVertices()[i];
+
+            //If a Vertex is mapped at i, but not an Edge
+            if(otherVertex != null && vertex.getEdges()[i] == null){
+                int otherVertexIndex = getVertexRelationshipIndex(otherVertex,vertex);
+                Edge edge = new EdgeImpl();
+                vertex.setEdge(edge,i);
+                otherVertex.setEdge(edge,otherVertexIndex);
+            }
+        }
+    }
+
+    /**
      * Generates vertices and places them in "vertices"
      */
     private void generateVertices(){
@@ -404,6 +438,11 @@ public class BoardImpl implements Board {
         //Maps the vertices to other vertices
         for(int i = 0; i < vertices.length; i++){
             mapVertexToAdjacentVertices(vertices[i]);
+        }
+
+        //Maps the edges to vertices
+        for(int i = 0; i < vertices.length; i++){
+            mapEdges(vertices[i]);
         }
 
         //Maps all hexes to vertices

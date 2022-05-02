@@ -40,12 +40,26 @@ public class BoardTest{
         return output;
     }
 
+    private String getAdjacentEdgesString(Vertex vertex, BoardImpl board){
+        String output = "[";
+
+        for(Edge edge : vertex.getEdges()){
+            if(edge != null) {
+                output += edge.hashCode() + ", ";
+            }
+        }
+
+        output += "]";
+
+        return output;
+    }
+
     @Test
     public void createBoard(){
         try{
             BoardImpl board = new BoardImpl();
             for(Vertex vertex : board.getVertices()){
-                System.out.println("Vertex: " + board.t(vertex) + " | Adjacent vertices: " + getAdjacentVerticesString(vertex, board));
+                System.out.println("Vertex: " + board.t(vertex) + " | Adjacent vertices: " + getAdjacentVerticesString(vertex, board) + " | Adjacent edges: " + getAdjacentEdgesString(vertex, board));
             }
             System.out.println("-------------------------------------------------");
             for (Hex hex : board.getHexes()){
