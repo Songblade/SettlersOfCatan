@@ -1,6 +1,7 @@
 package settlers.board;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import settlers.board.Board;
@@ -63,6 +64,7 @@ public class BoardTest{
     }
 
     @Test
+    @Disabled
     public void createBoard(){
         try{
             BoardImpl board = new BoardImpl();

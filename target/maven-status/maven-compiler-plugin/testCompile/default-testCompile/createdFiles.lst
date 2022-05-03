@@ -1,6 +1,7 @@
 settlers\board\BoardTest.class
-settlers\board\TestEdge.class
-settlers\board\TestPlayer.class
 settlers\PlayerTest.class
 settlers\board\HexTest.class
+settlers\board\TestEdge.class
+settlers\board\TestPlayer.class
+settlers\gui\GUIMainTest.class
 settlers\board\VertexTest.class

@@ -11,9 +11,18 @@ import java.util.HashMap;
 public class GUIMainImpl implements GUIMain {
 
     private Main main;
+    private GUIPlayer[] playerGUIs;
 
     public GUIMainImpl(Main main) {
         this.main = main;
+        playerGUIs = new GUIPlayer[4];
+    }
+
+    /** Temp Constructor */
+    public GUIMainImpl(Board board){
+        this.main = null;
+        playerGUIs = new GUIPlayer[1];
+        playerGUIs[0] = new GUIPlayerImpl(board);
     }
 
     /**
