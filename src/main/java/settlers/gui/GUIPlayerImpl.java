@@ -138,16 +138,21 @@ public class GUIPlayerImpl implements GUIPlayer{
             JLabel hexInteriorLabel = new JLabel(new ImageIcon(getHexInteriorImageByResource(hex.getResource()).getScaledInstance(standardObjectSize,standardObjectSize,0)));
             hexInteriorLabel.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
 
+            JLabel hexNumberOutlineLabel = new JLabel(new ImageIcon(getNumberOutlineImage(hex.getNumber()).getScaledInstance(standardObjectSize,standardObjectSize,0)));
+            hexNumberOutlineLabel.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
+
             JLabel hexNumberLabel = new JLabel(new ImageIcon(getNumberImage(hex.getNumber()).getScaledInstance(standardObjectSize,standardObjectSize,0)));
             hexNumberLabel.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
 
             frame.add(hexOutlineLabel);
             frame.add(hexInteriorLabel);
             frame.add(hexNumberLabel);
+            frame.add(hexNumberOutlineLabel);
 
             frame.setComponentZOrder(hexOutlineLabel,0);
             frame.setComponentZOrder(hexInteriorLabel,0);
             frame.setComponentZOrder(hexNumberLabel,0);
+            frame.setComponentZOrder(hexNumberOutlineLabel,0);
         }
     }
 
@@ -156,7 +161,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void sleep(){
         try {
-            Thread.sleep(100);
+            Thread.sleep(10000);
         }catch (InterruptedException e){
             throw new IllegalStateException("Thread drank caffine");
         }
