@@ -12,5 +12,15 @@ public interface Board {
      */
     Vertex[] getVertices();
 
+    /**
+     * @return a length-5 array containing all the hex column beginning indices
+     */
+    int[] getHexColumnBeginningIndices();
+
+    /**
+     * @return a length-5 array containing all the vertex column beginning indices
+     */
+    int[] getVertexColumnBeginningIndices();
+
     // I don't have any setters here, because they will be set by the constructor
 }

@@ -497,6 +497,16 @@ public class BoardImpl implements Board {
     }
 
     /**
+     * @return a length-5 array containing all the hex column beginning indices
+     */
+    public int[] getHexColumnBeginningIndices(){return Arrays.copyOf(hexColumnBeginningIndices,5);}
+
+    /**
+     * @return a length-5 array containing all the vertex column beginning indices
+     */
+    public int[] getVertexColumnBeginningIndices(){return Arrays.copyOf(vertexColumnBeginningIndices,5);}
+
+    /**
      * Test methods
      */
     public int t(Vertex vertex){return getVertexIndex(vertex);};

@@ -10,7 +10,11 @@ public class GUIMainTest {
 
     @Test
     public void createGUIMain(){
-        Board board = new BoardImpl();
-        GUIMain guiMain = new GUIMainImpl(board);
+        try {
+            Board board = new BoardImpl();
+            GUIMain guiMain = new GUIMainImpl(board);
+        }catch (Throwable e){
+            e.printStackTrace();
+        }
     }
 }
