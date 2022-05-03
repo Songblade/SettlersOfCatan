@@ -15,14 +15,16 @@ import java.awt.event.MouseListener;
 public class GUIPlayerImpl implements GUIPlayer{
 
     private Board board;
-    private int boardOffsetX = 468;
-    private int boardOffsetY = 40;
+    private final int boardOffsetX = 468;
+    private final int boardOffsetY = 40;
+    private final int standardObjectSize = 128;
+
 
     private Frame frame;
-
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
-    private final int standardObjectSize = 128;
+    private JLabel thiefImage = new JLabel(new ImageIcon(getImage("src/main/java/settlers/gui/textures/hexes/Thief.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
+
 
     public GUIPlayerImpl(Board board){
         this.board = board;
@@ -34,12 +36,17 @@ public class GUIPlayerImpl implements GUIPlayer{
         frame.setLayout(null);
         frame.setVisible(true);
 
+        //Adds the hexes
         putHexes();
+
+        //Adds the thief
+        frame.add(thiefImage);
+        frame.setComponentZOrder(thiefImage, 0);
+
+        //Repaints the frame
         frame.repaint();
 
-        for(int i = 0; i < 100; i++) {
-            sleep();
-        }
+        sleep();
     }
 
     /**
@@ -84,6 +91,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         return getImage("src/main/java/settlers/gui/textures/numbers/" + number + ".png");
     }
 
+    /**
+     * Gets the outline image in hexes corresponding to the number
+     * @param number the number you want the outline image corresponding to
+     * @return the outline image corresponding to the number
+     */
     private Image getNumberOutlineImage(int number){
         String prefix = "src/main/java/settlers/gui/textures/hexes/HexagonOutline";
 
@@ -131,16 +143,24 @@ public class GUIPlayerImpl implements GUIPlayer{
             int xPos = boardOffsetX + (92 * row);
             int yPos = boardOffsetY + Math.abs((row - 2) * 44) + (88 * column);
 
+            //Renders hex outline
             Image hexOutlineIcon = getImage("src/main/java/settlers/gui/textures/hexes/HexagonOutline.png").getScaledInstance(standardObjectSize,standardObjectSize,0);
             JLabel hexOutlineLabel = new JLabel(new ImageIcon(hexOutlineIcon));
             hexOutlineLabel.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
 
+            //Renders hex interior
             JLabel hexInteriorLabel = new JLabel(new ImageIcon(getHexInteriorImageByResource(hex.getResource()).getScaledInstance(standardObjectSize,standardObjectSize,0)));
             hexInteriorLabel.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
 
+            if(hex.getResource() == Resource.MISC){
+                thiefImage.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
+            }
+
+            //Renders number outline
             JLabel hexNumberOutlineLabel = new JLabel(new ImageIcon(getNumberOutlineImage(hex.getNumber()).getScaledInstance(standardObjectSize,standardObjectSize,0)));
             hexNumberOutlineLabel.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
 
+            //Renders number interior
             JLabel hexNumberLabel = new JLabel(new ImageIcon(getNumberImage(hex.getNumber()).getScaledInstance(standardObjectSize,standardObjectSize,0)));
             hexNumberLabel.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
 
@@ -161,7 +181,9 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void sleep(){
         try {
-            Thread.sleep(10000);
+            while (true) {
+                Thread.sleep(1);
+            }
         }catch (InterruptedException e){
             throw new IllegalStateException("Thread drank caffine");
         }
