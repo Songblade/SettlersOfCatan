@@ -1,13 +1,29 @@
 package settlers.gui;
 
-import settlers.Player;
 import settlers.Action;
+import settlers.Main;
+import settlers.Player;
 import settlers.card.Resource;
 import settlers.board.*;
 
 import java.util.HashMap;
 
-public interface GUIMain {
+public class GUIMainImpl implements GUIMain {
+
+    private Main main;
+    private GUIPlayer[] playerGUIs;
+
+    public GUIMainImpl(Main main) {
+        this.main = main;
+        playerGUIs = new GUIPlayer[4];
+    }
+
+    /** Temp Constructor */
+    public GUIMainImpl(Board board){
+        this.main = null;
+        playerGUIs = new GUIPlayer[1];
+        playerGUIs[0] = new GUIPlayerImpl(board);
+    }
 
     /**
      *Asks Main if the player can preform the specified action. Returns true if yes, false if no
@@ -15,14 +31,20 @@ public interface GUIMain {
      * @param action
      * @return
      */
-    public boolean canPreformAction(Player player, Action action);
+    @Override
+    public boolean canPreformAction(Player player, Action action) {
+        return false;
+    }
 
     /**
      * Tells Main to preform the specified action for the player
      * @param player
      * @param action
      */
-    public void preformAction(Player player, Action action);
+    @Override
+    public void preformAction(Player player, Action action) {
+
+    }
 
     /**
      * Triggered by Main on a player's turn when it wants to know what action the player will take
@@ -36,11 +58,17 @@ public interface GUIMain {
      * @param player
      * @return
      */
-    public boolean getAction(Player player);
+    @Override
+    public boolean getAction(Player player) {
+        return false;
+    }
 
     /**
      * Triggered by Main to inform the PlayerGUIs that an action was processed and to update accordingly
      * @param action
      */
-    public void reportAction(Action action);
+    @Override
+    public void reportAction(Action action){
+
+    }
 }

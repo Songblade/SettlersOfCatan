@@ -1,3 +1,4 @@
+D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\gui\GUIMainImpl.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\Main.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\gui\GUIPlayer.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\BoardImpl.java
@@ -5,11 +6,13 @@ D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\Ed
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\HexImpl.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\PlayerImpl.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\card\Resource.java
+D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\gui\GUIPlayerImpl.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\card\DevelopmentCard.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\VertexImpl.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\gui\GUIMain.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\Board.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\Hex.java
+D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\Action.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\Edge.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\Player.java
 D:\CompSciAssignments\InProgress\SettlersOfCatan\src\main\java\settlers\board\Vertex.java
