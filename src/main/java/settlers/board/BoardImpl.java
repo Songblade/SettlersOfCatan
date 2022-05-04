@@ -499,12 +499,12 @@ public class BoardImpl implements Board {
     /**
      * @return a length-5 array containing all the hex column beginning indices
      */
-    public int[] getHexColumnBeginningIndices(){return Arrays.copyOf(hexColumnBeginningIndices,5);}
+    public int[] getHexColumnBeginningIndices(){return Arrays.copyOf(hexColumnBeginningIndices,hexColumnBeginningIndices.length);}
 
     /**
      * @return a length-5 array containing all the vertex column beginning indices
      */
-    public int[] getVertexColumnBeginningIndices(){return Arrays.copyOf(vertexColumnBeginningIndices,5);}
+    public int[] getVertexColumnBeginningIndices(){return Arrays.copyOf(vertexColumnBeginningIndices,vertexColumnBeginningIndices.length);}
 
     /**
      * Test methods
