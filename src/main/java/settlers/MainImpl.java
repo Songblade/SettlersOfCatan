@@ -106,7 +106,22 @@ public class MainImpl implements Main {
      */
     @Override
     public Set<Edge> getAvailableRoadSpots(Player player) {
-        return null;
+        // we will start with an empty set
+        // then, we will go through all the vertices
+        // if one belongs to this player, add the other two
+        // Then at the end, I will take all the viable roads, and retainAll
+        // This is frankly too inefficient, but I am not bothering to find something better
+        Set<Edge> roadSpots = new HashSet<>();
+        for (Vertex vertex : board.getVertices()) {
+            for (Edge edge : vertex.getEdges()) {
+                if (edge != null && player.equals(edge.getPlayer())) {
+                    roadSpots.addAll(Arrays.asList(vertex.getEdges()));
+                }
+            }
+        }
+        roadSpots.retainAll(board.getEmptyEdges());
+        roadSpots.remove(null);
+        return roadSpots;
     }
 
     /**

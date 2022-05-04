@@ -140,27 +140,6 @@ public class MainTest {
         assertEquals(new HashSet<>(verticesCopy), main.getAvailableSettlementSpots(playerCopy.get(0)));
     }
 
-    /**
-     * Gets me the other vertex that has this road
-     * @param road that I need its other end
-     * @param hadVertex that I already have
-     * @return other vertex
-     * I could figure it out, but this is easier for me, even though it is super inefficient
-     */
-    private Vertex getRoadsOtherVertex(Edge road, Vertex hadVertex) {
-        List<Vertex> verticesCopy = Arrays.asList(main.getBoard().getVertices());
-        for (Vertex vertex : verticesCopy) {
-            if (vertex != hadVertex) {
-                for (Edge edge : vertex.getEdges()) {
-                    if (edge == road) {
-                        return vertex;
-                    }
-                }
-            }
-        }
-        return null; // this should never happen, each edge should have two ends
-    }
-
     // test that during game phase, only includes spots that are next to your roads
     @Test
     public void gameSettlementOnlyNextToRoads() {
@@ -173,13 +152,13 @@ public class MainTest {
         Edge firstRoad = firstVertex.getEdges()[0];
         firstRoad.setPlayer(playerCopy.get(0));
         verticesCopy.add(firstVertex);
-        verticesCopy.add(getRoadsOtherVertex(firstRoad, firstVertex));
+        verticesCopy.add(firstVertex.getAdjacentVertices()[0]);
 
         Vertex secondVertex = verticesSource.getVertices()[3];
         Edge secondRoad = secondVertex.getEdges()[0];
         secondRoad.setPlayer(playerCopy.get(0));
         verticesCopy.add(secondVertex);
-        verticesCopy.add(getRoadsOtherVertex(secondRoad, secondVertex));
+        verticesCopy.add(secondVertex.getAdjacentVertices()[0]);
 
         assertEquals(new HashSet<>(verticesCopy), main.getAvailableSettlementSpots(playerCopy.get(0)));
     }
@@ -233,10 +212,85 @@ public class MainTest {
         // give the three roads next to the settlement, which are guaranteed to be good
         // that also means that I don't have to check things next to settlements, only next to roads
     // test that includes the edges next to your roads and settlements
+    @Test
+    public void roadNextToRoadAndSettlement() {
+        Hex verticesSource = main.getBoard().getHexes()[9];
+        List<Player> playerCopy = main.getPlayers();
+        main.setPhase(true);
+
+        Vertex firstVertex = verticesSource.getVertices()[0];
+        Edge firstRoad = firstVertex.getEdges()[0];
+        addPlayer(firstRoad, playerCopy.get(0));
+        addPlayer(firstVertex, playerCopy.get(0));
+
+        // must test that has the 4 locations on each side of the road
+        Set<Edge> result = new HashSet<>();
+        result.add(firstVertex.getEdges()[1]);
+        result.add(firstVertex.getEdges()[2]);
+        result.add(firstVertex.getAdjacentVertices()[0].getEdges()[0]);
+        result.add(firstVertex.getAdjacentVertices()[0].getEdges()[2]);
+        assertEquals(result, main.getAvailableRoadSpots(playerCopy.get(0)));
+    }
+
     // test that does not include edges that have a road already, whether yours or someone else's
     // test that does include edges next to roads but not settlements
+    @Test
+    public void roadNextToOtherPlayersRoad() {
+        Hex verticesSource = main.getBoard().getHexes()[9];
+        List<Player> playerCopy = main.getPlayers();
+        main.setPhase(true);
+
+        Vertex firstVertex = verticesSource.getVertices()[0];
+        Edge firstRoad = firstVertex.getEdges()[0];
+        addPlayer(firstRoad, playerCopy.get(0));
+        addPlayer(firstVertex.getEdges()[1], playerCopy.get(1)); // give the other player an adjacent road
+
+        // must test that has the 3 locations on each side of the road, ignoring other player
+        Set<Edge> result = new HashSet<>();
+        result.add(firstVertex.getEdges()[2]);
+        result.add(firstVertex.getAdjacentVertices()[0].getEdges()[0]);
+        result.add(firstVertex.getAdjacentVertices()[0].getEdges()[2]);
+        assertEquals(result, main.getAvailableRoadSpots(playerCopy.get(0)));
+    }
+
     // test that includes edges where it goes through someone else's settlement
+    @Test
+    public void roadNextToOtherPlayersSettlement() {
+        Hex verticesSource = main.getBoard().getHexes()[9];
+        List<Player> playerCopy = main.getPlayers();
+        main.setPhase(true);
+
+        Vertex firstVertex = verticesSource.getVertices()[0];
+        Edge firstRoad = firstVertex.getEdges()[0];
+        addPlayer(firstRoad, playerCopy.get(0));
+        addPlayer(firstVertex, playerCopy.get(1));
+
+        // must test that has the 4 locations on each side of the road
+        Set<Edge> result = new HashSet<>();
+        result.add(firstVertex.getEdges()[1]);
+        result.add(firstVertex.getEdges()[2]);
+        result.add(firstVertex.getAdjacentVertices()[0].getEdges()[0]);
+        result.add(firstVertex.getAdjacentVertices()[0].getEdges()[2]);
+        assertEquals(result, main.getAvailableRoadSpots(playerCopy.get(0)));
+    }
+
     // test that works when the edge is on the edge
+    @Test
+    public void roadEdgeOfBoard() {
+        Vertex firstVertex = main.getBoard().getVertices()[0];
+        List<Player> playerCopy = main.getPlayers();
+        main.setPhase(true);
+
+        Edge firstRoad = firstVertex.getEdges()[2];
+        addPlayer(firstRoad, playerCopy.get(0));
+        addPlayer(firstVertex, playerCopy.get(1));
+
+        // must test that has the 2 locations on each side of the road, the ones that aren't ocean
+        Set<Edge> result = new HashSet<>();
+        result.add(firstVertex.getEdges()[1]);
+        result.add(firstVertex.getAdjacentVertices()[2].getEdges()[2]);
+        assertEquals(result, main.getAvailableRoadSpots(playerCopy.get(0)));
+    }
 
     // buildSettlement
     // Make sure that the settlement actually gets built
