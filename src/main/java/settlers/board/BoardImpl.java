@@ -8,6 +8,9 @@ public class BoardImpl implements Board {
 
     private Hex[] hexes;
     private Vertex[] vertices;
+    private Set<Vertex> openVertices;
+    private Set<Edge> emptyEdges;
+
     private Hashtable<Resource,Integer> tileResourceQuantities;
     private ArrayList<Integer> priorityTileNumbers;
     private ArrayList<Integer> otherTileNumbers;
@@ -43,6 +46,9 @@ public class BoardImpl implements Board {
 
         //Generates vertices
         generateVertices();
+
+        openVertices = new HashSet<>(Arrays.asList(vertices));
+        emptyEdges = getAllEdges();
     }
 
     /**
@@ -494,6 +500,48 @@ public class BoardImpl implements Board {
      */
     public Vertex[] getVertices(){
         return Arrays.copyOf(vertices,54);
+    }
+
+    private Set<Edge> getAllEdges() {
+        Set<Edge> edges = new HashSet<>();
+        for (Vertex vertex : vertices) {
+            edges.addAll(Arrays.asList(vertex.getEdges()));
+            // adds all not already there
+        }
+        return edges;
+    }
+
+    /**
+     * @return all vertices that don't have a settlement or city and aren't next to one
+     */
+    @Override
+    public Set<Vertex> getOpenVertices() {
+        return Collections.unmodifiableSet(openVertices);
+    }
+
+    /**
+     * @return all edges that don't have a road
+     */
+    @Override
+    public Set<Edge> getEmptyEdges() {
+        return Collections.unmodifiableSet(emptyEdges);
+    }
+
+    /**
+     * @param vertex to be removed from the collection of open vertices
+     */
+    @Override
+    public void removeSettlement(Vertex vertex) {
+        openVertices.remove(vertex);
+        openVertices.removeAll(Arrays.asList(vertex.getAdjacentVertices()));
+    }
+
+    /**
+     * @param road to be removed from the list of empty edges
+     */
+    @Override
+    public void removeRoad(Edge road) {
+        emptyEdges.remove(road);
     }
 
     /**

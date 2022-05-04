@@ -1,30 +1,36 @@
 package settlers;
 
-import settlers.board.Board;
-import settlers.board.BoardImpl;
-import settlers.board.Edge;
-import settlers.board.Vertex;
+import settlers.board.*;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 import settlers.gui.GUIMain;
+import settlers.gui.GUIMainImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MainImpl implements Main {
 
     private Board board;
     private Player[] players;
     private GUIMain gui;
+    private boolean isMainPhase; // starts automatically as false
+    private Hex thiefIsHere; // so we don't have to look for it
 
     protected MainImpl(int numberOfPlayers) {
         players = new Player[numberOfPlayers];
-        for (Player player : players) {
-            player = new PlayerImpl();
+        for (int i = 0; i < numberOfPlayers; i++) {
+            players[i] = new PlayerImpl();
         }
         board = new BoardImpl();
+        // now we find the thief, the only time we need to do it this way
+        for (Hex hex : board.getHexes()) {
+            if (hex.getNumber() == 1) {
+                thiefIsHere = hex;
+                break;
+            }
+        }
         // I will create a GUIMain once Aryeh tells me how to do it
+        gui = new GUIMainImpl(this);
     }
 
     /**
@@ -62,7 +68,34 @@ public class MainImpl implements Main {
      */
     @Override
     public Set<Vertex> getAvailableSettlementSpots(Player player) {
-        return null;
+        // I check the game phase, then call the appropriate method
+        if (!isMainPhase) {
+            return board.getOpenVertices(); // since all vertices not occupied or next to one occupied are
+                // fair game here
+        }
+        return getSettleSpotsGame(player);
+    }
+
+    /**
+     * Gets the settle spots during the game
+     * @param player building a settlement
+     * @return the available settlement spots for that player
+     */
+    private Set<Vertex> getSettleSpotsGame(Player player) {
+        // First, I get a list of all open settle spots
+        // I then traverse each of them
+        // If it has a road of this player, I add it to a second list
+        // I return the second list
+        Set<Vertex> openSpots = board.getOpenVertices();
+        Set<Vertex> settleSpots = new HashSet<>();
+        for (Vertex spot : openSpots) {
+            for (Edge edge : spot.getEdges()) {
+                if (edge != null && player.equals(edge.getPlayer())) {
+                    settleSpots.add(spot);
+                }
+            }
+        }
+        return settleSpots;
     }
 
     /**
@@ -92,7 +125,7 @@ public class MainImpl implements Main {
      *
      * @param player   who is building the settlement
      * @param location where the player builds the settlement
-     * @throws IllegalArgumentException if the player cannot build a settlement, or not here
+     * This and the following methods do not throw exceptions to aid with testing
      */
     @Override
     public void buildSettlement(Player player, Vertex location) {
@@ -104,7 +137,6 @@ public class MainImpl implements Main {
      *
      * @param player   building the road
      * @param location where the road is being built
-     * @throws IllegalArgumentException if the player cannot build a road, or not here
      */
     @Override
     public void buildRoad(Player player, Edge location) {
@@ -116,7 +148,6 @@ public class MainImpl implements Main {
      *
      * @param player     who is building the city
      * @param settlement that the player is upgrading
-     * @throws IllegalArgumentException if the player cannot build a city, or not here
      */
     @Override
     public void buildCity(Player player, Vertex settlement) {
@@ -171,5 +202,17 @@ public class MainImpl implements Main {
     @Override
     public void trade(Player player, Resource resourceGiven, int resourceNumber, Resource resourceGotten) {
 
+    }
+
+    /**
+     * This is used only for testing purposes, so I can change the stage from MainTest
+     * @param changingToMain whether or not we are changing to main
+     */
+    protected void setPhase(boolean changingToMain) {
+        isMainPhase = changingToMain;
+    }
+
+    protected List<Player> getPlayers() {
+        return Arrays.asList(players);
     }
 }

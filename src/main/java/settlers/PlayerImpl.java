@@ -1,5 +1,7 @@
 package settlers;
 
+import settlers.board.Edge;
+import settlers.board.Vertex;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
@@ -11,11 +13,19 @@ public class PlayerImpl implements Player {
     private int resourceCount; // defaults to 0, number of total resources
     private Map<DevelopmentCard, Integer> vellies;
     private Set<Resource> ports;
+    private Set<Vertex> settlements;
+    private Set<Vertex> cities;
+    private Set<Edge> roads;
+    private int id;
 
     public PlayerImpl() {
         resources = new HashMap<>();
         vellies = new HashMap<>();
         ports = new HashSet<>();
+        settlements = new HashSet<>();
+        cities = new HashSet<>();
+        roads = new HashSet<>();
+        id = (int) (Math.random() * 100);
     }
 
     /**
@@ -115,5 +125,65 @@ public class PlayerImpl implements Player {
     @Override
     public boolean addPort(Resource resource) {
         return ports.add(resource);
+    }
+
+    /**
+     * @return all the player's settlements
+     */
+    @Override
+    public Set<Vertex> getSettlements() {
+        return settlements;
+    }
+
+    /**
+     * @return all the player's cities
+     */
+    @Override
+    public Set<Vertex> getCities() {
+        return cities;
+    }
+
+    /**
+     * @return all the player's roads
+     */
+    @Override
+    public Set<Edge> getRoads() {
+        return roads;
+    }
+
+    /**
+     * @param road to be added to the player's collection
+     */
+    @Override
+    public void addRoad(Edge road) {
+        if (roads.size() < 15) {
+            roads.add(road);
+        }
+    }
+
+    /**
+     * @param settlement to be added to the player's collection
+     */
+    @Override
+    public void addSettlement(Vertex settlement) {
+        if (settlements.size() < 5) {
+            settlements.add(settlement);
+        }
+    }
+
+    /**
+     * @param city to be removed from the player's settlement collection and added to its city collection
+     */
+    @Override
+    public void upgradeSettlement(Vertex city) {
+        if (cities.size() < 4) {
+            settlements.remove(city);
+            cities.add(city);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Player: " + id;
     }
 }
