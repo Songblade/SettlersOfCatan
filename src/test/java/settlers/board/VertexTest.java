@@ -336,4 +336,52 @@ class TestPlayer implements Player {
         return false;
     }
 
+    /**
+     * @return all the player's settlements
+     */
+    @Override
+    public Set<Vertex> getSettlements() {
+        return null;
+    }
+
+    /**
+     * @return all the player's cities
+     */
+    @Override
+    public Set<Vertex> getCities() {
+        return null;
+    }
+
+    /**
+     * @return all the player's roads
+     */
+    @Override
+    public Set<Edge> getRoads() {
+        return null;
+    }
+
+    /**
+     * @param road to be added to the player's collection
+     */
+    @Override
+    public void addRoad(Edge road) {
+
+    }
+
+    /**
+     * @param settlement to be added to the player's collection
+     */
+    @Override
+    public void addSettlement(Vertex settlement) {
+
+    }
+
+    /**
+     * @param city to be removed from the player's settlement collection and added to its city collection
+     */
+    @Override
+    public void upgradeSettlement(Vertex city) {
+
+    }
+
 }

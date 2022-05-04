@@ -13,10 +13,12 @@ public class VertexImpl implements Vertex {
     private Resource port; // if you would get a port by building a settlement here, this is what you would get
     private Player player; // if a player built a settlement or city here, this is that player
     private boolean isCity; // if this is a city or not, starts false by default
+    private int id;
 
     public VertexImpl() {
         adjVertices = new Vertex[3];
         adjEdges = new Edge[3];
+        id = (int) (Math.random() * Integer.MAX_VALUE);
     }
 
     /**
@@ -163,4 +165,33 @@ public class VertexImpl implements Vertex {
     }
     **/
 
+    /**
+     * Returns a string representation of the object. In general, the
+     * {@code toString} method returns a string that
+     * "textually represents" this object. The result should
+     * be a concise but informative representation that is easy for a
+     * person to read.
+     * It is recommended that all subclasses override this method.
+     * <p>
+     * The {@code toString} method for class {@code Object}
+     * returns a string consisting of the name of the class of which the
+     * object is an instance, the at-sign character `{@code @}', and
+     * the unsigned hexadecimal representation of the hash code of the
+     * object. In other words, this method returns a string equal to the
+     * value of:
+     * <blockquote>
+     * <pre>
+     * getClass().getName() + '@' + Integer.toHexString(hashCode())
+     * </pre></blockquote>
+     *
+     * @return a string representation of the object.
+     */
+    @Override
+    public String toString() {
+        String toStringV = "V: " + id;
+        if (player != null) {
+            toStringV += "\n\tplayer " + player.toString();
+        }
+        return toStringV;
+    }
 }

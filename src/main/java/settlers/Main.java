@@ -3,6 +3,7 @@ package settlers;
 import settlers.board.*;
 import settlers.card.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,7 @@ public interface Main {
      * Builds a settlement, and updates the Player and Vertex accordingly
      * @param player who is building the settlement
      * @param location where the player builds the settlement
-     * @throws IllegalArgumentException if the player cannot build a settlement, or not here
+     * This and the following methods do not throw exceptions to aid with testing
      */
     void buildSettlement(Player player, Vertex location);
 
@@ -55,7 +56,6 @@ public interface Main {
      * Builds a road, and updates the Edge accordingly
      * @param player building the road
      * @param location where the road is being built
-     * @throws IllegalArgumentException if the player cannot build a road, or not here
      */
     void buildRoad(Player player, Edge location);
 
@@ -63,7 +63,6 @@ public interface Main {
      * Upgrades a settlement to a city, and updates the Vertex accordingly
      * @param player who is building the city
      * @param settlement that the player is upgrading
-     * @throws IllegalArgumentException if the player cannot build a city, or not here
      */
     void buildCity(Player player, Vertex settlement);
 
@@ -98,7 +97,6 @@ public interface Main {
      * @param resourceGiven resource type being given
      * @param resourceNumber number of that resource being given
      * @param resourceGotten resource type being received
-     * @throws IllegalArgumentException if canTrade() returns false
      */
     void trade(Player player, Resource resourceGiven, int resourceNumber, Resource resourceGotten);
 
@@ -123,6 +121,10 @@ enum Building {
     }
 
     private final Map<Resource, Integer> resources;
+
+    public Map<Resource, Integer> getResources() {
+        return Collections.unmodifiableMap(resources);
+    }
 
 
 }

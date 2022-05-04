@@ -3,6 +3,8 @@ package settlers;
 import java.util.Map;
 import java.util.Set;
 
+import settlers.board.Edge;
+import settlers.board.Vertex;
 import settlers.card.*;
 
 public interface Player {
@@ -57,4 +59,34 @@ public interface Player {
      * @return true if the port was added, false if the player already had it
      */
     boolean addPort(Resource resource);
+
+    /**
+     * @return all the player's settlements
+     */
+    Set<Vertex> getSettlements();
+
+    /**
+     * @return all the player's cities
+     */
+    Set<Vertex> getCities();
+
+    /**
+     * @return all the player's roads
+     */
+    Set<Edge> getRoads();
+
+    /**
+     * @param road to be added to the player's collection
+     */
+    void addRoad(Edge road);
+
+    /**
+     * @param settlement to be added to the player's collection
+     */
+    void addSettlement(Vertex settlement);
+
+    /**
+     * @param city to be removed from the player's settlement collection and added to its city collection
+     */
+    void upgradeSettlement(Vertex city);
 }
