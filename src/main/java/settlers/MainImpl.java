@@ -144,7 +144,21 @@ public class MainImpl implements Main {
      */
     @Override
     public void buildSettlement(Player player, Vertex location) {
-
+        // I need to change the vertex's status
+        location.setPlayer(player);
+        // I need to add the vertex to the player's list
+        player.addSettlement(location);
+        // I need to remove the vertex from the board's open vertex list
+        // I need to remove the adjacent vertices from the board's open vertex list
+        board.removeSettlement(location);
+        // I need to add the port to the player's list, if applicable
+        if (location.getPort() != null) {
+            player.addPort(location.getPort());
+        }
+        // I need to remove resources from the player, if this is the right phase
+        if (isMainPhase) {
+            player.removeResources(Building.SETTLEMENT.getResources());
+        }
     }
 
     /**

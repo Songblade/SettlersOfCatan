@@ -293,21 +293,29 @@ public class MainTest {
     }
 
     // buildSettlement
+
+    private Player setUpPlayer(Building building) {
+        Player player = main.getPlayers().get(0);
+        for (Resource resource : building.getResources().keySet()) {
+            for (int i = 0; i < building.getResources().get(resource); i++) {
+                player.addResource(resource);
+            }
+        }
+        return player;
+    }
+
     // Make sure that the settlement actually gets built
+    // Make sure can no longer build here or adjacent to here
     @Test
     public void testSettlementIsBuilt() {
-        Player player = main.getPlayers().get(0);
-        player.addResource(Resource.WOOD);
-        player.addResource(Resource.BRICK);
-        player.addResource(Resource.SHEEP);
-        player.addResource(Resource.WHEAT);
-
+        Player player = setUpPlayer(Building.SETTLEMENT);
         Vertex vertex = main.getBoard().getVertices()[4];
         main.setPhase(true);
 
         main.buildSettlement(player, vertex);
 
         assertEquals(player, vertex.getPlayer());
+        assertTrue(player.getSettlements().contains(vertex));
 
         // this part makes sure that the vertex is no longer available for this person or anyone else to build
         Set<Vertex> result = main.getAvailableSettlementSpots(player);
@@ -322,32 +330,77 @@ public class MainTest {
     // Make sure that if there is a port, the player has the port now
     @Test
     public void testPlayerHasPort() {
-        Player player = main.getPlayers().get(0);
-        player.addResource(Resource.WOOD);
-        player.addResource(Resource.BRICK);
-        player.addResource(Resource.SHEEP);
-        player.addResource(Resource.WHEAT);
-
-        Vertex vertex = main.getBoard().getVertices()[4];
+        Player player = setUpPlayer(Building.SETTLEMENT);
+        Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0]; // a vertex with a port
         main.setPhase(true);
 
         main.buildSettlement(player, vertex);
 
-        assertEquals(player, vertex.getPlayer());
+        assertTrue(player.getPorts().contains(vertex.getPort())); // tests that the player has that port's
+            // resource now in its port
+    }
 
-        // this part makes sure that the vertex is no longer available for this person or anyone else to build
-        Set<Vertex> result = main.getAvailableSettlementSpots(player);
-        assertFalse(result.contains(vertex));
-        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
-
-        result = main.getAvailableSettlementSpots(main.getPlayers().get(1));
-        assertFalse(result.contains(vertex));
-        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
+    /**
+     * @return a map containing 0 of each resource
+     */
+    private HashMap<Resource, Integer> emptyResourceMap() {
+        HashMap<Resource, Integer> emptyMap = new HashMap<>();
+        for (Resource resource : Resource.values()) {
+            if (resource != Resource.MISC) {
+                emptyMap.put(resource, 0);
+            }
+        }
+        return emptyMap;
     }
 
     // Make sure that the player's resources are decreased if game phase
-    // Make sure player resources not decreased otherwise
-    // Make sure can no longer build here or adjacent to here
+    @Test
+    public void testPlayerLosesAllResourcesSettlement() {
+        Player player = setUpPlayer(Building.SETTLEMENT);
+        Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0]; // a vertex with a port
+        main.setPhase(true);
+
+        main.buildSettlement(player, vertex);
+
+        assertEquals(emptyResourceMap(), player.getResources());
+    }
+
+    // Make sure that the player's resources are decreased to above 0 if has extra resources
+    @Test
+    public void testPlayerLosesSomeResourcesSettlement() {
+        Player player = setUpPlayer(Building.SETTLEMENT);
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.ORE);
+
+        Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0];
+        main.setPhase(true);
+
+        main.buildSettlement(player, vertex);
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        result.put(Resource.ORE, 1);
+
+        assertEquals(result, player.getResources());
+    }
+
+    // Make sure player resources not decreased if setup
+    @Test
+    public void testPlayerLosesNoResourcesSettlementSetup() {
+        Player player = setUpPlayer(Building.SETTLEMENT);
+        Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0];
+
+        main.buildSettlement(player, vertex);
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        result.put(Resource.BRICK, 1);
+        result.put(Resource.WHEAT, 1);
+        result.put(Resource.SHEEP, 1);
+
+        assertEquals(result, player.getResources());
+    }
+
     // I will not implement any exceptions, to aid in testing
 
     // buildRoad
