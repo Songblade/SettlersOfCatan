@@ -294,7 +294,57 @@ public class MainTest {
 
     // buildSettlement
     // Make sure that the settlement actually gets built
+    @Test
+    public void testSettlementIsBuilt() {
+        Player player = main.getPlayers().get(0);
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.BRICK);
+        player.addResource(Resource.SHEEP);
+        player.addResource(Resource.WHEAT);
+
+        Vertex vertex = main.getBoard().getVertices()[4];
+        main.setPhase(true);
+
+        main.buildSettlement(player, vertex);
+
+        assertEquals(player, vertex.getPlayer());
+
+        // this part makes sure that the vertex is no longer available for this person or anyone else to build
+        Set<Vertex> result = main.getAvailableSettlementSpots(player);
+        assertFalse(result.contains(vertex));
+        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
+
+        result = main.getAvailableSettlementSpots(main.getPlayers().get(1));
+        assertFalse(result.contains(vertex));
+        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
+    }
+
     // Make sure that if there is a port, the player has the port now
+    @Test
+    public void testPlayerHasPort() {
+        Player player = main.getPlayers().get(0);
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.BRICK);
+        player.addResource(Resource.SHEEP);
+        player.addResource(Resource.WHEAT);
+
+        Vertex vertex = main.getBoard().getVertices()[4];
+        main.setPhase(true);
+
+        main.buildSettlement(player, vertex);
+
+        assertEquals(player, vertex.getPlayer());
+
+        // this part makes sure that the vertex is no longer available for this person or anyone else to build
+        Set<Vertex> result = main.getAvailableSettlementSpots(player);
+        assertFalse(result.contains(vertex));
+        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
+
+        result = main.getAvailableSettlementSpots(main.getPlayers().get(1));
+        assertFalse(result.contains(vertex));
+        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
+    }
+
     // Make sure that the player's resources are decreased if game phase
     // Make sure player resources not decreased otherwise
     // Make sure can no longer build here or adjacent to here
