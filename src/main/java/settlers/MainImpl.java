@@ -169,7 +169,16 @@ public class MainImpl implements Main {
      */
     @Override
     public void buildRoad(Player player, Edge location) {
-
+        // I need to change the edge's status
+        location.setPlayer(player);
+        // I need to add the edge to the player's list
+        player.addRoad(location);
+        // I need to remove the edge from the board's empty edge list
+        board.removeRoad(location);
+        // I need to remove resources from the player, if this is the right phase
+        if (isMainPhase) {
+            player.removeResources(Building.ROAD.getResources());
+        }
     }
 
     /**

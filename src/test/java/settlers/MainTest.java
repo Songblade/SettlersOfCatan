@@ -401,13 +401,99 @@ public class MainTest {
         assertEquals(result, player.getResources());
     }
 
+    // CRITICAL: Once you implement the method that checks if you can build a city, add a test that
+        // building a settlement lets you upgrade it to a city
+
     // I will not implement any exceptions, to aid in testing
 
     // buildRoad
     // Make sure that the road is actually built now
-    // Make sure the player's resources are decreased if game phase
-    // Make sure player resources not decreased otherwise
     // Make sure can no longer build here
+    @Test
+    public void testRoadIsBuilt() {
+        Player player = setUpPlayer(Building.ROAD);
+        Vertex vertex = main.getBoard().getVertices()[4];
+        Edge edge = vertex.getEdges()[0];
+        main.setPhase(true);
+
+        main.buildRoad(player, edge);
+
+        assertEquals(player, edge.getPlayer());
+        assertTrue(player.getRoads().contains(edge));
+
+        // this part makes sure that the edge is no longer available for this person or anyone else
+        Set<Edge> result = main.getAvailableRoadSpots(player);
+        assertFalse(result.contains(edge));
+
+        result = main.getAvailableRoadSpots(main.getPlayers().get(1));
+        assertFalse(result.contains(edge));
+    }
+
+    // Make sure the player's resources are decreased if game phase
+    @Test
+    public void testRoadBringsResourcesTo0() {
+        Player player = setUpPlayer(Building.ROAD);
+        Vertex vertex = main.getBoard().getVertices()[4];
+        Edge edge = vertex.getEdges()[0];
+        main.setPhase(true);
+
+        main.buildRoad(player, edge);
+
+        assertEquals(emptyResourceMap(), player.getResources());
+    }
+
+    // Make sure not to 0 if has more than that
+    @Test
+    public void testRoadBringsResourcesNotTo0() {
+        Player player = setUpPlayer(Building.ROAD);
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.ORE);
+
+        Vertex vertex = main.getBoard().getVertices()[4];
+        Edge edge = vertex.getEdges()[0];
+        main.setPhase(true);
+
+        main.buildRoad(player, edge);
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        result.put(Resource.ORE, 1);
+
+        assertEquals(result, player.getResources());
+    }
+
+    // Make sure player resources not decreased if setup
+    @Test
+    public void testRoadIgnoresResourcesSetup() {
+        Player player = setUpPlayer(Building.ROAD);
+
+        Vertex vertex = main.getBoard().getVertices()[4];
+        Edge edge = vertex.getEdges()[0];
+
+        main.buildRoad(player, edge);
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        result.put(Resource.BRICK, 1);
+
+        assertEquals(result, player.getResources());
+    }
+
     // Make sure can now build beyond here, both road and settlement
+    @Test
+    public void testCanBuildRoadBeyond() {
+        Player player = setUpPlayer(Building.ROAD);
+        Vertex vertex = main.getBoard().getVertices()[4];
+        Edge edge = vertex.getEdges()[0];
+        main.setPhase(true);
+
+        main.buildRoad(player, edge);
+
+        Set<Edge> result = main.getAvailableRoadSpots(player);
+        assertTrue(result.contains(vertex.getAdjacentVertices()[0].getEdges()[2]));
+
+        Set<Vertex> vertexResult = main.getAvailableSettlementSpots(player);
+        assertTrue(vertexResult.contains(vertex.getAdjacentVertices()[0]));
+    }
 
 }
