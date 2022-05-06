@@ -159,6 +159,8 @@ public class MainImpl implements Main {
         if (isMainPhase) {
             player.removeResources(Building.SETTLEMENT.getResources());
         }
+        // tell GUI to do update it
+        gui.reportAction(Action.SETTLEMENT);
     }
 
     /**
@@ -179,6 +181,8 @@ public class MainImpl implements Main {
         if (isMainPhase) {
             player.removeResources(Building.ROAD.getResources());
         }
+        // tell GUI to do update it
+        gui.reportAction(Action.ROAD);
     }
 
     /**
