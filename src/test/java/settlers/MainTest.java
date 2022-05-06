@@ -325,7 +325,9 @@ public class MainTest {
         main.buildSettlement(player, vertex);
 
         assertEquals(player, vertex.getPlayer());
+        assertFalse(vertex.isCity());
         assertTrue(player.getSettlements().contains(vertex));
+        assertFalse(player.getCities().contains(vertex));
 
         // this part makes sure that the vertex is no longer available for this person or anyone else to build
         Set<Vertex> result = main.getAvailableSettlementSpots(player);
@@ -556,6 +558,84 @@ public class MainTest {
         assertEquals(result, main.getAvailableCitySpots(playerCopy.get(0)));
     }
 
-    // I feel like I forgot something
+    // buildCity
+    // test that the settlement is now considered a city, and is included in the player's city list
+        // and not its settlement list
+    @Test
+    public void testCityIsBuilt() {
+        Player player = setUpPlayer(Building.CITY);
+        Vertex vertex = main.getBoard().getVertices()[4];
+        main.buildSettlement(player, vertex); // in setup phase, so no resources used
+        main.setPhase(true);
+
+        main.buildCity(player, vertex);
+
+        assertEquals(player, vertex.getPlayer());
+        assertTrue(vertex.isCity());
+        assertFalse(player.getSettlements().contains(vertex));
+        assertTrue(player.getCities().contains(vertex));
+    }
+
+    // test that can't build another settlement or city here
+    @Test
+    public void testCantBuildSomethingElseHere() {
+        Player player = setUpPlayer(Building.CITY);
+        Vertex vertex = main.getBoard().getVertices()[4];
+        main.buildSettlement(player, vertex); // in setup phase, so no resources used
+        main.setPhase(true);
+
+        main.buildCity(player, vertex);
+
+        // this part makes sure that the vertex is no longer available for this person or anyone else to build
+        Set<Vertex> result = main.getAvailableSettlementSpots(player);
+        assertFalse(result.contains(vertex));
+        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
+
+        result = main.getAvailableSettlementSpots(main.getPlayers().get(1));
+        assertFalse(result.contains(vertex));
+        assertFalse(result.contains(vertex.getAdjacentVertices()[0]));
+
+        // this person can't build another city here
+        result = main.getAvailableCitySpots(main.getPlayers().get(0));
+        assertFalse(result.contains(vertex));
+
+        result = main.getAvailableCitySpots(main.getPlayers().get(1));
+        assertFalse(result.contains(vertex));
+    }
+
+    // test that the player's resources were removed to 0
+    @Test
+    public void testCityResourcesTo0() {
+        Player player = setUpPlayer(Building.CITY);
+        Vertex vertex = main.getBoard().getVertices()[4];
+        main.buildSettlement(player, vertex); // in setup phase, so no resources used
+        main.setPhase(true);
+
+        main.buildCity(player, vertex);
+
+        assertEquals(emptyResourceMap(), player.getResources());
+    }
+
+    // test that if the player had other resources, it does not have 0 now
+    @Test
+    public void testCityResourcesToMoreThan0() {
+        Player player = setUpPlayer(Building.CITY);
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.ORE);
+
+        Vertex vertex = main.getBoard().getVertices()[4];
+        main.buildSettlement(player, vertex); // in setup phase, so no resources used
+        main.setPhase(true);
+
+        main.buildCity(player, vertex);
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        result.put(Resource.ORE, 1);
+
+        assertEquals(result, player.getResources());
+    }
+
+    // I think I forgot something, something about the settlement
 
 }

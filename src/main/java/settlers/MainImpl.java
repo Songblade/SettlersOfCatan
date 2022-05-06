@@ -186,14 +186,25 @@ public class MainImpl implements Main {
     }
 
     /**
-     * Upgrades a settlement to a city, and updates the Vertex accordingly
+     * Upgrades a settlement to a city, and updates the Vertex and Player accordingly
      *
-     * @param player     who is building the city
-     * @param settlement that the player is upgrading
+     * @param player   who is building the city
+     * @param location that the player is upgrading from a settlement to a city
      */
     @Override
-    public void buildCity(Player player, Vertex settlement) {
-
+    public void buildCity(Player player, Vertex location) {
+        // I need to change the vertex's status
+        location.makeCity();
+        // I need to change which list the vertex is on
+        player.upgradeSettlement(location);
+        // I need to remove resources from the player, if this is the right phase
+        // the phase doesn't really matter here, since you can't build a city during setup phase anyway
+            // but I might want it for testing, so I will leave it in
+        if (isMainPhase) {
+            player.removeResources(Building.CITY.getResources());
+        }
+        // tell GUI to do update it
+        gui.reportAction(Action.CITY);
     }
 
     /**
