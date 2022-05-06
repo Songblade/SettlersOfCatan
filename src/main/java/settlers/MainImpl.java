@@ -287,7 +287,7 @@ public class MainImpl implements Main {
         isMainPhase = changingToMain;
     }
 
-    protected List<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return Arrays.asList(players);
     }
 }

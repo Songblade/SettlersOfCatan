@@ -3,10 +3,7 @@ package settlers;
 import settlers.board.*;
 import settlers.card.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface Main {
 
@@ -99,6 +96,8 @@ public interface Main {
      * @param resourceGotten resource type being received
      */
     void trade(Player player, Resource resourceGiven, int resourceNumber, Resource resourceGotten);
+
+    List<Player> getPlayers();
 
     // If we decide to implement Player to Player trading,
     // I will add versions of canTrade() and trade() for that
