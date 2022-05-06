@@ -19,13 +19,25 @@ public class PlayerImpl implements Player {
     private int id;
 
     public PlayerImpl() {
-        resources = new HashMap<>();
+        setUpEmptyResources(); // sets up the resources to have 0 of each type
         vellies = new HashMap<>();
         ports = new HashSet<>();
         settlements = new HashSet<>();
         cities = new HashSet<>();
         roads = new HashSet<>();
         id = (int) (Math.random() * 100);
+    }
+
+    /**
+     * Sets up the player's resources to have 0 of every type, for aid of testing
+     */
+    private void setUpEmptyResources() {
+        resources = new HashMap<>();
+        for (Resource resource : Resource.values()) {
+            if (resource != Resource.MISC) {
+                resources.put(resource, 0);
+            }
+        }
     }
 
     /**
