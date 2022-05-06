@@ -19,7 +19,7 @@ public class MainImpl implements Main {
     protected MainImpl(int numberOfPlayers) {
         players = new Player[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
-            players[i] = new PlayerImpl();
+            players[i] = new PlayerImpl(i);
         }
         board = new BoardImpl();
         // now we find the thief, the only time we need to do it this way
@@ -32,6 +32,28 @@ public class MainImpl implements Main {
         // I will create a GUIMain once Aryeh tells me how to do it
         gui = new GUIMainImpl(this);
     }
+
+    /*
+    Here is where I will write the main() method
+    First, the method needs to set up the board and the players
+    Then, it needs to set the order of the turns
+    Then, it needs to go through the turns once, offering each player a choice of settlement and road
+    Then, it needs to do the same thing, but in reverse order. This time, each player also gets up to 3
+        resources per settlement they take
+    Then, we start the actual loop
+    This is the loop:
+        We start by rolling the dice, telling the player what the roll was, and giving each player
+            the resources from that roll
+        If the player rolled a 7, all players with more than 7 cards must choose half to discard
+        We then let this player move the thief, and they get a random card from a player of
+            their choice at the new location
+        Then, the player has a choice of building (as many times as they want) or passing, since we are not
+            yet adding trading or development cards
+        When the player passes, the next player rolls the dice
+        When all players go, the loop restarts
+        If any player ever gets 10 victory points, the game ends, and that player is declared the winner
+            That is checked whenever the player does something that could get a victory point
+     */
 
     /**
      * @return this game's board

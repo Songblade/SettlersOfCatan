@@ -392,4 +392,12 @@ class TestPlayer implements Player {
         return 0;
     }
 
+    /**
+     * @return the player's ID, which if set up properly will be from 0 to 3
+     */
+    @Override
+    public int getID() {
+        return 0;
+    }
+
 }

@@ -96,4 +96,9 @@ public interface Player {
      * @return the player's current number of victory points
      */
     int getVictoryPoints();
+
+    /**
+     * @return the player's ID, which if set up properly will be from 0 to 3
+     */
+    int getID();
 }

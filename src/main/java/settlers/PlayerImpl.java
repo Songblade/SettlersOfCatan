@@ -17,16 +17,21 @@ public class PlayerImpl implements Player {
     private Set<Vertex> cities;
     private Set<Edge> roads;
     private int victoryPoints; // starts at 0
-    private int id; // ignore this, it is for testing
+    private final int id; // ignore this, it is for testing
 
+    // I am leaving the old constructor, which uses a random ID, so that I don't have to change all my old tests
     public PlayerImpl() {
+        this((int) (Math.random() * 100));
+    }
+
+    public PlayerImpl(int id) {
         setUpEmptyResources(); // sets up the resources to have 0 of each type
         vellies = new HashMap<>();
         ports = new HashSet<>();
         settlements = new HashSet<>();
         cities = new HashSet<>();
         roads = new HashSet<>();
-        id = (int) (Math.random() * 100);
+        this.id = id;
     }
 
     /**
@@ -219,6 +224,14 @@ public class PlayerImpl implements Player {
     @Override
     public int getVictoryPoints() {
         return victoryPoints;
+    }
+
+    /**
+     * @return the player's ID, which if set up properly will be from 0 to 3
+     */
+    @Override
+    public int getID() {
+        return id;
     }
 
     @Override
