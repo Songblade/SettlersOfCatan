@@ -191,8 +191,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
-        //button.setVisible(false);
-        //button.setEnabled(false);
+        button.setVisible(false);
+        button.setEnabled(false);
         button.setRolloverIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PointerHover.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
         button.setBounds(xPos + standardObjectSize / 4,yPos + standardObjectSize / 4,standardObjectSize/2,standardObjectSize/2);
 

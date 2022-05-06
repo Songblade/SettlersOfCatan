@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
 Test set: settlers.PlayerTest
 -------------------------------------------------------------------------------
-Tests run: 15, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 0.018 s - in settlers.PlayerTest
+Tests run: 15, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.026 s <<< FAILURE! - in settlers.PlayerTest
+settlers.PlayerTest.resourceWorksOne  Time elapsed: 0.004 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <{WOOD=1}> but was: <{WOOD=1, SHEEP=0, BRICK=0, ORE=0, WHEAT=0}>
+	at settlers.PlayerTest.resourceWorksOne(PlayerTest.java:45)
+
+settlers.PlayerTest.resourceWorksEmpty  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <{}> but was: <{WOOD=0, SHEEP=0, BRICK=0, ORE=0, WHEAT=0}>
+	at settlers.PlayerTest.resourceWorksEmpty(PlayerTest.java:35)
+
