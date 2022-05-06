@@ -61,6 +61,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Adds the thief
         frame.add(thiefImage);
+        paintLayerMap.put(thiefImage,2);
 
         //Ensures everything paints at the right Z layer
         orderPainting();
@@ -72,7 +73,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     private void orderPainting(){
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < 4; i++) {
             for (Component component : paintLayerMap.keySet()) {
                 if(i == paintLayerMap.get(component))frame.setComponentZOrder(component, paintLayerMap.get(component));
             }
@@ -195,7 +196,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         button.setBounds(xPos + standardObjectSize / 4,yPos + standardObjectSize / 4,standardObjectSize/2,standardObjectSize/2);
 
         frame.add(button);
-        paintLayerMap.put(button,2);
+        paintLayerMap.put(button,3);
 
         return button;
     }
