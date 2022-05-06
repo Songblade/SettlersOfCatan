@@ -16,7 +16,7 @@ public class MainImpl implements Main {
     private boolean isMainPhase; // starts automatically as false
     private Hex thiefIsHere; // so we don't have to look for it
 
-    protected MainImpl(int numberOfPlayers) {
+    public MainImpl(int numberOfPlayers) {
         players = new Player[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
             players[i] = new PlayerImpl(i);
@@ -287,7 +287,7 @@ public class MainImpl implements Main {
         isMainPhase = changingToMain;
     }
 
-    protected List<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return Arrays.asList(players);
     }
 }

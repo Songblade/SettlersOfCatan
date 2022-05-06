@@ -3,6 +3,7 @@ package settlers.gui;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import settlers.MainImpl;
 import settlers.board.Board;
 import settlers.board.BoardImpl;
 
@@ -12,7 +13,7 @@ public class GUIMainTest {
     public void createGUIMain(){
         try {
             Board board = new BoardImpl();
-            GUIMain guiMain = new GUIMainImpl(board);
+            GUIMain guiMain = new GUIMainImpl(new MainImpl(4));
         }catch (Throwable e){
             e.printStackTrace();
         }
