@@ -16,7 +16,8 @@ public class PlayerImpl implements Player {
     private Set<Vertex> settlements;
     private Set<Vertex> cities;
     private Set<Edge> roads;
-    private int id;
+    private int victoryPoints; // starts at 0
+    private int id; // ignore this, it is for testing
 
     public PlayerImpl() {
         setUpEmptyResources(); // sets up the resources to have 0 of each type
@@ -105,6 +106,20 @@ public class PlayerImpl implements Player {
     @Override
     public void addDevelopmentCard(DevelopmentCard development) {
         vellies.put(development, vellies.getOrDefault(development, 0) + 1);
+        if (development == DevelopmentCard.VICTORY_POINT) {
+            victoryPoints++;
+        }
+    }
+
+    /**
+     * Increases the player's victory points
+     * @param num should be 1, but should be 2 if this is Longest Road or Largest Army
+     *      If the player loses longest road or largest army, it should be -2
+     * @return true if the player now has >= 10 points, false otherwise
+     */
+    private boolean increaseVictoryPoints(int num) {
+        victoryPoints += num;
+        return victoryPoints >= 10;
     }
 
     /**
@@ -177,21 +192,33 @@ public class PlayerImpl implements Player {
      * @param settlement to be added to the player's collection
      */
     @Override
-    public void addSettlement(Vertex settlement) {
+    public boolean addSettlement(Vertex settlement) {
         if (settlements.size() < 5) {
             settlements.add(settlement);
+            return increaseVictoryPoints(1);
         }
+        return false;
     }
 
     /**
      * @param city to be removed from the player's settlement collection and added to its city collection
      */
     @Override
-    public void upgradeSettlement(Vertex city) {
+    public boolean upgradeSettlement(Vertex city) {
         if (cities.size() < 4) {
             settlements.remove(city);
             cities.add(city);
+            return increaseVictoryPoints(1);
         }
+        return false;
+    }
+
+    /**
+     * @return the player's current number of victory points
+     */
+    @Override
+    public int getVictoryPoints() {
+        return victoryPoints;
     }
 
     @Override

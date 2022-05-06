@@ -82,11 +82,18 @@ public interface Player {
 
     /**
      * @param settlement to be added to the player's collection
+     * @return true if the player now has 10 victory points, false otherwise
      */
-    void addSettlement(Vertex settlement);
+    boolean addSettlement(Vertex settlement);
 
     /**
      * @param city to be removed from the player's settlement collection and added to its city collection
+     * @return true if the player now has 10 victory points, false otherwise
      */
-    void upgradeSettlement(Vertex city);
+    boolean upgradeSettlement(Vertex city);
+
+    /**
+     * @return the player's current number of victory points
+     */
+    int getVictoryPoints();
 }

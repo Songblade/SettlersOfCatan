@@ -372,16 +372,24 @@ class TestPlayer implements Player {
      * @param settlement to be added to the player's collection
      */
     @Override
-    public void addSettlement(Vertex settlement) {
-
+    public boolean addSettlement(Vertex settlement) {
+        return false;
     }
 
     /**
      * @param city to be removed from the player's settlement collection and added to its city collection
      */
     @Override
-    public void upgradeSettlement(Vertex city) {
+    public boolean upgradeSettlement(Vertex city) {
+        return false;
+    }
 
+    /**
+     * @return the player's current number of victory points
+     */
+    @Override
+    public int getVictoryPoints() {
+        return 0;
     }
 
 }
