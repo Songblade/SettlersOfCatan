@@ -132,7 +132,7 @@ public class MainImpl implements Main {
      */
     @Override
     public Set<Vertex> getAvailableCitySpots(Player player) {
-        return null;
+        return player.getSettlements();
     }
 
     /**
