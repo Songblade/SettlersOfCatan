@@ -185,6 +185,16 @@ public class MainTest {
         main.getBoard().removeRoad(edge);
     }
 
+    /**
+     * Upgrades a settlement to a city properly
+     * @param vertex where settlement is built
+     * @param player where settlement is updated
+     */
+    private void upgradePlayer(Vertex vertex, Player player) {
+        vertex.makeCity();
+        player.upgradeSettlement(vertex);
+    }
+
     // and excludes spots that have settlements, yours or not
     // test that excludes spots adjacent to settlements
     @Test
@@ -403,6 +413,19 @@ public class MainTest {
 
     // CRITICAL: Once you implement the method that checks if you can build a city, add a test that
         // building a settlement lets you upgrade it to a city
+    @Test
+    public void buildSettlementLetsBuildCity() {
+        Player player = setUpPlayer(Building.SETTLEMENT);
+        Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0]; // a vertex with a port
+        main.setPhase(true);
+
+        main.buildSettlement(player, vertex);
+
+        HashSet<Vertex> result = new HashSet<>();
+        result.add(vertex);
+
+        assertEquals(result, main.getAvailableCitySpots(player));
+    }
 
     // I will not implement any exceptions, to aid in testing
 
@@ -495,5 +518,44 @@ public class MainTest {
         Set<Vertex> vertexResult = main.getAvailableSettlementSpots(player);
         assertTrue(vertexResult.contains(vertex.getAdjacentVertices()[0]));
     }
+
+    // tests for getAvailableCitySpots
+    // test that a player with 2 settlements can build a settlement in both places, and nowhere else
+    @Test
+    public void availableCitySpotsGivesSettlements() {
+        List<Vertex> verticesCopy = new ArrayList<>(Arrays.asList(main.getBoard().getVertices()));
+        List<Player> playerCopy = main.getPlayers();
+
+        Vertex vertex0 = verticesCopy.get(4);
+        Vertex vertex1 = verticesCopy.get(5);
+        Vertex trickVertex = verticesCopy.get(6);
+        addPlayer(vertex0, playerCopy.get(0)); // give this player a settlement
+        addPlayer(vertex1, playerCopy.get(0)); // give this player a settlement
+        addPlayer(trickVertex, playerCopy.get(1)); // give another player a settlement, should be ignored
+
+        HashSet<Vertex> result = new HashSet<>();
+        result.add(vertex0);
+        result.add(vertex1);
+        assertEquals(result, main.getAvailableCitySpots(playerCopy.get(0)));
+    }
+
+    // tests that cities are not included in available spots
+    @Test
+    public void cantBuildCitiesOnCities() {
+        List<Vertex> verticesCopy = new ArrayList<>(Arrays.asList(main.getBoard().getVertices()));
+        List<Player> playerCopy = main.getPlayers();
+
+        Vertex vertex0 = verticesCopy.get(4);
+        Vertex vertex1 = verticesCopy.get(5);
+        addPlayer(vertex0, playerCopy.get(0)); // give this player a settlement
+        addPlayer(vertex1, playerCopy.get(0)); // give this player a settlement
+        upgradePlayer(vertex0, playerCopy.get(0)); // make one settlement a city
+
+        HashSet<Vertex> result = new HashSet<>();
+        result.add(vertex1); // only include the regular settlement
+        assertEquals(result, main.getAvailableCitySpots(playerCopy.get(0)));
+    }
+
+    // I feel like I forgot something
 
 }
