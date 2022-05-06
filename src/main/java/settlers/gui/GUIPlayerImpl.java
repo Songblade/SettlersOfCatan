@@ -61,7 +61,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Adds the thief
         frame.add(thiefImage);
-        paintLayerMap.put(thiefImage,2);
+        paintLayerMap.put(thiefImage,1);
 
         //Ensures everything paints at the right Z layer
         orderPainting();
@@ -75,7 +75,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void orderPainting(){
         for(int i = 0; i < 4; i++) {
             for (Component component : paintLayerMap.keySet()) {
-                if(i == paintLayerMap.get(component))frame.setComponentZOrder(component, paintLayerMap.get(component));
+                if(paintLayerMap.containsKey(component) && i == paintLayerMap.get(component)){
+                    frame.add(component);
+                }
             }
         }
     }
@@ -166,8 +168,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         JLabel label = new JLabel(new ImageIcon(icon));
         label.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
 
-        //Adds label to frame
-        frame.add(label);
+        //Sets the frame's Z order
         paintLayerMap.put(label,zOrder);
 
         return label;
@@ -190,13 +191,12 @@ public class GUIPlayerImpl implements GUIPlayer{
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
-        button.setVisible(false);
-        button.setEnabled(false);
+        //button.setVisible(false);
+        //button.setEnabled(false);
         button.setRolloverIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PointerHover.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
         button.setBounds(xPos + standardObjectSize / 4,yPos + standardObjectSize / 4,standardObjectSize/2,standardObjectSize/2);
 
-        frame.add(button);
-        paintLayerMap.put(button,3);
+        paintLayerMap.put(button,0);
 
         return button;
     }
@@ -225,10 +225,10 @@ public class GUIPlayerImpl implements GUIPlayer{
             int yPos = boardOffsetY + Math.abs((row - 2) * 44) + (88 * column);
 
             //Creates hex outline
-            JLabel hexOutlineLabel = createLabel("src/main/java/settlers/gui/textures/hexes/HexagonOutline.png",xPos,yPos,0);
+            JLabel hexOutlineLabel = createLabel("src/main/java/settlers/gui/textures/hexes/HexagonOutline.png",xPos,yPos,3);
 
             //Creates hex interior
-            JLabel hexInteriorLabel = createLabel(getHexInteriorImageByResource(hex.getResource()),xPos,yPos,0);
+            JLabel hexInteriorLabel = createLabel(getHexInteriorImageByResource(hex.getResource()),xPos,yPos,3);
 
             //Creates hex button and adds it to the hexButtonMap
             JButton hexButton = createButton(xPos,yPos);
@@ -240,10 +240,10 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             //Creates number outline
-            JLabel hexNumberOutlineLabel = createLabel(getNumberOutlineImage(hex.getNumber()),xPos,yPos,1);
+            JLabel hexNumberOutlineLabel = createLabel(getNumberOutlineImage(hex.getNumber()),xPos,yPos,2);
 
             //Creates number interior
-            JLabel hexNumberLabel = createLabel(getNumberImage(hex.getNumber()),xPos,yPos,1);
+            JLabel hexNumberLabel = createLabel(getNumberImage(hex.getNumber()),xPos,yPos,2);
         }
     }
 
@@ -279,7 +279,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             int yPos = boardOffsetY + (column * 88 + (Math.abs(3 - (row + 1)/2)) * 44 - 44);
 
             //Create vertex label
-            JLabel vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png",xPos,yPos,1);
+            JLabel vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png",xPos,yPos,2);
 
             //Create vertex button
             JButton vertexButton = createButton(xPos,yPos);
@@ -293,7 +293,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     int edgeXPos = xPos + 20;
                     int edgeYPos = yPos - 24;
 
-                    JLabel topEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayLeft.png",edgeXPos,edgeYPos,0);
+                    JLabel topEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayLeft.png",edgeXPos,edgeYPos,3);
                     JButton topEdgeButton = createButton(edgeXPos,edgeYPos);
 
                     edgeButtonMap.put(topEdgeButton,topEdge);
@@ -303,7 +303,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     int edgeXPos = xPos + 16;
                     int edgeYPos = yPos + 20;
 
-                    JLabel bottomEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayRight.png",edgeXPos,edgeYPos,0);
+                    JLabel bottomEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayRight.png",edgeXPos,edgeYPos,3);
                     JButton bottomEdgeButton = createButton(edgeXPos,edgeYPos);
 
                     edgeButtonMap.put(bottomEdgeButton,bottomEdge);
@@ -317,7 +317,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     int edgeXPos = xPos + 28;
                     int edgeYPos = yPos;
 
-                    JLabel sideEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayStraight.png",edgeXPos,edgeYPos,0);
+                    JLabel sideEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayStraight.png",edgeXPos,edgeYPos,3);
                     JButton sideEdgeButton = createButton(edgeXPos,edgeYPos);
 
                     edgeButtonMap.put(sideEdgeButton,sideEdge);
