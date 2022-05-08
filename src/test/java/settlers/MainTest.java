@@ -1,12 +1,14 @@
 package settlers;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-import settlers.board.Edge;
-import settlers.board.Hex;
-import settlers.board.Vertex;
+import settlers.board.*;
 import settlers.card.Resource;
+import settlers.gui.GUIMainDummyImpl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +18,7 @@ public class MainTest {
     private MainImpl main;
 
     public MainTest() {
-        main = new MainImpl();
+        main = new MainImpl(4, new GUIMainDummyImpl());
     }
 
     // start by testing playerElementsFor
@@ -637,6 +639,94 @@ public class MainTest {
         assertEquals(result, player.getResources());
     }
 
-    // I think I forgot something, something about the settlement
+    // now we are testing protected methods that are used in the main loop
 
+
+    // getNumOfPlayers (note this is a static method)
+
+    /**
+     * Creates file for tests
+     * @param fileContents the string to be put in the file
+     * @return the file containing what I want
+     * @throws IOException so I can use files
+     */
+    private FileInputStream testFileStream(String fileContents) throws IOException {
+        File file = File.createTempFile("numPlayerInput", "txt");
+        FileWriter writeFile = new FileWriter(file);
+        writeFile.write(fileContents);
+        writeFile.close();
+        return new FileInputStream(file);
+    }
+    // test that if I just give a number that is good, it works
+    @Test
+    public void getNumOfPlayersWorksImmediately() throws IOException {
+        assertEquals(3, MainImpl.getNumOfPlayers(testFileStream("3")));
+    }
+
+    // test that if I give a number with other stuff after it, it still works if there is a space
+    @Test
+    public void getNumOfPlayersWorksWhenGarbageAfterSpace() throws IOException {
+        assertEquals(3, MainImpl.getNumOfPlayers(testFileStream("3 abcdef")));
+    }
+
+    // test that if I give something not a number, it will keep asking until I give a number
+    @Test
+    public void getNumOfPlayersContinuesUntilInt() throws IOException {
+        assertEquals(2, MainImpl.getNumOfPlayers(testFileStream("food\ntwo\n2")));
+    }
+
+    // test that if I give a number less than 2, will keep asking until I give something big enough
+    @Test
+    public void getNumOfPlayersContinuesUntilBig() throws IOException {
+        assertEquals(4, MainImpl.getNumOfPlayers(testFileStream("zero\n0\n1\n4")));
+    }
+
+    // test that if I give a number more than 4, will keep asking until I give something small enough
+    @Test
+    public void getNumOfPlayersContinuesUntilSmall() throws IOException {
+        assertEquals(2, MainImpl.getNumOfPlayers(testFileStream("a million\n1000000\n10\n7\n6\n5\n2")));
+    }
+
+    // testing turnOrder
+    // I will make 3 tests, one for 2 players, one for 3, and one for 4
+    // in each, I will make the main, and test its turnOrder() 1000 times
+    // each time, I will test that all the applicable numbers are there, and the length is correct
+    // I will also make sure that I have at least 100 of each number going first overall
+    // (that is probably the wrong number to check, but I haven't taken Stat yet)
+    private void turnOrderTest(int playerNumber) {
+        MainImpl main = new MainImpl(playerNumber, new GUIMainDummyImpl());
+        int[] numberFirst = new int[playerNumber]; // how many times each number has been first
+        for (int i = 0; i < 1000; i++) {
+            List<Integer> turnOrder = main.turnOrder();
+            assertEquals(playerNumber, turnOrder.size());
+            numberFirst[turnOrder.get(0)]++;
+            for (int j = 0; j < playerNumber; j++) {
+                assertTrue(turnOrder.contains(j));
+            }
+        }
+        for (int j = 0; j < playerNumber; j++) {
+            assertTrue(numberFirst[j] > 100);
+        }
+    }
+
+    @Test
+    public void turnOrderTest2() {
+        turnOrderTest(2);
+    }
+
+    @Test
+    public void turnOrderTest3() {
+        turnOrderTest(3);
+    }
+
+    @Test
+    public void turnOrderTest4() {
+        turnOrderTest(4);
+    }
+
+    // applyDice
+    // test that if no one has any settlements, no one gets anything
+    // test that if someone has a settlement by the hex, he gets the resource
+    // test that if two people have settlements by the hex, they each get the resource
+    // test that if one person has 2 settlements by the hex, he gets the resource twice
 }
