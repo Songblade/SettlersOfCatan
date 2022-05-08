@@ -210,6 +210,20 @@ public class GUIPlayerImpl implements GUIPlayer{
         return createLabel(icon,xPos,yPos,zOrder);
     }
 
+    private JTextField createText(String text, int xPos, int yPos, int zOrder){
+        JTextField field = new JTextField(text);
+        field.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
+        field.setEditable(false);
+        field.setOpaque(false);
+        field.setBorder(BorderFactory.createEmptyBorder());
+        field.setFont(new Font(Font.DIALOG,Font.BOLD,24));
+
+        //Sets the frame's Z order
+        paintLayerMap.put(field,zOrder);
+
+        return field;
+    }
+
     /**
      * Creates a button at xPos, yPos.
      * @param xPos
@@ -366,21 +380,68 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void putOtherElements(){
         //Places the label for this player
         JLabel thisPlayerLabel = createLabel("",50,40,1);
-        thisPlayerLabel.setIcon(new ImageIcon(getCityByColor(playerid).getScaledInstance(256,256,0)));
+        thisPlayerLabel.setIcon(new ImageIcon(getCityImage(playerid).getScaledInstance(256,256,0)));
+
+        //Places the resources to the side of the player label
+        int currentXOffset = 120;
+        int xOffsetIncrement = 60;
+        for(Resource resource : Resource.values()){
+            if(resource != Resource.MISC){
+                JLabel thisPlayerResourceLabel = createLabel("",currentXOffset,40,2);
+                thisPlayerResourceLabel.setIcon(new ImageIcon(getResourceImage(resource).getScaledInstance(64,64,0)));
+                currentXOffset += xOffsetIncrement;
+
+                JTextField thisPlayerResourceCountLabel = createText("0",currentXOffset,80,1);
+            }
+        }
 
         //Places the labels for other players
-        int currentYOffset = 120;
+        int currentYOffset = 160;
         int yOffsetIncrement = 60;
         for(Player plr : players){
             if(plr.getID() != playerid) {
+                //Places the player labels for other players
                 JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
-                playerLabel.setIcon(new ImageIcon(getCityByColor(plr.getID()).getScaledInstance(128, 128, 0)));
+                playerLabel.setIcon(new ImageIcon(getCityImage(plr.getID()).getScaledInstance(128, 128, 0)));
                 currentYOffset += yOffsetIncrement;
+
+                //Places the resource labels for other players
+                JLabel playerResourceLabel = createLabel("",80,currentYOffset - 60,1);
+                playerResourceLabel.setIcon(new ImageIcon(getResourceImage(Resource.MISC).getScaledInstance(56,56,0)));
+
+                JTextField playerResourceText = createText("0",175,currentYOffset - 60,1);
             }
         }
     }
 
-    private Image getCityByColor(int id){
+    /**
+     * @param resource
+     * @return an image of @resource
+     */
+    private Image getResourceImage(Resource resource){
+        String basePath = "src/main/java/settlers/gui/textures/resources/";
+
+        switch (resource){
+            case WOOD:
+                return getImage(basePath + "Wood.Png");
+            case BRICK:
+                return getImage(basePath + "Brick.Png");
+            case SHEEP:
+                return getImage(basePath + "Sheep.Png");
+            case WHEAT:
+                return getImage(basePath + "Wheat.Png");
+            case ORE:
+                return getImage(basePath + "Ore.Png");
+            default:
+                return getImage(basePath + "Misc.Png");
+        }
+    }
+
+    /**
+     * @param id
+     * @return an image of the city of @id's color
+     */
+    private Image getCityImage(int id){
         switch (id){
             case 0:
                 return getImage("src/main/java/settlers/gui/textures/construction/CityRed.png");
