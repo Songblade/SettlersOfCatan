@@ -1,6 +1,5 @@
 package settlers;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
@@ -32,7 +31,6 @@ public class PlayerTest {
     // Test the resource methods (will check hand number each time)
     // make sure that can return an empty hand
     @Test
-    @Disabled
     public void resourceWorksEmpty() {
         assertEquals(getEmptyHand(), player.getResources());
         assertFalse(player.hasMoreThan7Cards());
@@ -40,7 +38,6 @@ public class PlayerTest {
 
     // make sure that can return when we add one card
     @Test
-    @Disabled
     public void resourceWorksOne() {
         player.addResource(Resource.WOOD);
         HashMap<Resource, Integer> result = getEmptyHand();
