@@ -83,6 +83,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Adds the vertices
         putVerticesAndRoads();
 
+        //Adds the ports
+        putPorts();
+
         //Adds other elements
         putOtherElements();
 
@@ -324,7 +327,12 @@ public class GUIPlayerImpl implements GUIPlayer{
             int yPos = boardOffsetY + (column * 88 + (Math.abs(3 - (row + 1)/2)) * 44 - 44);
 
             //Create vertex label
-            JLabel vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png",xPos,yPos,2);
+            JLabel vertexLabel;
+            if(vertex.getPort() == null) {
+                vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png", xPos, yPos, 2);
+            }else{
+                vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadRedCenter.png", xPos, yPos, 2);
+            }
 
             //Create vertex button
             JButton vertexButton = createButton(xPos,yPos);
@@ -374,29 +382,70 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    private Image getPortDirectionImage(int direction){
+        String basePath = "src/main/java/settlers/gui/textures/hexes/";
+
+        switch (direction){
+            case 0:
+                return getImage(basePath + "PortUpLeft.png");
+            case 1:
+                return getImage(basePath + "PortDownLeft.png");
+            case 2:
+                return getImage(basePath + "PortDownCenter.png");
+            case 3:
+                return getImage(basePath + "PortDownRight.png");
+            case 4:
+                return getImage(basePath + "PortUpRight.png");
+            default:
+                return getImage(basePath + "PortUpCenter.png");
+
+        }
+    }
+
+    /**
+     * Puts ports onto the board
+     */
+    private void putPorts(){
+        String basePath = "src/main/java/settlers/gui/textures/hexes/";
+        String portPath = basePath + "Port.png";
+
+        int[][] portImageLocations = {{0,-92,44,3}};
+
+        for(int i = 0; i < portImageLocations.length; i++) {
+            int offsetX = boardOffsetX + portImageLocations[i][1];
+            int offsetY =  boardOffsetY + portImageLocations[i][2];
+
+            JLabel port = createLabel(portPath, offsetX, offsetY, 2);
+            JLabel portDirection = createLabel(getPortDirectionImage(portImageLocations[i][3]),offsetX,offsetY,1);
+
+            JLabel portImage = createLabel("", offsetX, offsetY, 0);
+            portImage.setIcon(new ImageIcon(getResourceImage(board.getVertices()[portImageLocations[i][0]].getPort()).getScaledInstance(64,64,0)));
+        }
+    }
+
     /**
      * Puts all non-board related elements onto the GUI
      */
     private void putOtherElements(){
         //Places the label for this player
-        JLabel thisPlayerLabel = createLabel("",50,40,1);
+        JLabel thisPlayerLabel = createLabel("",50,550,1);
         thisPlayerLabel.setIcon(new ImageIcon(getCityImage(playerid).getScaledInstance(256,256,0)));
 
         //Places the resources to the side of the player label
         int currentXOffset = 120;
-        int xOffsetIncrement = 60;
+        int xOffsetIncrement = 80;
         for(Resource resource : Resource.values()){
             if(resource != Resource.MISC){
-                JLabel thisPlayerResourceLabel = createLabel("",currentXOffset,40,2);
+                JLabel thisPlayerResourceLabel = createLabel("",currentXOffset,550,2);
                 thisPlayerResourceLabel.setIcon(new ImageIcon(getResourceImage(resource).getScaledInstance(64,64,0)));
                 currentXOffset += xOffsetIncrement;
 
-                JTextField thisPlayerResourceCountLabel = createText("0",currentXOffset,80,1);
+                JTextField thisPlayerResourceCountLabel = createText("0",currentXOffset - 24,500,1);
             }
         }
 
         //Places the labels for other players
-        int currentYOffset = 160;
+        int currentYOffset = 280;
         int yOffsetIncrement = 60;
         for(Player plr : players){
             if(plr.getID() != playerid) {
