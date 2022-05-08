@@ -34,7 +34,7 @@ public class PlayerTest {
     @Test
     @Disabled
     public void resourceWorksEmpty() {
-        assertEquals(new HashMap<Resource, Integer>(), player.getResources());
+        assertEquals(getEmptyHand(), player.getResources());
         assertFalse(player.hasMoreThan7Cards());
     }
 
@@ -43,7 +43,7 @@ public class PlayerTest {
     @Disabled
     public void resourceWorksOne() {
         player.addResource(Resource.WOOD);
-        HashMap<Resource, Integer> result = new HashMap<>();
+        HashMap<Resource, Integer> result = getEmptyHand();
         result.put(Resource.WOOD, 1);
         assertEquals(result, player.getResources());
         assertFalse(player.hasMoreThan7Cards());
