@@ -16,7 +16,7 @@ public class MainTest {
     private MainImpl main;
 
     public MainTest() {
-        main = new MainImpl(4);
+        main = new MainImpl();
     }
 
     // start by testing playerElementsFor

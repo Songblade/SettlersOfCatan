@@ -4,6 +4,7 @@ import settlers.board.*;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 import settlers.gui.GUIMain;
+import settlers.gui.GUIMainDummyImpl;
 import settlers.gui.GUIMainImpl;
 
 import java.util.*;
@@ -31,6 +32,26 @@ public class MainImpl implements Main {
         }
         // I will create a GUIMain once Aryeh tells me how to do it
         gui = new GUIMainImpl(this);
+    }
+
+    /**
+     * A version of the constructor to be used for testing
+     */
+    public MainImpl() {
+        players = new Player[4];
+        for (int i = 0; i < 4; i++) {
+            players[i] = new PlayerImpl(i);
+        }
+        board = new BoardImpl();
+        // now we find the thief, the only time we need to do it this way
+        for (Hex hex : board.getHexes()) {
+            if (hex.getNumber() == 1) {
+                thiefIsHere = hex;
+                break;
+            }
+        }
+        // a dummy testGUI that doesn't actually show a board
+        gui = new GUIMainDummyImpl();
     }
 
     /*
@@ -290,4 +311,5 @@ public class MainImpl implements Main {
     public List<Player> getPlayers() {
         return Arrays.asList(players);
     }
+
 }

@@ -7,7 +7,7 @@ import settlers.board.*;
 
 import java.util.HashMap;
 
-public class GUIMainDummyImpl {
+public class GUIMainDummyImpl implements GUIMain {
 
     /**
      *Asks Main if the player can preform the specified action. Returns true if yes, false if no
