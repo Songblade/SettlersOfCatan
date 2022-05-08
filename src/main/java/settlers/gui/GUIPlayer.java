@@ -5,4 +5,8 @@ import settlers.board.*;
 
 public interface GUIPlayer {
 
+    /**
+     * Starts Player's turn
+     */
+    void startTurn();
 }

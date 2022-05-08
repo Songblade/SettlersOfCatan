@@ -1,6 +1,7 @@
 package settlers.gui;
 
 import settlers.Player;
+import settlers.PlayerImpl;
 import settlers.board.*;
 import settlers.card.Resource;
 
@@ -10,14 +11,18 @@ import javax.swing.plaf.basic.BasicMenuUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class GUIPlayerImpl implements GUIPlayer{
 
-    //Board
+    //Board and Player
     private Board board;
+    private int playerid;
+    private List<Player> players;
 
     //Final params
     private final int boardOffsetX = 468;
@@ -36,28 +41,50 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<Component,Integer> paintLayerMap = new HashMap<>();
 
     //Frame and image
-    private Frame frame;
+    private JFrame frame;
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     //Thief
     private JLabel thiefImage = new JLabel(new ImageIcon(getImage("src/main/java/settlers/gui/textures/hexes/Thief.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
 
+    //Functional
+    private boolean thisPlayerHasTurn = false;
 
-    public GUIPlayerImpl(Board board){
+    //Events
+    private ActionListener events;
+
+    //Actions
+    private Action passTurn = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            thisPlayerHasTurn = false;
+        }
+    };
+
+
+    public GUIPlayerImpl(Board board, Player player, List<Player> players){
         this.board = board;
+        this.players = players;
+        this.playerid = player.getID();
 
         //Sets frame up
-        frame = new JFrame("This is a totally legit Catan");
+        frame = new JFrame("Catan: Player " + (player.getID() + 1));
         frame.setBackground(Color.BLACK);
         frame.setSize(1536,768);
         frame.setLayout(null);
         frame.setVisible(true);
+
+        //Maps the frame's actions
+        mapActions();
 
         //Adds the hexes
         putHexes();
 
         //Adds the vertices
         putVerticesAndRoads();
+
+        //Adds other elements
+        putOtherElements();
 
         //Adds the thief
         frame.add(thiefImage);
@@ -69,9 +96,13 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Repaints the frame
         frame.repaint();
 
-        sleep();
+        thisPlayerHasTurn = true;
+        startTurn();
     }
 
+    /**
+     * Places GUI elements in the right Z order
+     */
     private void orderPainting(){
         for(int i = 0; i < 4; i++) {
             for (Component component : paintLayerMap.keySet()) {
@@ -330,15 +361,56 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * Temp Method
+     * Puts all non-board related elements onto the GUI
      */
-    private void sleep(){
-        try {
-            while (true) {
-                Thread.sleep(1);
+    private void putOtherElements(){
+        //Places the label for this player
+        JLabel thisPlayerLabel = createLabel("",50,40,1);
+        thisPlayerLabel.setIcon(new ImageIcon(getCityByColor(playerid).getScaledInstance(256,256,0)));
+
+        //Places the labels for other players
+        int currentYOffset = 120;
+        int yOffsetIncrement = 60;
+        for(Player plr : players){
+            if(plr.getID() != playerid) {
+                JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
+                playerLabel.setIcon(new ImageIcon(getCityByColor(plr.getID()).getScaledInstance(128, 128, 0)));
+                currentYOffset += yOffsetIncrement;
             }
-        }catch (InterruptedException e){
-            throw new IllegalStateException("Thread drank caffine");
         }
+    }
+
+    private Image getCityByColor(int id){
+        switch (id){
+            case 0:
+                return getImage("src/main/java/settlers/gui/textures/construction/CityRed.png");
+            case 1:
+                return getImage("src/main/java/settlers/gui/textures/construction/CityBlue.png");
+            case 2:
+                return getImage("src/main/java/settlers/gui/textures/construction/CityWhite.png");
+            default:
+                return getImage("src/main/java/settlers/gui/textures/construction/CityOrange.png");
+        }
+    }
+
+    /**
+     * Starts Player's turn
+     */
+    public void startTurn(){
+        while(thisPlayerHasTurn){
+            try {
+                Thread.sleep(1);
+            }catch (InterruptedException e){
+                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
+            }
+        }
+    }
+
+    /**
+     * Maps all of the frame's actions
+     */
+    private void mapActions(){
+        frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke((char) 32),"passTurn");
+        frame.getRootPane().getActionMap().put("passTurn",passTurn);
     }
 }

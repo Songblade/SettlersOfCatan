@@ -4,3 +4,4 @@ settlers\gui\GUIPlayerImpl.class
 settlers\gui\GUIMainImpl.class
 settlers\gui\GUIPlayerImpl$1.class
 settlers\PlayerImpl.class
+settlers\gui\GUIPlayerImpl$2.class

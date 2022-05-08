@@ -2,6 +2,7 @@ package settlers.gui;
 
 import settlers.Action;
 import settlers.Main;
+import settlers.MainImpl;
 import settlers.Player;
 import settlers.card.Resource;
 import settlers.board.*;
@@ -15,14 +16,10 @@ public class GUIMainImpl implements GUIMain {
 
     public GUIMainImpl(Main main) {
         this.main = main;
-        playerGUIs = new GUIPlayer[4];
-    }
-
-    /** Temp Constructor */
-    public GUIMainImpl(Board board){
-        this.main = null;
-        playerGUIs = new GUIPlayer[1];
-        playerGUIs[0] = new GUIPlayerImpl(board);
+        playerGUIs = new GUIPlayer[main.getPlayers().size()];
+        for(int i = 0; i < main.getPlayers().size(); i++){
+            playerGUIs[i] = new GUIPlayerImpl(main.getBoard(),main.getPlayers().get(i),main.getPlayers());
+        }
     }
 
     /**
@@ -69,6 +66,8 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public void reportAction(Action action){
-
+        if(action == Action.SETTLEMENT){
+            System.out.println("Settlement has been built");
+        }
     }
 }
