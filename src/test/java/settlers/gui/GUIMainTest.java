@@ -24,7 +24,11 @@ public class GUIMainTest {
 
     @Test
     public void createMain(){
-        Main main = new MainImpl(4);
-        main.buildSettlement(main.getPlayers().get(0),main.getBoard().getVertices()[0]);
+        try {
+            Main main = new MainImpl(4);
+            main.buildSettlement(main.getPlayers().get(0), main.getBoard().getVertices()[0]);
+        }catch (Throwable e){
+            e.printStackTrace();
+        }
     }
 }

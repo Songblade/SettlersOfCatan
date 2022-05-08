@@ -47,8 +47,10 @@ public class GUIPlayerImpl implements GUIPlayer{
     private JFrame frame;
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
-    //Thief
-    private JLabel thiefImage = new JLabel(new ImageIcon(getImage("src/main/java/settlers/gui/textures/hexes/Thief.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
+    //Thief and die
+    private JLabel thiefImage;
+    private JLabel dieCounter;
+    private JLabel dieCounterOutline;
 
     //Functional
     private boolean thisPlayerHasTurn = false;
@@ -80,6 +82,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Maps the frame's actions
         mapActions();
 
+        //Adds the thief
+        thiefImage = createLabel("src/main/java/settlers/gui/textures/hexes/Thief.png",0,0,1);
+
         //Adds the hexes
         putHexes();
 
@@ -91,10 +96,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Adds other elements
         putOtherElements();
-
-        //Adds the thief
-        frame.add(thiefImage);
-        paintLayerMap.put(thiefImage,1);
 
         //Ensures everything paints at the right Z layer
         orderPainting();
@@ -430,7 +431,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         thisPlayerLabel.setIcon(new ImageIcon(getCityImage(playerid).getScaledInstance(256,256,0)));
 
         //Places the resources to the side of the player label
-        int currentXOffset = 120;
+        int currentXOffset = 140;
         int xOffsetIncrement = 80;
         for(Resource resource : Resource.values()){
             if(resource != Resource.MISC){
@@ -439,32 +440,45 @@ public class GUIPlayerImpl implements GUIPlayer{
                 currentXOffset += xOffsetIncrement;
 
                 JTextField thisPlayerResourceCountLabel = createText("0",currentXOffset - 24,500,1);
+
+                //Creates a button for the resource
+                JButton thisPlayerResourceButton = createButton(currentXOffset - xOffsetIncrement,550);
+                resourceButtonMap.put(thisPlayerResourceButton,resource);
             }
         }
 
         //Places the labels for other players
-        int currentYOffset = 280;
+        int currentYOffset = 240;
         int yOffsetIncrement = 60;
         for(Player plr : players){
             if(plr.getID() != playerid) {
                 //Places the player labels for other players
-                JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
+                JLabel playerLabel = createLabel("", 35, currentYOffset + 60, 1);
                 playerLabel.setIcon(new ImageIcon(getCityImage(plr.getID()).getScaledInstance(128, 128, 0)));
                 currentYOffset += yOffsetIncrement;
 
                 //Places the resource labels for other players
-                JLabel playerResourceLabel = createLabel("",80,currentYOffset - 60,1);
+                JLabel playerResourceLabel = createLabel("",80,currentYOffset,1);
                 playerResourceLabel.setIcon(new ImageIcon(getResourceImage(Resource.MISC).getScaledInstance(56,56,0)));
 
-                JTextField playerResourceText = createText("0",175,currentYOffset - 60,1);
+                JTextField playerResourceText = createText("0",175,currentYOffset,1);
 
                 //Places a button for the player
-                JButton playerButton = createButton(35,currentYOffset - 60);
-                playerButton.setVisible(true);
-                playerButton.setEnabled(true);
+                JButton playerButton = createButton(35,currentYOffset);
                 playerButtonMap.put(playerButton,plr);
             }
         }
+
+        //Places the die counter
+        int dieCounterSize = 256;
+
+        dieCounter = createLabel("",64,0,1);
+        dieCounter.setSize(dieCounterSize,dieCounterSize);
+        dieCounter.setIcon(new ImageIcon(getNumberImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
+
+        dieCounterOutline = createLabel("",64,0,2);
+        dieCounterOutline.setSize(dieCounterSize,dieCounterSize);
+        dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
     }
 
     /**
@@ -524,8 +538,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Maps all of the frame's actions
      */
     private void mapActions(){
-        //frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke((char) 32),"passTurn");
-        //frame.getRootPane().getActionMap().put("passTurn",passTurn);
         frame.getRootPane().registerKeyboardAction(passTurn,KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 }
