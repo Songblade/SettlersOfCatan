@@ -29,11 +29,14 @@ public class GUIPlayerImpl implements GUIPlayer{
     private final int boardOffsetY = 40;
     private final int standardObjectSize = 128;
 
-    //Maps
+    //Button maps
     private HashMap<JButton,Hex> hexButtonMap = new HashMap<>();
     private HashMap<JButton,Vertex> vertexButtonMap = new HashMap<>();
     private HashMap<JButton,Edge> edgeButtonMap = new HashMap<>();
+    private HashMap<JButton, Resource> resourceButtonMap = new HashMap<>();
+    private HashMap<JButton, Player> playerButtonMap = new HashMap<>();
 
+    //Label maps
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
 
@@ -54,7 +57,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private ActionListener events;
 
     //Actions
-    private Action passTurn = new AbstractAction() {
+    private ActionListener passTurn = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
             thisPlayerHasTurn = false;
@@ -327,12 +330,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             int yPos = boardOffsetY + (column * 88 + (Math.abs(3 - (row + 1)/2)) * 44 - 44);
 
             //Create vertex label
-            JLabel vertexLabel;
-            if(vertex.getPort() == null) {
-                vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png", xPos, yPos, 2);
-            }else{
-                vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadRedCenter.png", xPos, yPos, 2);
-            }
+            JLabel vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png", xPos, yPos, 2);
 
             //Create vertex button
             JButton vertexButton = createButton(xPos,yPos);
@@ -459,6 +457,12 @@ public class GUIPlayerImpl implements GUIPlayer{
                 playerResourceLabel.setIcon(new ImageIcon(getResourceImage(Resource.MISC).getScaledInstance(56,56,0)));
 
                 JTextField playerResourceText = createText("0",175,currentYOffset - 60,1);
+
+                //Places a button for the player
+                JButton playerButton = createButton(35,currentYOffset - 60);
+                playerButton.setVisible(true);
+                playerButton.setEnabled(true);
+                playerButtonMap.put(playerButton,plr);
             }
         }
     }
@@ -520,7 +524,8 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Maps all of the frame's actions
      */
     private void mapActions(){
-        frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke((char) 32),"passTurn");
-        frame.getRootPane().getActionMap().put("passTurn",passTurn);
+        //frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke((char) 32),"passTurn");
+        //frame.getRootPane().getActionMap().put("passTurn",passTurn);
+        frame.getRootPane().registerKeyboardAction(passTurn,KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 }
