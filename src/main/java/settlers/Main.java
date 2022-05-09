@@ -21,6 +21,11 @@ public interface Main {
     boolean playerElementsFor(Player player, Building project);
 
     /**
+     * @return spots where the thief can be moved to
+     */
+    Set<Hex> getAvailableThiefSpots();
+
+    /**
      * Gets the locations where this player can build a settlement
      * @param player building the settlement
      * @return a Set of Vertices where this player could build
@@ -40,6 +45,14 @@ public interface Main {
      * @return a Set of Vertices where this player could build
      */
     Set<Vertex> getAvailableCitySpots(Player player);
+
+    /**
+     * Moves the thief and steals a resource
+     * @param stealer player who is stealing
+     * @param settlement that is being robbed
+     * @param location that is being robbed
+     */
+    void moveThief(Player stealer, Vertex settlement, Hex location);
 
     /**
      * Builds a settlement, and updates the Player and Vertex accordingly

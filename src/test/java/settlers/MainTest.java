@@ -639,8 +639,11 @@ public class MainTest {
         assertEquals(result, player.getResources());
     }
 
-    // now we are testing protected methods that are used in the main loop
+    // tests for getrobberlocations or whatever it's called
+    // tests for robplayer or whatever its called
+    // don't forget to add a test that you don't get resources from a robbed place
 
+    // now we are testing protected methods that are used in the main loop
 
     // getNumOfPlayers (note this is a static method)
 
@@ -764,7 +767,7 @@ public class MainTest {
         int hexIndex = findHexOfNum(2);
         // builds a settlement on a hex that should not be bordering this one, I hope
         main.buildSettlement(main.getPlayers().get(0), hexes[(hexIndex + 2) % hexes.length].getVertices()[0]); // no resources, because setup phase
-        main.applyDice(2, main.getPlayers().get(0));
+        main.applyDice(2);
         for (Player player : main.getPlayers()) { // make sure no players got any resources
             assertEquals(emptyResourceMap(), player.getResources());
         }
@@ -779,7 +782,7 @@ public class MainTest {
         main.buildSettlement(main.getPlayers().get(1), hexes[(hexIndex + 2) % hexes.length].getVertices()[1]);
         main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
 
-        main.applyDice(2, main.getPlayers().get(0));
+        main.applyDice(2);
 
         HashMap<Resource, Integer> result = emptyResourceMap();
         result.put(hexes[hexIndex].getResource(), 1); // the 1 resource that the player gets
@@ -803,7 +806,7 @@ public class MainTest {
         main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
         main.buildSettlement(main.getPlayers().get(2), hexes[hexIndex].getVertices()[2]);
 
-        main.applyDice(2, main.getPlayers().get(0));
+        main.applyDice(2);
 
         HashMap<Resource, Integer> result = emptyResourceMap();
         result.put(hexes[hexIndex].getResource(), 1); // the 1 resource that each player gets
@@ -827,7 +830,7 @@ public class MainTest {
         main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
         main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[2]); // player 0's second settlement
 
-        main.applyDice(2, main.getPlayers().get(0));
+        main.applyDice(2);
 
         HashMap<Resource, Integer> result = emptyResourceMap();
         result.put(hexes[hexIndex].getResource(), 2); // the 2 resources that the player gets
@@ -851,7 +854,7 @@ public class MainTest {
         main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
         main.buildCity(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // I made sure this would cost no resources in setup
 
-        main.applyDice(2, main.getPlayers().get(0));
+        main.applyDice(2);
 
         HashMap<Resource, Integer> result = emptyResourceMap();
         result.put(hexes[hexIndex].getResource(), 2); // the 2 resources that the player gets
@@ -864,6 +867,9 @@ public class MainTest {
             }
         }
     }
+
+    // test that if a hex has the robber, it doesn't give resources
+
     // I just realized that I can't test the ones with different hexes because I have no way of knowing if they are adjacent
     /*
     // test that if one person has settlements by both hexes, he gets the resources of both, whether the same
@@ -926,9 +932,4 @@ public class MainTest {
 
     // test that if two people each have a settlement by the two hexes, they both get the resource of their hex
 
-    // I can't test the 7 parts, because I don't know what methods to override, but these are the tests I would do
-    // test that if we have a 7 and no player has more than 7, none lose anything
-    // test that if we have a 7 and one player has more than 7, that player and only that player loses half his cards
-    // test that if we have a 7 and two players have more than 7, both lose half their cards
-    // I will also have to test moving the thief, but that would probably be its own method
 }

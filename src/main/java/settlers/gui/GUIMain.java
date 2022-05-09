@@ -2,11 +2,9 @@ package settlers.gui;
 
 import settlers.Player;
 import settlers.Action;
-import settlers.card.Resource;
 import settlers.board.*;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 public interface GUIMain {
 
@@ -31,9 +29,10 @@ public interface GUIMain {
     public void startTurn(Player player, int dieRoll);
 
     /**
-     *
-     * @param player
-     * @param validSpots
+     * Called by Main. Has the player built a settlement and road during setup
+     * @param player whose turn it is
+     * @param validSpots where a settlement can be built during setup
+     * @return the Vertex where the player built a Settlement
      */
-    public void startSetupTurn(Player player, List<Vertex> validSpots);
+    public Vertex startSetupTurn(Player player, Set<Vertex> validSpots);
 }

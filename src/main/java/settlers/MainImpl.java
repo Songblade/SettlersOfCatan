@@ -154,16 +154,12 @@ public class MainImpl implements Main {
         Player player = players[turnNumber];
         // we ask gui where the player wants to put the settlement
         // gui will then call buildSettlement on the appropriate spot to actually build the settlement
-        // Vertex settlement = gui.insertMethodNameHere(getAvailableSettlementSpots(player));
-        // we ask gui where the player wants to put the road, giving them the non-null roads
-        // gui then calls buildRoad on the chosen edge
-        // Set<Edge> roadSpots = new HashSet<>(Arrays.asList(settlement.getEdges()));
-        // roadSpots.remove(null); // does nothing if there is no null edge
-        // gui.insertMethodNameHere(roadSpots);
-        /* if (isSecondLoop) {
+        // It will also find out what road to build, and build that too
+        Vertex settlement = gui.startSetupTurn(player, getAvailableSettlementSpots(player));
+        // now the player does its setup turn over in guiland
+        if (isSecondLoop) {
             givePlayerSettlementResources(player, settlement);
         }
-        * */
     }
 
     /**
@@ -190,39 +186,34 @@ public class MainImpl implements Main {
             //the resources from that roll
         while (true) { // goes until I call break when the player ends the game
             for (int turnNumber : turnOrder) {
-                Player player = players[turnNumber]; // the player whose turn it is
-                rollDice(player); // rolls the dice, and gives players resources
+                mainTurn(turnNumber); // rolls the dice, and gives players resources
                 // if a 7 is rolled, it deals with players discarding and robbing
-                // we ask the player to do actions until he says no
-                boolean middleOfTurn = true; // turns false when turns end
-                while(middleOfTurn) {
-                    middleOfTurn = gui.getAction(player); // the player does an action, and gui deals with
-                    // the results
-                }
-                if (player.getVictoryPoints() >= 10) {
-                    // winGame(player); // ends the game and declares this player the winner
-                    break;
-                }
+                // it also calls the method that gives control over to the gui to actually do the turn
+                // I don't need to call about victory points, the player already knows about it
             }
         }
     }
 
-    private void rollDice(Player player) {
+    private void mainTurn(int turnNumber) {
+        Player player = players[turnNumber]; // the player whose turn it is
         Random dieRoller = new Random();
         // gets the value of the dice being rolled
         // since nextInt(6) gives 0 to 5, I then add 1 per die to make each die 1 to 6
         int dieValue = 2 + dieRoller.nextInt(6) + dieRoller.nextInt(6);
         // gui.insertMethodNameHere(dieValue); // displays the die value
-        applyDice(dieValue, player);
+        applyDice(dieValue); // changes values and stuff
+        gui.startTurn(player, dieValue); // tells GUI to get input and call the methods, when they end,
+            // this method will end, and it will be the next player's turn
+            // updates number and resources and also does 7 stuff, so I don't worry about it
     }
 
     /**
-     * Uses the result of the die roll to give resources and do 7 stuff
+     * Uses the result of the die roll to give resources
+     * No longer deals with 7, that is now done by GUI
      * This is protected and a separate method so I can test it
      * @param dieValue  a number from 2 to 12
-     * @param player    who rolled the dice, matters if we get a 7
      */
-    protected void applyDice(int dieValue, Player player) {
+    protected void applyDice(int dieValue) {
         if (dieValue != 7) {
             for (Hex hex : board.getHexes()) {
                 if (hex.getNumber() == dieValue && !hex.hasThief()) {
@@ -238,11 +229,8 @@ public class MainImpl implements Main {
                     }
                 }
             }
-        } else { // if the dice do add up to 7
-            // I will figure out the 7 stuff later
-            // we discard half of the cards of each player with more than 7 cards
-            // we let the player move the robber and steal a card
         }
+        // if we get a 7, no resources are given, and instead gui will deal with the thief and the like later
     }
 
     /**
@@ -252,6 +240,15 @@ public class MainImpl implements Main {
     public Board getBoard() {
         return board; // already unmodifiable, yay
     }
+
+    /**
+     * @return a list of the players in this game
+     */
+    @Override
+    public List<Player> getPlayers() {
+        return Arrays.asList(players);
+    }
+
 
     /**
      * Returns whether or not the player has enough resources to build the project
@@ -270,6 +267,14 @@ public class MainImpl implements Main {
             }
         }
         return true;
+    }
+
+    /**
+     * @return spots where the thief can be moved to
+     */
+    @Override
+    public Set<Hex> getAvailableThiefSpots() {
+        return null;
     }
 
     /**
@@ -348,6 +353,17 @@ public class MainImpl implements Main {
     }
 
     /**
+     * Moves the thief and steals a resource
+     *
+     * @param stealer    player who is stealing
+     * @param settlement that is being robbed
+     */
+    @Override
+    public void moveThief(Player stealer, Vertex settlement, Hex location) {
+
+    }
+
+    /**
      * Builds a settlement, and updates the Player and Vertex accordingly
      *
      * @param player   who is building the settlement
@@ -359,7 +375,7 @@ public class MainImpl implements Main {
         // I need to change the vertex's status
         location.setPlayer(player);
         // I need to add the vertex to the player's list
-        player.addSettlement(location);
+        boolean isWinner = player.addSettlement(location); // true if the player now has 10 victory points
         // I need to remove the vertex from the board's open vertex list
         // I need to remove the adjacent vertices from the board's open vertex list
         board.removeSettlement(location);
@@ -371,8 +387,10 @@ public class MainImpl implements Main {
         if (isMainPhase) {
             player.removeResources(Building.SETTLEMENT.getResources());
         }
-        // tell GUI to do update it
-        gui.reportAction(Action.SETTLEMENT);
+        // we don't need to tell the GUI to update anything, because it already knows
+        if (isWinner) {
+            // do something, not sure what yet
+        }
     }
 
     /**
@@ -393,8 +411,7 @@ public class MainImpl implements Main {
         if (isMainPhase) {
             player.removeResources(Building.ROAD.getResources());
         }
-        // tell GUI to do update it
-        gui.reportAction(Action.ROAD);
+        // no need to report to GUI that the action is done, it already knows
     }
 
     /**
@@ -415,8 +432,7 @@ public class MainImpl implements Main {
         if (isMainPhase) {
             player.removeResources(Building.CITY.getResources());
         }
-        // tell GUI to do update it
-        gui.reportAction(Action.CITY);
+        // no need to report to GUI, it will know from the method ending
     }
 
     /**
@@ -475,10 +491,6 @@ public class MainImpl implements Main {
      */
     protected void setPhase(boolean changingToMain) {
         isMainPhase = changingToMain;
-    }
-
-    public List<Player> getPlayers() {
-        return Arrays.asList(players);
     }
 
 }
