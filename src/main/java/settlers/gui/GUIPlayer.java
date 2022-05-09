@@ -3,6 +3,8 @@ package settlers.gui;
 import settlers.Player;
 import settlers.board.*;
 
+import java.util.Set;
+
 public interface GUIPlayer {
 
     /**
@@ -13,7 +15,7 @@ public interface GUIPlayer {
     /**
      * Starts a settlement turn
      */
-    void startSettlementTurn();
+    void startSettlementTurn(Set<Vertex> availableSpots);
 
     /**
      * Tells GUIPlayers to make a city

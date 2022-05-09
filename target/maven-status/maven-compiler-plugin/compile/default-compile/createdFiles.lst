@@ -4,6 +4,7 @@ settlers\MainImpl.class
 settlers\gui\GUIPlayerImpl.class
 settlers\gui\GUIMainImpl.class
 settlers\gui\GUIPlayerImpl$2.class
+settlers\MainImpl$1.class
 settlers\gui\GUIMainImpl$1.class
 settlers\Action.class
 settlers\gui\GUIPlayerImpl$4.class

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: settlers.board.BoardTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 1.193 s - in settlers.board.BoardTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 1.179 s - in settlers.board.BoardTest

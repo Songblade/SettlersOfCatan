@@ -7,23 +7,26 @@ import settlers.Player;
 import settlers.card.Resource;
 import settlers.board.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class GUIMainImpl implements GUIMain {
 
     private Main main;
-    private GUIPlayer[] playerGUIs;
+    private HashMap<Player,GUIPlayer> playerGUIs;
 
     public GUIMainImpl(Main main) {
         this.main = main;
-        playerGUIs = new GUIPlayer[main.getPlayers().size()];
+        playerGUIs = new HashMap();
         for(int i = 0; i < main.getPlayers().size(); i++){
-            playerGUIs[i] = new GUIPlayerImpl(this,main.getBoard(),main.getPlayers().get(i),main.getPlayers());
+            Player player = main.getPlayers().get(i);
+            playerGUIs.put(player, new GUIPlayerImpl(this,main.getBoard(),player,main.getPlayers()));
         }
-        for(GUIPlayer gui : playerGUIs){
-            gui.startSettlementTurn();
-        }
+        //for(GUIPlayer gui : playerGUIs){
+        //    gui.startSettlementTurn(main.getAvailableSettlementSpots(main.getPlayers().get(0)));
+        //}
     }
 
 
@@ -44,7 +47,7 @@ public class GUIMainImpl implements GUIMain {
      */
     private void playerBuiltRoad(Player player, Edge edge){
         main.buildRoad(player,edge);
-        for(GUIPlayer gui : playerGUIs){
+        for(GUIPlayer gui : playerGUIs.values()){
             gui.setRoad(player,edge);
         }
     }
@@ -56,7 +59,7 @@ public class GUIMainImpl implements GUIMain {
      */
     private void playerBuiltSettlement(Player player, Vertex vertex){
         main.buildSettlement(player,vertex);
-        for(GUIPlayer gui : playerGUIs){
+        for(GUIPlayer gui : playerGUIs.values()){
             gui.setSettlement(player,vertex);
         }
     }
@@ -68,7 +71,7 @@ public class GUIMainImpl implements GUIMain {
      */
     private void playerBuiltCity(Player player, Vertex vertex){
         main.buildCity(player,vertex);
-        for(GUIPlayer gui : playerGUIs){
+        for(GUIPlayer gui : playerGUIs.values()){
             gui.setCity(player,vertex);
         }
     }

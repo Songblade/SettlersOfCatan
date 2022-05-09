@@ -566,12 +566,13 @@ public class GUIPlayerImpl implements GUIPlayer{
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
         }
+        System.exit(666);
     }
 
-    public void startSettlementTurn(){
+    public void startSettlementTurn(Set<Vertex> availableSpots){
         thisPlayerHasTurn = true;
         canPass = false;
-        requestSettlementPlacementSP();
+        requestSettlementPlacementSP(availableSpots);
         while(lastSettlementSpot == null){
             try {
                 Thread.sleep(1);
@@ -670,8 +671,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     /**
      * When main requests GUIPlayer to place a settlement, show all the buttons which would allow him to do so
      */
-    private void requestSettlementPlacementSP(){
-        Set<Vertex> availableSpots = main.getAvailableSettlementSpots(this.player);
+    private void requestSettlementPlacementSP(Set<Vertex> availableSpots){
         for(JButton button : vertexButtonMap.keySet()){
             if(availableSpots.contains(vertexButtonMap.get(button))){
                 button.setEnabled(true);
