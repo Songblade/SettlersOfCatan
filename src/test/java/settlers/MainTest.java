@@ -93,6 +93,24 @@ public class MainTest {
         assertTrue(main.playerElementsFor(player, Building.ROAD));
     }
 
+    // test that if a player has 5 settlements, it can't build another. I am just assuming it will work equally for the others
+        // even though the player has the right resources
+    @Test
+    public void cantBuildSettlementIfHasMax() {
+        Player player = new PlayerImpl();
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.BRICK);
+        player.addResource(Resource.WHEAT);
+        player.addResource(Resource.SHEEP);
+
+        Vertex[] vertices = main.getBoard().getVertices();
+        for (int i = 0; i < 50; i += 10) { // builds 5, spread out settlements
+            assertTrue(main.playerElementsFor(player, Building.SETTLEMENT));
+            main.buildSettlement(player, vertices[i]); // this is setup, so no resource cost
+        }
+        assertFalse(main.playerElementsFor(player, Building.SETTLEMENT));
+    }
+
     // getAvailableSettlementSpots
     // test that includes every vertex if it's the setup phase and every vertex is unoccupied
     @Test
@@ -639,9 +657,107 @@ public class MainTest {
         assertEquals(result, player.getResources());
     }
 
-    // tests for getrobberlocations or whatever it's called
-    // tests for robplayer or whatever its called
+    // tests for getAvailableThiefSpots
+    // test that includes the right things
+    @Test
+    public void getAvailableThiefSpotsWorks() {
+        Hex thiefIsHere = null;
+        for (Hex hex : main.getBoard().getHexes()) {
+            if (hex.getNumber() == 1) {
+                thiefIsHere = hex;
+                break;
+            }
+        }
+        Set<Hex> result = new HashSet<>(Arrays.asList(main.getBoard().getHexes()));
+        result.remove(thiefIsHere);
+        assertEquals(result, main.getAvailableThiefSpots());
+    }
+
+    // test that includes the right things after the thief is moved
+    // this is also a test for moveThief, that the thief is now moved
+    @Test
+    public void getAvailableThiefSpotsWorksTwice() {
+        Player player = main.getPlayers().get(0);
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+        Set<Hex> result = new HashSet<>(Arrays.asList(main.getBoard().getHexes()));
+        result.remove(thiefIsHere);
+        assertEquals(result, main.getAvailableThiefSpots());
+    }
+
+    // tests for moveThief
+    // tests that this works even if the thief was already moved
+    @Test
+    public void moveThiefWorksTwice() {
+        Player player = main.getPlayers().get(0);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+        thiefIsHere = main.getBoard().getHexes()[1];
+        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        Set<Hex> result = new HashSet<>(Arrays.asList(main.getBoard().getHexes()));
+        result.remove(thiefIsHere);
+        assertEquals(result, main.getAvailableThiefSpots());
+    }
+
+    // tests that the first player gets a resource, and second one loses it
+    @Test
+    public void moveThiefMovesResource() {
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+
+        Player badGuy = main.getPlayers().get(0);
+        badGuy.addResource(Resource.WOOD);
+        badGuy.addResource(Resource.ORE);
+
+        Player victim = main.getPlayers().get(1);
+        victim.addResource(Resource.BRICK);
+        main.buildSettlement(victim, thiefIsHere.getVertices()[0]);
+
+        main.moveThief(badGuy, thiefIsHere.getVertices()[0], thiefIsHere);
+
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        result.put(Resource.ORE, 1);
+        result.put(Resource.BRICK, 1);
+        assertEquals(result, badGuy.getResources());
+        assertEquals(emptyResourceMap(), victim.getResources());
+    }
+
+    // test that stealing works even if other player has many resources, using first with 7 and second with 8
+    @Test
+    public void moveThiefMovesResourceFromRich() {
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+
+        Player badGuy = main.getPlayers().get(0);
+        badGuy.addResource(Resource.WOOD);
+        badGuy.addResource(Resource.ORE);
+        badGuy.addResource(Resource.WOOD);
+        badGuy.addResource(Resource.ORE);
+        badGuy.addResource(Resource.BRICK);
+        badGuy.addResource(Resource.SHEEP);
+        badGuy.addResource(Resource.WHEAT);
+
+        Player victim = main.getPlayers().get(1);
+        victim.addResource(Resource.WOOD);
+        victim.addResource(Resource.ORE);
+        victim.addResource(Resource.WOOD);
+        victim.addResource(Resource.ORE);
+        victim.addResource(Resource.BRICK);
+        victim.addResource(Resource.SHEEP);
+        victim.addResource(Resource.WHEAT);
+        victim.addResource(Resource.WHEAT);
+        main.buildSettlement(victim, thiefIsHere.getVertices()[0]);
+
+        main.moveThief(badGuy, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        assertTrue(badGuy.hasMoreThan7Cards());
+        assertFalse(victim.hasMoreThan7Cards());
+    }
+
     // don't forget to add a test that you don't get resources from a robbed place
+    // also don't forget to make sure that a player can't build something if that player has already built the max
 
     // now we are testing protected methods that are used in the main loop
 
@@ -869,6 +985,22 @@ public class MainTest {
     }
 
     // test that if a hex has the robber, it doesn't give resources
+    @Test
+    public void dieRollNoResourceRobbed() {
+        Hex[] hexes = main.getBoard().getHexes();
+        int hexIndex = findHexOfNum(2);
+        // other player builds a settlement on a hex that should not be bordering this one, though it doesn't matter if it is
+        main.buildSettlement(main.getPlayers().get(1), hexes[(hexIndex + 2) % hexes.length].getVertices()[1]);
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
+
+        main.moveThief(main.getPlayers().get(2), hexes[hexIndex].getVertices()[1], hexes[hexIndex]);
+
+        main.applyDice(2);
+
+        for (Player player : main.getPlayers()) { // make sure no players got any resources, since the robber was there
+            assertEquals(emptyResourceMap(), player.getResources());
+        }
+    }
 
     // I just realized that I can't test the ones with different hexes because I have no way of knowing if they are adjacent
     /*

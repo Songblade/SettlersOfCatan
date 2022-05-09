@@ -217,7 +217,7 @@ public class MainImpl implements Main {
         if (dieValue != 7) {
             for (Hex hex : board.getHexes()) {
                 if (hex.getNumber() == dieValue && !hex.hasThief()) {
-                    // if this hex has the right number and not the thief, we give i
+                    // if this hex has the right number and not the thief, we give its players the right resource
                     for (Vertex vertex : hex.getVertices()) {
                         if (vertex.getPlayer() != null) { // if this vertex has a player, give him a resource
                             vertex.getPlayer().addResource(hex.getResource());
@@ -252,7 +252,8 @@ public class MainImpl implements Main {
 
     /**
      * Returns whether or not the player has enough resources to build the project
-     *
+     * And also whether or not the player has reached the maximum number of that project
+     * The maximum numbers are 15 roads, 5 settlements, and 4 cities
      * @param player  that wants to build
      * @param project that the player wants to build
      * @return true if the player has enough resources, false otherwise
@@ -266,7 +267,22 @@ public class MainImpl implements Main {
                 return false;
             }
         }
-        return true;
+        // this next part makes sure that if
+        int projectNumber;
+        switch (project) {
+            case ROAD:
+                projectNumber = player.getRoads().size();
+                break;
+            case SETTLEMENT:
+                projectNumber = player.getSettlements().size();
+                break;
+            case CITY:
+                projectNumber = player.getCities().size();
+                break;
+            default:
+                projectNumber = 0; // so there will be no problems
+        }
+        return projectNumber < project.getMax();
     }
 
     /**
@@ -274,7 +290,9 @@ public class MainImpl implements Main {
      */
     @Override
     public Set<Hex> getAvailableThiefSpots() {
-        return null;
+        Set<Hex> hexes = new HashSet<>(Arrays.asList(board.getHexes()));
+        hexes.remove(thiefIsHere);
+        return hexes;
     }
 
     /**
@@ -356,11 +374,43 @@ public class MainImpl implements Main {
      * Moves the thief and steals a resource
      *
      * @param stealer    player who is stealing
-     * @param settlement that is being robbed
+     * @param settlement that is being robbed, can be an empty vertex if no one is being stolen from
+     * @param location   that is being robbed, resources can't be gotten there until the thief is moved
      */
     @Override
     public void moveThief(Player stealer, Vertex settlement, Hex location) {
+        // moves the robber
+        thiefIsHere.setThief(false);
+        thiefIsHere = location;
+        location.setThief(true);
+        if (settlement.getPlayer() == null) {
+            return; // because there is no robbing being done
+        }
+        Player victim = settlement.getPlayer();
+        List<Resource> victimResources = getVictimResources(victim);
+        if (victimResources.isEmpty()) {
+            return; // since the victim has nothing for the stealer to rob
+        }
+        Random resourceChooser = new Random();
+        Resource robbedResource = victimResources.get(resourceChooser.nextInt(victimResources.size())); // chooses the random to be removed
+        Map<Resource, Integer> removedMap = new HashMap<>(); // this is to use the syntax to remove from the victim
+        removedMap.put(robbedResource, 1);
+        victim.removeResources(removedMap); // removes one random resource
+        stealer.addResource(robbedResource); // gives that resource to the thief
+    }
 
+    /**
+     * @param player who is being robbed
+     * @return the player's resources in list form
+     */
+    private List<Resource> getVictimResources(Player player) {
+        List<Resource> resources = new ArrayList<>();
+        for (Resource resource : player.getResources().keySet()) {
+            for (int i = 0; i < player.getResources().get(resource); i++) {
+                resources.add(resource);
+            }
+        }
+        return resources;
     }
 
     /**
