@@ -66,6 +66,13 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     };
 
+    private ActionListener test = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            repaintVertices();
+        }
+    };
+
 
     public GUIPlayerImpl(Board board, Player player, List<Player> players){
         this.board = board;
@@ -428,7 +435,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void putOtherElements(){
         //Places the label for this player
         JLabel thisPlayerLabel = createLabel("",50,550,1);
-        thisPlayerLabel.setIcon(new ImageIcon(getCityImage(playerid).getScaledInstance(256,256,0)));
+        thisPlayerLabel.setIcon(new ImageIcon(getConstructionImage(playerid,2).getScaledInstance(256,256,0)));
 
         //Places the resources to the side of the player label
         int currentXOffset = 140;
@@ -454,7 +461,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             if(plr.getID() != playerid) {
                 //Places the player labels for other players
                 JLabel playerLabel = createLabel("", 35, currentYOffset + 60, 1);
-                playerLabel.setIcon(new ImageIcon(getCityImage(plr.getID()).getScaledInstance(128, 128, 0)));
+                playerLabel.setIcon(new ImageIcon(getConstructionImage(plr.getID(),2).getScaledInstance(128, 128, 0)));
                 currentYOffset += yOffsetIncrement;
 
                 //Places the resource labels for other players
@@ -504,20 +511,52 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+
     /**
-     * @param id
-     * @return an image of the city of @id's color
+     * @param id player's id
+     * @return the player's color
      */
-    private Image getCityImage(int id){
+    private String getPlayerColor(int id){
         switch (id){
             case 0:
-                return getImage("src/main/java/settlers/gui/textures/construction/CityRed.png");
+                return "Red";
             case 1:
-                return getImage("src/main/java/settlers/gui/textures/construction/CityBlue.png");
+                return "Blue";
             case 2:
-                return getImage("src/main/java/settlers/gui/textures/construction/CityWhite.png");
+                return "White";
             default:
-                return getImage("src/main/java/settlers/gui/textures/construction/CityOrange.png");
+                return "Orange";
+        }
+    }
+
+    /**
+     * @param id construction type's id
+     * @return the construction type in string form
+     */
+    private String getConstructionType(int id){
+        switch (id){
+            case 0:
+                return "Road";
+            case 1:
+                return "Settlement";
+            default:
+                return "City";
+        }
+    }
+
+    /**
+     * @param plrId player's id
+     * @param constructionId construction's id
+     * @return the specified player's construction of specified type
+     */
+    private Image getConstructionImage(int plrId, int constructionId){
+        String basePath = "src/main/java/settlers/gui/textures/construction/";
+        String suffix = ".png";
+
+        if(constructionId == 0){
+            return getImage(basePath + "Road" + getPlayerColor(plrId) + "Center" + suffix);
+        }else{
+            return getImage(basePath + getConstructionType(constructionId) + getPlayerColor(plrId) + suffix);
         }
     }
 
@@ -539,5 +578,54 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void mapActions(){
         frame.getRootPane().registerKeyboardAction(passTurn,KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        frame.getRootPane().registerKeyboardAction(test,KeyStroke.getKeyStroke((char) 97),JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
+    /**
+     * @param vertex
+     * @return the id of the player who owns two roads next to this vertex. Defaults to -1
+     */
+    private int getOwnerlessVertexColorId(Vertex vertex){
+        HashSet<Integer> knownIds = new HashSet<>();
+        for(Edge edge : vertex.getEdges()){
+            if(edge.getPlayer() != null) {
+                if(knownIds.contains(edge.getPlayer().getID())) return edge.getPlayer().getID();
+                knownIds.add(edge.getPlayer().getID());
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Repaints all verticies
+     */
+    private void repaintVertices(){
+        for(Vertex vertex: vertexLabelMap.keySet()){
+            JLabel label = vertexLabelMap.get(vertex);
+
+            int ownerid = -1;
+            int constructionid = 0;
+
+            Player owner = vertex.getPlayer();
+
+            if(owner != null){
+                ownerid = owner.getID();
+                constructionid = vertex.isCity() ? 2 : 1;
+                label.setIcon(new ImageIcon(getConstructionImage(ownerid,constructionid).getScaledInstance(standardObjectSize,standardObjectSize,0)));
+            }else if(getOwnerlessVertexColorId(vertex) != -1){
+                label.setIcon(new ImageIcon(getConstructionImage(getOwnerlessVertexColorId(vertex),constructionid).getScaledInstance(standardObjectSize,standardObjectSize,0)));
+            }
+        }
+
+        frame.repaint();
+    }
+
+    /**
+     * Repaints all edges
+     */
+    private void repaintEdges(){
+        for(Edge edge : edgeLabelMap.keySet()){
+
+        }
     }
 }
