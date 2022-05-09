@@ -14,7 +14,9 @@ public interface Main {
 
     /**
      * Returns whether or not the player has enough resources to build the project
-     * @param player that wants to build
+     * And also whether or not the player has reached the maximum number of that project
+     * The maximum numbers are 15 roads, 5 settlements, and 4 cities
+     * @param player  that wants to build
      * @param project that the player wants to build
      * @return true if the player has enough resources, false otherwise
      */
@@ -48,9 +50,10 @@ public interface Main {
 
     /**
      * Moves the thief and steals a resource
-     * @param stealer player who is stealing
-     * @param settlement that is being robbed
-     * @param location that is being robbed
+     *
+     * @param stealer    player who is stealing
+     * @param settlement that is being robbed, can be an empty vertex if no one is being stolen from
+     * @param location   that is being robbed, resources can't be gotten there until the thief is moved
      */
     void moveThief(Player stealer, Vertex settlement, Hex location);
 
@@ -118,12 +121,13 @@ public interface Main {
 }
 
 enum Building {
-    ROAD(1, 1, 0, 0, 0),
-    SETTLEMENT(1, 1, 1, 0, 1),
-    CITY(0, 0, 2, 3, 0),
-    DEVELOPMENT_CARD(0, 0, 1, 1, 1);
+    ROAD(15,1, 1, 0, 0, 0),
+    SETTLEMENT(5,1, 1, 1, 0, 1),
+    CITY(4,0, 0, 2, 3, 0),
+    DEVELOPMENT_CARD(25,0, 0, 1, 1, 1);
 
-    Building(int brickNumber, int woodNumber, int wheatNumber, int oreNumber, int sheepNumber) {
+    Building(int maxNumber, int brickNumber, int woodNumber, int wheatNumber, int oreNumber, int sheepNumber) {
+        this.maxNumber = maxNumber;
         resources = new HashMap<>();
         resources.put(Resource.BRICK, brickNumber);
         resources.put(Resource.WOOD, woodNumber);
@@ -133,9 +137,13 @@ enum Building {
     }
 
     private final Map<Resource, Integer> resources;
+    private final int maxNumber;
 
     public Map<Resource, Integer> getResources() {
         return Collections.unmodifiableMap(resources);
+    }
+    public int getMax() {
+        return maxNumber;
     }
 
 
