@@ -1,5 +1,6 @@
 package settlers.gui;
 
+import settlers.Action;
 import settlers.Player;
 import settlers.PlayerImpl;
 import settlers.board.*;
@@ -16,13 +17,15 @@ import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GUIPlayerImpl implements GUIPlayer{
 
     //Board and Player
-    private Board board;
-    private int playerid;
-    private List<Player> players;
+    private final Board board;
+    private final Player player;
+    private final List<Player> players;
+    private final GUIMain main;
 
     //Final params
     private final int boardOffsetX = 468;
@@ -54,30 +57,19 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     //Functional
     private boolean thisPlayerHasTurn = false;
+    private boolean canPass = false;
+    private Vertex lastSettlementSpot = null;
+    private Action.ActionType currentAction = Action.ActionType.PASS;
 
     //Events
     private ActionListener events;
 
-    //Actions
-    private ActionListener passTurn = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            thisPlayerHasTurn = false;
-        }
-    };
 
-    private ActionListener test = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            repaintVertices();
-        }
-    };
-
-
-    public GUIPlayerImpl(Board board, Player player, List<Player> players){
+    public GUIPlayerImpl(GUIMain main,Board board, Player player, List<Player> players){
+        this.main = main;
         this.board = board;
         this.players = players;
-        this.playerid = player.getID();
+        this.player = player;
 
         //Sets frame up
         frame = new JFrame("Catan: Player " + (player.getID() + 1));
@@ -110,8 +102,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Repaints the frame
         frame.repaint();
 
-        thisPlayerHasTurn = true;
-        startTurn();
+        startSettlementTurn();
     }
 
     /**
@@ -342,6 +333,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
             //Create vertex button
             JButton vertexButton = createButton(xPos,yPos);
+            vertexButton.addActionListener(vertexButtonClickedAction(vertex));
 
             //Create all adjacent right facing roads
             if(row % 2 == 0){
@@ -435,7 +427,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void putOtherElements(){
         //Places the label for this player
         JLabel thisPlayerLabel = createLabel("",50,550,1);
-        thisPlayerLabel.setIcon(new ImageIcon(getConstructionImage(playerid,2).getScaledInstance(256,256,0)));
+        thisPlayerLabel.setIcon(new ImageIcon(getConstructionImage(player.getID(),2).getScaledInstance(256,256,0)));
 
         //Places the resources to the side of the player label
         int currentXOffset = 140;
@@ -458,7 +450,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         int currentYOffset = 240;
         int yOffsetIncrement = 60;
         for(Player plr : players){
-            if(plr.getID() != playerid) {
+            if(plr.getID() != player.getID()) {
                 //Places the player labels for other players
                 JLabel playerLabel = createLabel("", 35, currentYOffset + 60, 1);
                 playerLabel.setIcon(new ImageIcon(getConstructionImage(plr.getID(),2).getScaledInstance(128, 128, 0)));
@@ -563,8 +555,24 @@ public class GUIPlayerImpl implements GUIPlayer{
     /**
      * Starts Player's turn
      */
+    @Override
     public void startTurn(){
+        thisPlayerHasTurn = true;
+        canPass = true;
         while(thisPlayerHasTurn){
+            try {
+                Thread.sleep(1);
+            }catch (InterruptedException e){
+                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
+            }
+        }
+    }
+
+    public void startSettlementTurn(){
+        thisPlayerHasTurn = true;
+        canPass = false;
+        requestSettlementPlacement();
+        while(lastSettlementSpot == null){
             try {
                 Thread.sleep(1);
             }catch (InterruptedException e){
@@ -577,8 +585,8 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Maps all of the frame's actions
      */
     private void mapActions(){
-        frame.getRootPane().registerKeyboardAction(passTurn,KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
-        frame.getRootPane().registerKeyboardAction(test,KeyStroke.getKeyStroke((char) 97),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        frame.getRootPane().registerKeyboardAction(passTurn(),KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        frame.getRootPane().registerKeyboardAction(passTurn(),KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**
@@ -621,11 +629,103 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * Repaints all edges
+     * When main requests GUIPlayer to place a settlement, show all the buttons which would allow him to do so
      */
-    private void repaintEdges(){
-        for(Edge edge : edgeLabelMap.keySet()){
-
+    private void requestSettlementPlacement(){
+        Set<Vertex> availableSpots = main.getAvailableSettlementSpots(this.player);
+        for(JButton button : vertexButtonMap.keySet()){
+            if(availableSpots.contains(vertexButtonMap.get(button))){
+                button.setEnabled(true);
+                button.setVisible(true);
+            }
         }
+        currentAction = Action.ActionType.SETTLEMENT;
+    }
+
+    /**
+     * Makes all hex buttons invisible and disables them
+     */
+    private void disableHexButtons(){
+        for(JButton button : hexButtonMap.keySet()){
+            button.setEnabled(false);
+            button.setVisible(false);
+        }
+    }
+
+    /**
+     * Makes all vertex buttons invisible and disables them
+     */
+    private void disableVertexButtons(){
+        for(JButton button : vertexButtonMap.keySet()){
+            button.setEnabled(false);
+            button.setVisible(false);
+        }
+    }
+
+    /**
+     * Makes all edge buttons invisible and disables them
+     */
+    private void disableEdgeButtons(){
+        for(JButton button : edgeButtonMap.keySet()){
+            button.setEnabled(false);
+            button.setVisible(false);
+        }
+    }
+
+    /**
+     * Makes all player buttons invisible and disables them
+     */
+    private void disablePlayerButtons(){
+        for(JButton button : playerButtonMap.keySet()){
+            button.setEnabled(false);
+            button.setVisible(false);
+        }
+    }
+
+    /**
+     * Makes all resource buttons invisible and disables them
+     */
+    private void disableResourceButtons(){
+        for(JButton button : edgeButtonMap.keySet()){
+            button.setEnabled(false);
+            button.setVisible(false);
+        }
+    }
+
+    private void disableAllButtons(){
+        disableHexButtons();
+        disableVertexButtons();
+        disableEdgeButtons();
+        disablePlayerButtons();
+        disableResourceButtons();
+    }
+
+    private ActionListener passTurn(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(canPass){
+                    disableAllButtons();
+                    currentAction = Action.ActionType.PASS;
+                    thisPlayerHasTurn = false;
+                }
+            }
+        };
+    }
+
+    //Buttons
+    private ActionListener vertexButtonClickedAction(Vertex vertex){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentAction == Action.ActionType.SETTLEMENT) {
+                    settlers.Action action = new settlers.Action(player, Action.ActionType.SETTLEMENT);
+                    action.vertex = vertex;
+                    disableVertexButtons();
+                    main.preformAction(action);
+                    lastSettlementSpot = vertex;
+                }
+            }
+        };
     }
 }

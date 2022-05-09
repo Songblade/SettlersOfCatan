@@ -8,6 +8,7 @@ import settlers.card.Resource;
 import settlers.board.*;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class GUIMainImpl implements GUIMain {
 
@@ -18,56 +19,78 @@ public class GUIMainImpl implements GUIMain {
         this.main = main;
         playerGUIs = new GUIPlayer[main.getPlayers().size()];
         for(int i = 0; i < main.getPlayers().size(); i++){
-            playerGUIs[i] = new GUIPlayerImpl(main.getBoard(),main.getPlayers().get(i),main.getPlayers());
+            playerGUIs[i] = new GUIPlayerImpl(this,main.getBoard(),main.getPlayers().get(i),main.getPlayers());
         }
     }
 
+
     /**
      *Asks Main if the player can preform the specified action. Returns true if yes, false if no
-     * @param player
      * @param action
      * @return
      */
     @Override
-    public boolean canPreformAction(Player player, Action action) {
-        return false;
+    public boolean canPreformAction(Action action) {
+        return true;
     }
 
     /**
      * Tells Main to preform the specified action for the player
-     * @param player
      * @param action
      */
     @Override
-    public void preformAction(Player player, Action action) {
+    public void preformAction(Action action) {
 
     }
 
     /**
-     * Triggered by Main on a player's turn when it wants to know what action the player will take
-     * GUIMain contacts GUIPlayer or whatever, and GUIPlayer finds what action the player wants
-     * It will then call the appropriate method in Main to find out if the player can do that, if applicable
-     * It will then call the method to get the places where the player can do it, if applicable
-     * It will then execute the action on what the player chooses, whether this is building, playing development cards
-     *    or trading
-     * It will then return true
-     * If the player decides instead to end his turn, the method returns false
-     * @param player
-     * @return
+     * Calls respective method in Main
+     * @param player building the settlement
+     * @return a Set of Vertices where this player could build
      */
     @Override
-    public boolean getAction(Player player) {
-        return false;
+    public Set<Vertex> getAvailableSettlementSpots(Player player){
+        return main.getAvailableSettlementSpots(player);
     }
 
     /**
-     * Triggered by Main to inform the PlayerGUIs that an action was processed and to update accordingly
-     * @param action
+     * Calls respective method in Main
+     * @param player building the road
+     * @return a Set of Edges where this player could build
      */
     @Override
-    public void reportAction(Action action){
-        if(action == Action.SETTLEMENT){
-            System.out.println("Settlement has been built");
-        }
+    public Set<Edge> getAvailableRoadSpots(Player player){
+        return main.getAvailableRoadSpots(player);
+    }
+
+    /**
+     * Calls respective method in Main
+     * @param player building the city
+     * @return a Set of Vertices where this player could build
+     */
+    @Override
+    public Set<Vertex> getAvailableCitySpots(Player player){
+        return main.getAvailableCitySpots(player);
+    }
+
+    /**
+     * Starts a turn. Called by Main, updates resources and die number in GUIPlayers
+     * @param player the player whose turn it is
+     * @param dieRoll the sum of both die rolls
+     */
+    @Override
+    public void startTurn(Player player, int dieRoll) {
+
+    }
+
+    /**
+     * Called by Main. Has the player built a settlement and road during setup
+     * @param player whose turn it is
+     * @param validSpots where a settlement can be built during setup
+     * @return the Vertex where the player built a Settlement
+     */
+    @Override
+    public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
+        return null;
     }
 }

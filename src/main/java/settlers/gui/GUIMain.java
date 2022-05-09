@@ -22,6 +22,27 @@ public interface GUIMain {
     public void preformAction(Action action);
 
     /**
+     * Calls respective method in Main
+     * @param player building the settlement
+     * @return a Set of Vertices where this player could build
+     */
+    Set<Vertex> getAvailableSettlementSpots(Player player);
+
+    /**
+     * Calls respective method in Main
+     * @param player building the road
+     * @return a Set of Edges where this player could build
+     */
+    Set<Edge> getAvailableRoadSpots(Player player);
+
+    /**
+     * Calls respective method in Main
+     * @param player building the city
+     * @return a Set of Vertices where this player could build
+     */
+    Set<Vertex> getAvailableCitySpots(Player player);
+
+    /**
      * Starts a turn. Called by Main, updates resources and die number in GUIPlayers
      * @param player the player whose turn it is
      * @param dieRoll the sum of both die rolls

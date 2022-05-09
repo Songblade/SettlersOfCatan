@@ -29,6 +29,21 @@ public class GUIMainDummyImpl implements GUIMain {
 
     }
 
+    @Override
+    public Set<Vertex> getAvailableSettlementSpots(Player player) {
+        return null;
+    }
+
+    @Override
+    public Set<Edge> getAvailableRoadSpots(Player player) {
+        return null;
+    }
+
+    @Override
+    public Set<Vertex> getAvailableCitySpots(Player player) {
+        return null;
+    }
+
     /**
      * Starts a turn. Called by Main, updates resources and die number in GUIPlayers
      *
