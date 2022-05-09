@@ -725,8 +725,210 @@ public class MainTest {
     }
 
     // applyDice
+
+    /**
+     * Get one of a number's hexes
+     * @param num I want the hex for, probably 1, 2, or 12
+     * @return the array index of the hex with the number
+     */
+    private int findHexOfNum(int num) {
+        Hex[] allHexes = main.getBoard().getHexes();
+        for (int i = 0; i < allHexes.length; i++) {
+            if (allHexes[i].getNumber() == num) {
+                return i;
+            }
+        }
+        return 0; // should never happen
+    }
+
+    /**
+     * Gets both hexes for a number
+     * @param num I want the hexes for, from 3-6 or 8-11
+     * @return a list of the array indices of both hexes
+     */
+    private List<Integer> findHexOfNums(int num) {
+        List<Integer> hexIndices = new ArrayList<>();
+        Hex[] allHexes = main.getBoard().getHexes();
+        for (int i = 0; i < allHexes.length; i++) {
+            if (allHexes[i].getNumber() == num) {
+                hexIndices.add(i);
+            }
+        }
+        return hexIndices;
+    }
+
     // test that if no one has any settlements, no one gets anything
+    @Test
+    public void noSettlementsNothingHappensDieRoll() {
+        Hex[] hexes = main.getBoard().getHexes();
+        int hexIndex = findHexOfNum(2);
+        // builds a settlement on a hex that should not be bordering this one, I hope
+        main.buildSettlement(main.getPlayers().get(0), hexes[(hexIndex + 2) % hexes.length].getVertices()[0]); // no resources, because setup phase
+        main.applyDice(2, main.getPlayers().get(0));
+        for (Player player : main.getPlayers()) { // make sure no players got any resources
+            assertEquals(emptyResourceMap(), player.getResources());
+        }
+    }
+
     // test that if someone has a settlement by the hex, he gets the resource
+    @Test
+    public void dieRollOneSettlement() {
+        Hex[] hexes = main.getBoard().getHexes();
+        int hexIndex = findHexOfNum(2);
+        // other player builds a settlement on a hex that should not be bordering this one, I hope
+        main.buildSettlement(main.getPlayers().get(1), hexes[(hexIndex + 2) % hexes.length].getVertices()[1]);
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
+
+        main.applyDice(2, main.getPlayers().get(0));
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(hexes[hexIndex].getResource(), 1); // the 1 resource that the player gets
+
+        for (Player player : main.getPlayers()) { // make sure no players got any resources
+            if (player == main.getPlayers().get(0)) {
+                assertEquals(result, player.getResources());
+            } else {
+                assertEquals(emptyResourceMap(), player.getResources());
+            }
+        }
+    }
+
     // test that if two people have settlements by the hex, they each get the resource
+    @Test
+    public void dieRollTwoPeople() {
+        Hex[] hexes = main.getBoard().getHexes();
+        int hexIndex = findHexOfNum(2);
+        // other player builds a settlement on a hex that should not be bordering this one, I hope
+        main.buildSettlement(main.getPlayers().get(1), hexes[(hexIndex + 2) % hexes.length].getVertices()[1]);
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
+        main.buildSettlement(main.getPlayers().get(2), hexes[hexIndex].getVertices()[2]);
+
+        main.applyDice(2, main.getPlayers().get(0));
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(hexes[hexIndex].getResource(), 1); // the 1 resource that each player gets
+
+        for (Player player : main.getPlayers()) { // make sure no players got any resources
+            if (player == main.getPlayers().get(0) || player == main.getPlayers().get(2)) {
+                assertEquals(result, player.getResources());
+            } else {
+                assertEquals(emptyResourceMap(), player.getResources());
+            }
+        }
+    }
+
     // test that if one person has 2 settlements by the hex, he gets the resource twice
+    @Test
+    public void dieRollTwoSettlements() {
+        Hex[] hexes = main.getBoard().getHexes();
+        int hexIndex = findHexOfNum(2);
+        // other player builds a settlement on a hex that should not be bordering this one, I hope
+        main.buildSettlement(main.getPlayers().get(1), hexes[(hexIndex + 2) % hexes.length].getVertices()[1]);
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[2]); // player 0's second settlement
+
+        main.applyDice(2, main.getPlayers().get(0));
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(hexes[hexIndex].getResource(), 2); // the 2 resources that the player gets
+
+        for (Player player : main.getPlayers()) { // make sure no players got any resources
+            if (player == main.getPlayers().get(0)) {
+                assertEquals(result, player.getResources());
+            } else {
+                assertEquals(emptyResourceMap(), player.getResources());
+            }
+        }
+    }
+
+    // test that if one person has a city by the hex, he gets the resource twice
+    @Test
+    public void dieRollCity() {
+        Hex[] hexes = main.getBoard().getHexes();
+        int hexIndex = findHexOfNum(2);
+        // other player builds a settlement on a hex that should not be bordering this one, I hope
+        main.buildSettlement(main.getPlayers().get(1), hexes[(hexIndex + 2) % hexes.length].getVertices()[1]);
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // no resources, because setup phase
+        main.buildCity(main.getPlayers().get(0), hexes[hexIndex].getVertices()[0]); // I made sure this would cost no resources in setup
+
+        main.applyDice(2, main.getPlayers().get(0));
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(hexes[hexIndex].getResource(), 2); // the 2 resources that the player gets
+
+        for (Player player : main.getPlayers()) { // make sure no players got any resources
+            if (player == main.getPlayers().get(0)) {
+                assertEquals(result, player.getResources());
+            } else {
+                assertEquals(emptyResourceMap(), player.getResources());
+            }
+        }
+    }
+    // I just realized that I can't test the ones with different hexes because I have no way of knowing if they are adjacent
+    /*
+    // test that if one person has settlements by both hexes, he gets the resources of both, whether the same
+    @Test
+    public void dieRollTwoSettlementsTwoHexesSameResource() {
+        Hex[] hexes = main.getBoard().getHexes();
+        List<Integer> hexIndices = findHexOfNums(6);
+        if (hexes[hexIndices.get(0)].getResource() != hexes[hexIndices.get(0)].getResource()) { // if they have different resources
+            main = new MainImpl(4, new GUIMainDummyImpl());
+            dieRollTwoSettlementsTwoHexesSameResource(); // try again with a different board
+            return;
+        }
+
+        // if this board has its 6's on the same resource
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndices.get(0)].getVertices()[0]); // no resources, because setup phase
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndices.get(1)].getVertices()[0]);
+
+        main.applyDice(2, main.getPlayers().get(0));
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(hexes[hexIndices.get(0)].getResource(), 2); // the 2 resources that the player gets
+
+        for (Player player : main.getPlayers()) { // make sure no players got any resources
+            if (player == main.getPlayers().get(0)) {
+                assertEquals(result, player.getResources());
+            } else {
+                assertEquals(emptyResourceMap(), player.getResources());
+            }
+        }
+    }
+
+    // or different type
+    @Test
+    public void dieRollTwoSettlementsTwoHexesDifResource() {
+        Hex[] hexes = main.getBoard().getHexes();
+        List<Integer> hexIndices = findHexOfNums(6);
+        if (hexes[hexIndices.get(0)].getResource() == hexes[hexIndices.get(0)].getResource()) { // if they have the same resources
+            main = new MainImpl(4, new GUIMainDummyImpl());
+            dieRollTwoSettlementsTwoHexesDifResource(); // try again with a different board
+            return;
+        }
+
+        // if this board has its 6's on different resources
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndices.get(0)].getVertices()[0]); // no resources, because setup phase
+        main.buildSettlement(main.getPlayers().get(0), hexes[hexIndices.get(1)].getVertices()[0]);
+
+        main.applyDice(2, main.getPlayers().get(0));
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(hexes[hexIndices.get(0)].getResource(), 2); // the 2 resources that the player gets
+
+        for (Player player : main.getPlayers()) { // make sure no players got any resources
+            if (player == main.getPlayers().get(0)) {
+                assertEquals(result, player.getResources());
+            } else {
+                assertEquals(emptyResourceMap(), player.getResources());
+            }
+        }
+    }*/
+
+    // test that if two people each have a settlement by the two hexes, they both get the resource of their hex
+
+    // I can't test the 7 parts, because I don't know what methods to override, but these are the tests I would do
+    // test that if we have a 7 and no player has more than 7, none lose anything
+    // test that if we have a 7 and one player has more than 7, that player and only that player loses half his cards
+    // test that if we have a 7 and two players have more than 7, both lose half their cards
+    // I will also have to test moving the thief, but that would probably be its own method
 }
