@@ -16,7 +16,6 @@ public class Action {
     public Hex hex;
     public Vertex vertex;
     public Edge road;
-    public Player otherPlayer;
     public final Player player;
 
     public final ActionType type;

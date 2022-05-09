@@ -43,6 +43,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
 
+    //Other maps
+    private HashMap<Edge, String> edgeDirectionMap = new HashMap<>();
+
     //Render Ordering Sets
     private HashMap<Component,Integer> paintLayerMap = new HashMap<>();
 
@@ -59,6 +62,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private boolean thisPlayerHasTurn = false;
     private boolean canPass = false;
     private Vertex lastSettlementSpot = null;
+    private Edge lastRoadSpot = null;
     private Action.ActionType currentAction = Action.ActionType.PASS;
 
     //Events
@@ -101,8 +105,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Repaints the frame
         frame.repaint();
-
-        startSettlementTurn();
     }
 
     /**
@@ -298,6 +300,20 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Creates an edge
+     */
+    private void createEdge(Edge edge, String direction, int offsetX, int offsetY){
+        JLabel edgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGray" + direction + ".png",offsetX,offsetY,3);
+        JButton edgeButton = createButton(offsetX,offsetY);
+
+        edgeButton.addActionListener(edgeButtonClickedAction(edge));
+
+        edgeButtonMap.put(edgeButton,edge);
+        edgeLabelMap.put(edge,edgeLabel);
+        edgeDirectionMap.put(edge,direction);
+    }
+
+    /**
      * Places all vertices
      */
     private void putVerticesAndRoads(){
@@ -341,37 +357,17 @@ public class GUIPlayerImpl implements GUIPlayer{
                 Edge bottomEdge = vertex.getEdges()[1];
 
                 if(topEdge != null) {
-                    int edgeXPos = xPos + 20;
-                    int edgeYPos = yPos - 24;
-
-                    JLabel topEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayLeft.png",edgeXPos,edgeYPos,3);
-                    JButton topEdgeButton = createButton(edgeXPos,edgeYPos);
-
-                    edgeButtonMap.put(topEdgeButton,topEdge);
+                    createEdge(topEdge,"Left",xPos + 20, yPos - 24);
                 }
 
                 if(bottomEdge != null) {
-                    int edgeXPos = xPos + 16;
-                    int edgeYPos = yPos + 20;
-
-                    JLabel bottomEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayRight.png",edgeXPos,edgeYPos,3);
-                    JButton bottomEdgeButton = createButton(edgeXPos,edgeYPos);
-
-                    edgeButtonMap.put(bottomEdgeButton,bottomEdge);
+                    createEdge(bottomEdge,"Right",xPos + 16, yPos + 20);
                 }
-
-
             }else{
                 Edge sideEdge = vertex.getEdges()[2];
 
                 if(sideEdge != null){
-                    int edgeXPos = xPos + 28;
-                    int edgeYPos = yPos;
-
-                    JLabel sideEdgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayStraight.png",edgeXPos,edgeYPos,3);
-                    JButton sideEdgeButton = createButton(edgeXPos,edgeYPos);
-
-                    edgeButtonMap.put(sideEdgeButton,sideEdge);
+                    createEdge(sideEdge,"Straight",xPos + 28, yPos);
                 }
             }
 
@@ -541,15 +537,19 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param constructionId construction's id
      * @return the specified player's construction of specified type
      */
-    private Image getConstructionImage(int plrId, int constructionId){
+    private Image getConstructionImage(int plrId, int constructionId, String roadDirection){
         String basePath = "src/main/java/settlers/gui/textures/construction/";
         String suffix = ".png";
 
         if(constructionId == 0){
-            return getImage(basePath + "Road" + getPlayerColor(plrId) + "Center" + suffix);
+            return getImage(basePath + "Road" + getPlayerColor(plrId) + roadDirection + suffix);
         }else{
             return getImage(basePath + getConstructionType(constructionId) + getPlayerColor(plrId) + suffix);
         }
+    }
+
+    private Image getConstructionImage(int plrId, int constructionId){
+        return getConstructionImage(plrId,constructionId,null);
     }
 
     /**
@@ -571,7 +571,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     public void startSettlementTurn(){
         thisPlayerHasTurn = true;
         canPass = false;
-        requestSettlementPlacement();
+        requestSettlementPlacementSP();
         while(lastSettlementSpot == null){
             try {
                 Thread.sleep(1);
@@ -579,6 +579,15 @@ public class GUIPlayerImpl implements GUIPlayer{
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
         }
+        requestRoadPlacementSP();
+        while(lastRoadSpot == null){
+            try {
+                Thread.sleep(1);
+            }catch (InterruptedException e){
+                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
+            }
+        }
+
     }
 
     /**
@@ -629,9 +638,39 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Tells GUIPlayers to make a city
+     * @param vertex location of the city
+     * @param player controller of the city
+     */
+    public void setCity(Player player, Vertex vertex){
+        JLabel label = vertexLabelMap.get(vertex);
+        label.setIcon(new ImageIcon(getConstructionImage(player.getID(),2).getScaledInstance(standardObjectSize,standardObjectSize,0)));
+    }
+
+    /**
+     * Tells GUIPlayers to make a settlement
+     * @param vertex location of the settlement
+     * @param player controller of the settlement
+     */
+    public void setSettlement(Player player ,Vertex vertex){
+        JLabel label = vertexLabelMap.get(vertex);
+        label.setIcon(new ImageIcon(getConstructionImage(player.getID(),1).getScaledInstance(standardObjectSize,standardObjectSize,0)));
+    }
+
+    /**
+     * Tells GUIPlayers to make a road
+     * @param edge location of the road
+     * @param player controller of the road
+     */
+    public void setRoad(Player player, Edge edge){
+        JLabel label = edgeLabelMap.get(edge);
+        label.setIcon(new ImageIcon(getConstructionImage(player.getID(),0,edgeDirectionMap.get(edge)).getScaledInstance(standardObjectSize,standardObjectSize,0)));
+    }
+
+    /**
      * When main requests GUIPlayer to place a settlement, show all the buttons which would allow him to do so
      */
-    private void requestSettlementPlacement(){
+    private void requestSettlementPlacementSP(){
         Set<Vertex> availableSpots = main.getAvailableSettlementSpots(this.player);
         for(JButton button : vertexButtonMap.keySet()){
             if(availableSpots.contains(vertexButtonMap.get(button))){
@@ -640,6 +679,18 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
         }
         currentAction = Action.ActionType.SETTLEMENT;
+    }
+
+    private void requestRoadPlacementSP(){
+        for(Edge edge : lastSettlementSpot.getEdges()){
+            for(JButton button : edgeButtonMap.keySet()){
+                if(edgeButtonMap.get(button).equals(edge)){
+                    button.setEnabled(true);
+                    button.setVisible(true);
+                }
+            }
+        }
+        currentAction = Action.ActionType.ROAD;
     }
 
     /**
@@ -724,6 +775,23 @@ public class GUIPlayerImpl implements GUIPlayer{
                     disableVertexButtons();
                     main.preformAction(action);
                     lastSettlementSpot = vertex;
+                    currentAction = Action.ActionType.PASS;
+                }
+            }
+        };
+    }
+
+    private ActionListener edgeButtonClickedAction(Edge edge){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentAction == Action.ActionType.ROAD){
+                    settlers.Action action = new settlers.Action(player, Action.ActionType.ROAD);
+                    action.road = edge;
+                    disableEdgeButtons();
+                    main.preformAction(action);
+                    lastRoadSpot = edge;
+                    currentAction = Action.ActionType.PASS;
                 }
             }
         };

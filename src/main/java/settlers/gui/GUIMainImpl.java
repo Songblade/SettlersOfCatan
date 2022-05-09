@@ -21,6 +21,9 @@ public class GUIMainImpl implements GUIMain {
         for(int i = 0; i < main.getPlayers().size(); i++){
             playerGUIs[i] = new GUIPlayerImpl(this,main.getBoard(),main.getPlayers().get(i),main.getPlayers());
         }
+        for(GUIPlayer gui : playerGUIs){
+            gui.startSettlementTurn();
+        }
     }
 
 
@@ -35,12 +38,61 @@ public class GUIMainImpl implements GUIMain {
     }
 
     /**
+     * Tells main and all GUIPlayers that a @player built a road at @edge
+     * @param player the builder of the road
+     * @param edge the location of the road
+     */
+    private void playerBuiltRoad(Player player, Edge edge){
+        main.buildRoad(player,edge);
+        for(GUIPlayer gui : playerGUIs){
+            gui.setRoad(player,edge);
+        }
+    }
+
+    /**
+     * Tells main and all GUIPlayers that a @player built a settlement at @vertex
+     * @param player the builder of the settlement
+     * @param vertex the location of the settlement
+     */
+    private void playerBuiltSettlement(Player player, Vertex vertex){
+        main.buildSettlement(player,vertex);
+        for(GUIPlayer gui : playerGUIs){
+            gui.setSettlement(player,vertex);
+        }
+    }
+
+    /**
+     * Tells main and all GUIPlayers that a @player built a city at @vertex
+     * @param player the builder of the city
+     * @param vertex the location of the city
+     */
+    private void playerBuiltCity(Player player, Vertex vertex){
+        main.buildCity(player,vertex);
+        for(GUIPlayer gui : playerGUIs){
+            gui.setCity(player,vertex);
+        }
+    }
+
+    /**
      * Tells Main to preform the specified action for the player
      * @param action
      */
     @Override
     public void preformAction(Action action) {
-
+        switch (action.type){
+            case ROAD:
+                playerBuiltRoad(action.player, action.road);
+                break;
+            case SETTLEMENT:
+                playerBuiltSettlement(action.player,action.vertex);
+                break;
+            case CITY:
+                playerBuiltCity(action.player,action.vertex);
+                break;
+            case THIEF:
+                main.moveThief(action.player,action.vertex,action.hex);
+                break;
+        }
     }
 
     /**
