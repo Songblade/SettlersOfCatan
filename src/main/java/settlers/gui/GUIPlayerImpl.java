@@ -343,7 +343,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             int yPos = boardOffsetY + (column * 88 + (Math.abs(3 - (row + 1)/2)) * 44 - 44);
 
             //Create vertex label
-            JLabel vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png", xPos, yPos, 2);
+            JLabel vertexLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGrayCenter.png", xPos, yPos, 1);
 
             //Create vertex button
             JButton vertexButton = createButton(xPos,yPos);
@@ -615,9 +615,11 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Maps all of the frame's actions
      */
     private void mapActions(){
+        frame.getRootPane().registerKeyboardAction(cancelMove(),KeyStroke.getKeyStroke((char) 8),JComponent.WHEN_IN_FOCUSED_WINDOW);
         frame.getRootPane().registerKeyboardAction(passTurn(),KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
         frame.getRootPane().registerKeyboardAction(requestRoadPlacement(),KeyStroke.getKeyStroke((char) 49),JComponent.WHEN_IN_FOCUSED_WINDOW);
         frame.getRootPane().registerKeyboardAction(requestSettlementPlacement(),KeyStroke.getKeyStroke((char) 50),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        frame.getRootPane().registerKeyboardAction(requestCityPlacement(),KeyStroke.getKeyStroke((char) 51),JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**
@@ -798,10 +800,50 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
+    /**
+     * Cancels your move
+     * @return
+     */
+    private ActionListener cancelMove(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentAction != Action.ActionType.PASS && currentAction != Action.ActionType.THIEF && mainPhase){
+                    disableAllButtons();
+                    currentAction = Action.ActionType.PASS;
+                }
+            }
+        };
+    }
+
     //Keybinds
+    /**
+     * Proscesses settlement building requests
+     * @return
+     */
+    private ActionListener requestCityPlacement() {
+        return new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                settlers.Action action = new settlers.Action(player, Action.ActionType.CITY);
+                //Checks if player can preform action
+                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn && currentAction == Action.ActionType.PASS){
+                    currentAction = Action.ActionType.CITY;
+                    Set<Vertex> availableSpots = main.getAvailableCitySpots(player);
+
+                    //Makes the right buttons visible
+                    for(JButton button : vertexButtonMap.keySet()){
+                        if(availableSpots.contains(vertexButtonMap.get(button))){
+                            enableButton(button);
+                        }
+                    }
+                }
+            }
+        };
+    }
 
     /**
-     * Proscesses road building requests
+     * Proscesses settlement building requests
      * @return
      */
     private ActionListener requestSettlementPlacement() {
@@ -868,8 +910,15 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.preformAction(action);
                     lastSettlementSpot = vertex;
                     currentAction = Action.ActionType.PASS;
-                    focusFrame();
+                }else if(currentAction == Action.ActionType.CITY){
+                    settlers.Action action = new settlers.Action(player, Action.ActionType.CITY);
+                    action.vertex = vertex;
+                    disableVertexButtons();
+                    main.preformAction(action);
+                    lastSettlementSpot = vertex;
+                    currentAction = Action.ActionType.PASS;
                 }
+                focusFrame();
             }
         };
     }
@@ -890,8 +939,8 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.preformAction(action);
                     lastRoadSpot = edge;
                     currentAction = Action.ActionType.PASS;
-                    focusFrame();
                 }
+                focusFrame();
             }
         };
     }
