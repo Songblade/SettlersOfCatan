@@ -33,6 +33,11 @@ public interface Player {
     boolean hasMoreThan7Cards();
 
     /**
+     * @return the number of resource cards this player has
+     */
+    int getCardNumber();
+
+    /**
      * @return an unmodifiable Map containing the player's development cards and quantity of each
      */
     Map<DevelopmentCard, Integer> getDevelopmentCards();
