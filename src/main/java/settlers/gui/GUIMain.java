@@ -91,8 +91,8 @@ public interface GUIMain {
     /**
      * Moves the thief
      * @param player the player who moved the thief
-     * @param otherPlayer the player who @player is stealing from
+     * @param location the location you are stealing from
      * @param position where the thief is being moved to
      */
-    public void moveThief(Player player, Player otherPlayer, Hex position);
+    public void moveThief(Player player, Vertex location, Hex position);
 }

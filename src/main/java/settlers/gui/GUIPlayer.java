@@ -50,6 +50,12 @@ public interface GUIPlayer {
     void updateResourceCounters();
 
     /**
+     * Moves the thief image
+     * @param hex the new location of the thief image
+     */
+    void moveThiefImage(Hex hex);
+
+    /**
      * Forces player to discard half of his hand
      */
     void discardHalfOfHand();

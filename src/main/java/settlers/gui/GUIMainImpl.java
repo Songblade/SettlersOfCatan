@@ -119,6 +119,26 @@ public class GUIMainImpl implements GUIMain {
     }
 
     /**
+     * Updates all player's resource counters
+     */
+    private void updateResourceCounters(){
+        for(GUIPlayer gui : playerGUIs.values()){
+            gui.updateResourceCounters();
+        }
+    }
+
+    /**
+     * Updates all player's resource counters and die
+     * @param dieRoll the number on the dice
+     */
+    private void updateResourceCounters(int dieRoll){
+        for(GUIPlayer gui : playerGUIs.values()){
+            gui.updateDieCounter(dieRoll);
+            gui.updateResourceCounters();
+        }
+    }
+
+    /**
      * Starts a turn. Called by Main, updates resources and die number in GUIPlayers
      * @param player the player whose turn it is
      * @param dieRoll the sum of both die rolls
@@ -148,35 +168,26 @@ public class GUIMainImpl implements GUIMain {
         }
 
         //Updates dice and resources for all players
-        for(GUIPlayer gui : playerGUIs.values()){
-            gui.updateDieCounter(dieRoll);
-            gui.updateResourceCounters();
-        }
+        updateResourceCounters(dieRoll);
 
         //Starts player's turn
         playerGUIs.get(player).startTurn(dieRoll);
     }
 
     /**
-     * @return a vertex owned by @player
-     */
-    private Vertex getVertexOwnedByPlayer(Player player){
-        for (Vertex vertex : main.getBoard().getVertices()){
-            if(vertex.getPlayer().equals(player)){
-                return vertex;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Moves the thief
      * @param player the player who moved the thief
-     * @param otherPlayer the player who @player is stealing from
+     * @param location the settlement which @player is stealing from
      * @param position where the thief is being moved to
      */
-    public void moveThief(Player player, Player otherPlayer, Hex position){
-        main.moveThief(player,getVertexOwnedByPlayer(otherPlayer),position);
+    public void moveThief(Player player, Vertex location, Hex position){
+        main.moveThief(player, location, position);
+
+        for(Player plr : main.getPlayers()){
+            playerGUIs.get(plr).moveThiefImage(position);
+        }
+
+        updateResourceCounters();
     }
 
     /**
@@ -188,9 +199,7 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
         //Update the resources for all players
-        for(GUIPlayer gui : playerGUIs.values()){
-            gui.updateResourceCounters();
-        }
+        updateResourceCounters();
 
         return playerGUIs.get(player).startSettlementTurn(validSpots);
     }

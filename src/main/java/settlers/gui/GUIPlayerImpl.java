@@ -10,10 +10,9 @@ import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.plaf.basic.BasicMenuUI;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class GUIPlayerImpl implements GUIPlayer{
 
@@ -61,8 +60,10 @@ public class GUIPlayerImpl implements GUIPlayer{
     private boolean thisPlayerHasTurn = false;
     private boolean canPass = false;
     private boolean mainPhase = false;
+    private boolean stealPreformed;
     private Vertex lastSettlementSpot = null;
     private Edge lastRoadSpot = null;
+    private Hex thiefRequestSpot = null;
     private GUISTate currentState = GUISTate.NONE;
 
     //Events
@@ -284,6 +285,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             //Creates hex button and adds it to the hexButtonMap
             JButton hexButton = createButton(xPos,yPos);
             hexButtonMap.put(hexButton,hex);
+            hexButton.addActionListener(hexButtonClickedAction(hexButton));
 
             //Puts thief at current position, if position is desert
             if(hex.getResource() == Resource.MISC){
@@ -590,11 +592,28 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     @Override
     public void startTurn(int roll){
+        enableDieCounterOutline(roll);
+
+        if(roll == 7){
+            thisPlayerHasTurn = false;
+            canPass = false;
+            stealPreformed = false;
+
+            currentState = GUISTate.THIEF;
+            enableHexButtons();
+
+            while(!stealPreformed){
+                try {
+                    Thread.sleep(1);
+                }catch (InterruptedException e){
+                    throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
+                }
+            }
+        }
+
         thisPlayerHasTurn = true;
         canPass = true;
         mainPhase = true;
-
-        enableDieCounterOutline(roll);
 
         while(thisPlayerHasTurn){
             try {
@@ -722,6 +741,18 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Moves the thief image
+     * @param hex the new location of the thief image
+     */
+    public void moveThiefImage(Hex hex){
+        for(JButton button : hexButtonMap.keySet()){
+            if(hexButtonMap.get(button).equals(hex)){
+                thiefImage.setBounds(button.getX() - standardObjectSize / 4,button.getY() - standardObjectSize / 4,standardObjectSize,standardObjectSize);
+            }
+        }
+    }
+
+    /**
      * When main requests GUIPlayer to place a settlement, show all the buttons which would allow him to do so
      */
     private void requestSettlementPlacementSP(Set<Vertex> availableSpots){
@@ -744,6 +775,18 @@ public class GUIPlayerImpl implements GUIPlayer{
         currentState = GUISTate.ROAD;
     }
 
+    private HashSet<Vertex> getOccupiedAdjacentVertices(Hex hex, boolean selfSearch){
+        HashSet<Vertex> result = new HashSet<>();
+
+        for(Vertex vertex : hex.getVertices()){
+            if(vertex.getPlayer() != null && (vertex.getPlayer() != player || selfSearch)){
+                result.add(vertex);
+            }
+        }
+
+        return result;
+    }
+
     private void enableButton(JButton button){
         button.setEnabled(true);
         button.setVisible(true);
@@ -752,6 +795,15 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void disableButton(JButton button){
         button.setEnabled(false);
         button.setVisible(false);
+    }
+
+    /**
+     * enables all hex buttons
+     */
+    private void enableHexButtons(){
+        for(JButton button : hexButtonMap.keySet()){
+            enableButton(button);
+        }
     }
 
     /**
@@ -931,16 +983,18 @@ public class GUIPlayerImpl implements GUIPlayer{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(currentState == GUISTate.SETTLEMENT) {
-                    disableVertexButtons();
                     main.buildSettlement(player,vertex);
                     lastSettlementSpot = vertex;
                     currentState = GUISTate.NONE;
                 }else if(currentState == GUISTate.CITY){
-                    disableVertexButtons();
                     main.buildCity(player,vertex);
-                    lastSettlementSpot = vertex;
+                    currentState = GUISTate.NONE;
+                }else if(currentState == GUISTate.THIEF){
+                    main.moveThief(player,vertex, thiefRequestSpot);
+                    stealPreformed = true;
                     currentState = GUISTate.NONE;
                 }
+                disableVertexButtons();
                 focusFrame();
             }
         };
@@ -956,11 +1010,11 @@ public class GUIPlayerImpl implements GUIPlayer{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(currentState == GUISTate.ROAD){
-                    disableEdgeButtons();
                     main.buildRoad(player,edge);
                     lastRoadSpot = edge;
                     currentState = GUISTate.NONE;
                 }
+                disableEdgeButtons();
                 focusFrame();
             }
         };
@@ -971,9 +1025,25 @@ public class GUIPlayerImpl implements GUIPlayer{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(currentState == GUISTate.THIEF){
-                    thiefImage.setBounds(button.getX(),button.getY(),standardObjectSize,standardObjectSize);
-                    currentState = GUISTate.NONE;
+                    Hex hex = hexButtonMap.get(button);
+                    thiefRequestSpot = hex;
+                    HashSet<Vertex> potentialRobberySpots = getOccupiedAdjacentVertices(hex,false);
+
+                    //Does the stealing mechanic
+                    if(potentialRobberySpots.size() > 0){
+                        //Enables adjacent vertex buttons which have settlements/cities on them
+                        for(JButton vertexButton : vertexButtonMap.keySet()){
+                            if(potentialRobberySpots.contains(vertexButtonMap.get(vertexButton))){
+                                enableButton(vertexButton);
+                            }
+                        }
+                    }else{
+                        main.moveThief(player,hex.getVertices()[0],hex);
+                        stealPreformed = true;
+                    }
                 }
+
+                disableHexButtons();
                 focusFrame();
             }
         };

@@ -76,7 +76,7 @@ public class GUIMainDummyImpl implements GUIMain {
     }
 
     @Override
-    public void moveThief(Player player, Player otherPlayer, Hex position) {
+    public void moveThief(Player player, Vertex vertex, Hex position) {
 
     }
 }
