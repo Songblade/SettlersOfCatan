@@ -98,6 +98,14 @@ public class PlayerImpl implements Player {
     }
 
     /**
+     * @return the number of resource cards this player has
+     */
+    @Override
+    public int getCardNumber() {
+        return resourceCount;
+    }
+
+    /**
      * @return an unmodifiable Map containing the player's development cards and quantity of each
      */
     @Override

@@ -170,9 +170,11 @@ public class MainImpl implements Main {
     private void givePlayerSettlementResources(Player player, Vertex settlement) {
         // this is inefficient, but I only have to do it once per player
         for (Hex hex : board.getHexes()) { // look at each hex's vertices
-            for (Vertex vertex : hex.getVertices()) {
-                if (vertex == settlement) { // if they are the same vertex
-                    player.addResource(hex.getResource()); // give the player that hex's resource
+            if (hex.getResource() != Resource.MISC) {
+                for (Vertex vertex : hex.getVertices()) {
+                    if (vertex == settlement) { // if they are the same vertex
+                        player.addResource(hex.getResource()); // give the player that hex's resource
+                    }
                 }
             }
         }
@@ -438,8 +440,8 @@ public class MainImpl implements Main {
             player.removeResources(Building.SETTLEMENT.getResources());
         }
         // we don't need to tell the GUI to update anything, because it already knows
-        if (isWinner) {
-            // do something, not sure what yet
+        if (isWinner) { // if the player has won, end the game
+            endGame(player);
         }
     }
 
@@ -475,7 +477,7 @@ public class MainImpl implements Main {
         // I need to change the vertex's status
         location.makeCity();
         // I need to change which list the vertex is on
-        player.upgradeSettlement(location);
+        boolean isWinner = player.upgradeSettlement(location);
         // I need to remove resources from the player, if this is the right phase
         // the phase doesn't really matter here, since you can't build a city during setup phase anyway
             // but I might want it for testing, so I will leave it in
@@ -483,6 +485,9 @@ public class MainImpl implements Main {
             player.removeResources(Building.CITY.getResources());
         }
         // no need to report to GUI, it will know from the method ending
+        if (isWinner) { // if the player has won, end the game
+            endGame(player);
+        }
     }
 
     /**
@@ -541,6 +546,28 @@ public class MainImpl implements Main {
      */
     protected void setPhase(boolean changingToMain) {
         isMainPhase = changingToMain;
+    }
+
+    private void endGame(Player victor) {
+        String color;
+        switch (victor.getID()) {
+            case 0:
+                color = "RED";
+                break;
+            case 1:
+                color = "BLUE";
+                break;
+            case 2:
+                color = "WHITE";
+                break;
+            case 3:
+                color = "ORANGE";
+                break;
+            default:
+                color = "BLACK - wait, what?";
+        }
+        System.out.println("Congratulations, " + color + ", you have won the game! Woo!!!");
+        System.exit(0);
     }
 
 }
