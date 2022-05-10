@@ -170,9 +170,11 @@ public class MainImpl implements Main {
     private void givePlayerSettlementResources(Player player, Vertex settlement) {
         // this is inefficient, but I only have to do it once per player
         for (Hex hex : board.getHexes()) { // look at each hex's vertices
-            for (Vertex vertex : hex.getVertices()) {
-                if (vertex == settlement) { // if they are the same vertex
-                    player.addResource(hex.getResource()); // give the player that hex's resource
+            if (hex.getResource() != Resource.MISC) {
+                for (Vertex vertex : hex.getVertices()) {
+                    if (vertex == settlement) { // if they are the same vertex
+                        player.addResource(hex.getResource()); // give the player that hex's resource
+                    }
                 }
             }
         }
