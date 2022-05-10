@@ -617,6 +617,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void mapActions(){
         frame.getRootPane().registerKeyboardAction(passTurn(),KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
         frame.getRootPane().registerKeyboardAction(requestRoadPlacement(),KeyStroke.getKeyStroke((char) 49),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        frame.getRootPane().registerKeyboardAction(requestSettlementPlacement(),KeyStroke.getKeyStroke((char) 50),JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**
@@ -798,6 +799,32 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     //Keybinds
+
+    /**
+     * Proscesses road building requests
+     * @return
+     */
+    private ActionListener requestSettlementPlacement() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                settlers.Action action = new settlers.Action(player, Action.ActionType.SETTLEMENT);
+                //Checks if player can preform action
+                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn && currentAction == Action.ActionType.PASS){
+                    currentAction = Action.ActionType.SETTLEMENT;
+                    Set<Vertex> availableSpots = main.getAvailableSettlementSpots(player);
+
+                    //Makes the right buttons visible
+                    for(JButton button : vertexButtonMap.keySet()){
+                        if(availableSpots.contains(vertexButtonMap.get(button))){
+                            enableButton(button);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
     /**
      * Proscesses road building requests
      * @return
@@ -808,7 +835,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 settlers.Action action = new settlers.Action(player, Action.ActionType.ROAD);
                 //Checks if player can preform action
-                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn){
+                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn && currentAction == Action.ActionType.PASS){
                     currentAction = Action.ActionType.ROAD;
                     Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
 
@@ -818,8 +845,6 @@ public class GUIPlayerImpl implements GUIPlayer{
                             enableButton(button);
                         }
                     }
-                }else{
-                    System.out.println("CanPreformAction: " + main.canPreformAction(action) + " mainPhase: " + mainPhase + " thisPlayerHasTurn: " + thisPlayerHasTurn);
                 }
             }
         };

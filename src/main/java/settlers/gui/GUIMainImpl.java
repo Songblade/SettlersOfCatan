@@ -43,7 +43,6 @@ public class GUIMainImpl implements GUIMain {
             case SETTLEMENT:
                 return main.getAvailableSettlementSpots(action.player).size() > 0;
             case ROAD:
-                System.out.println("Road Spots: " + main.getAvailableRoadSpots(action.player).size());
                 return main.getAvailableRoadSpots(action.player).size() > 0;
         }
         return false;
