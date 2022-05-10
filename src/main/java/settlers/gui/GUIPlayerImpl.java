@@ -896,7 +896,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentState != GUISTate.NONE && currentState != GUISTate.NONE.THIEF && mainPhase){
+                if(currentState != GUISTate.NONE && currentState != GUISTate.THIEF && mainPhase){
                     disableAllButtons();
                     currentState = GUISTate.NONE;
                 }
@@ -913,6 +913,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                //System.out.println("City placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildCity(player));
                 //Checks if player can preform action
                 if(main.canBuildCity(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
                     currentState = GUISTate.CITY;
@@ -937,6 +938,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //System.out.println("Settlement placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildSettlement(player));
                 //Checks if player can preform action
                 if(main.canBuildSettlement(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
                     currentState = GUISTate.SETTLEMENT;
@@ -961,6 +963,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //System.out.println("Road placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildRoad(player));
                 //Checks if player can preform action
                 if(main.canBuildRoad(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
                     currentState = GUISTate.ROAD;

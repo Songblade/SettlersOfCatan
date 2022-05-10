@@ -30,7 +30,7 @@ public class GUIMainImpl implements GUIMain {
 
 
     public boolean canBuildRoad(Player player){
-        return main.getAvailableCitySpots(player).size() > 0 && (main.playerElementsFor(player, Building.ROAD) || unlimitedResources);
+        return main.getAvailableRoadSpots(player).size() > 0 && (main.playerElementsFor(player, Building.ROAD) || unlimitedResources);
     }
 
     public boolean canBuildSettlement(Player player){
