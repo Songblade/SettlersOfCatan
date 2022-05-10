@@ -119,7 +119,7 @@ public interface Main {
     // I will add versions of canTrade() and trade() for that
 
 }
-
+/**
 enum Building {
     ROAD(15,1, 1, 0, 0, 0),
     SETTLEMENT(5,1, 1, 1, 0, 1),
@@ -147,4 +147,4 @@ enum Building {
     }
 
 
-}
+}*/

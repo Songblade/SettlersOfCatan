@@ -1,7 +1,6 @@
 package settlers.gui;
 
 import settlers.Player;
-import settlers.Action;
 import settlers.board.*;
 
 import java.util.Set;
@@ -9,17 +8,49 @@ import java.util.Set;
 public interface GUIMain {
 
     /**
-     *Asks Main if the player can preform the specified action. Returns true if yes, false if no
-     * @param action
+     * Asks main if player can build a road
+     * @param player
      * @return
      */
-    public boolean canPreformAction(Action action);
+    public boolean canBuildRoad(Player player);
 
     /**
-     * Tells Main to preform the specified action for the player
-     * @param action
+     * Asks main if player can build a settlement
+     * @param player
+     * @return
      */
-    public void preformAction(Action action);
+    public boolean canBuildSettlement(Player player);
+
+    /**
+     * Asks main if player can build a city
+     * @param player
+     * @return
+     */
+    public boolean canBuildCity(Player player);
+
+    /**
+     * Tells main to build a road at edge for player
+     * @param player
+     * @param edge
+     * @return
+     */
+    public void buildRoad(Player player, Edge edge);
+
+    /**
+     * Tells main to build a settlement at vertex for player
+     * @param player
+     * @param vertex
+     * @return
+     */
+    public void buildSettlement(Player player, Vertex vertex);
+
+    /**
+     * Tells main to build a city at vertex for player
+     * @param player
+     * @param vertex
+     * @return
+     */
+    public void buildCity(Player player, Vertex vertex);
 
     /**
      * Calls respective method in Main
@@ -56,4 +87,12 @@ public interface GUIMain {
      * @return the Vertex where the player built a Settlement
      */
     public Vertex startSetupTurn(Player player, Set<Vertex> validSpots);
+
+    /**
+     * Moves the thief
+     * @param player the player who moved the thief
+     * @param otherPlayer the player who @player is stealing from
+     * @param position where the thief is being moved to
+     */
+    public void moveThief(Player player, Player otherPlayer, Hex position);
 }

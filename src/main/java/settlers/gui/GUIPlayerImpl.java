@@ -1,6 +1,5 @@
 package settlers.gui;
 
-import settlers.Action;
 import settlers.Player;
 import settlers.PlayerImpl;
 import settlers.board.*;
@@ -40,6 +39,8 @@ public class GUIPlayerImpl implements GUIPlayer{
     //Label maps
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
+    private HashMap<Resource,JTextField> resourceTextMap = new HashMap<>();
+    private HashMap<Player,JTextField> playerTextMap = new HashMap<>();
 
     //Other maps
     private HashMap<Edge, String> edgeDirectionMap = new HashMap<>();
@@ -62,7 +63,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private boolean mainPhase = false;
     private Vertex lastSettlementSpot = null;
     private Edge lastRoadSpot = null;
-    private Action.ActionType currentAction = Action.ActionType.PASS;
+    private GUISTate currentState = GUISTate.NONE;
 
     //Events
     private ActionListener events;
@@ -433,6 +434,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 currentXOffset += xOffsetIncrement;
 
                 JTextField thisPlayerResourceCountLabel = createText("0",currentXOffset - 24,500,1);
+                resourceTextMap.put(resource,thisPlayerResourceCountLabel);
 
                 //Creates a button for the resource
                 JButton thisPlayerResourceButton = createButton(currentXOffset - xOffsetIncrement,550);
@@ -455,6 +457,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 playerResourceLabel.setIcon(new ImageIcon(getResourceImage(Resource.MISC).getScaledInstance(56,56,0)));
 
                 JTextField playerResourceText = createText("0",175,currentYOffset,1);
+                playerTextMap.put(plr,playerResourceText);
 
                 //Places a button for the player
                 JButton playerButton = createButton(35,currentYOffset);
@@ -559,6 +562,22 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Updates resource counters of all players
+     */
+    public void updateResourceCounters(){
+        //Sets this player's resource count
+        for(Resource resource : resourceTextMap.keySet()){
+            resourceTextMap.get(resource).setText("" + player.getResources().get(resource));
+        }
+
+        for(Player plr : players){
+            if(plr != player){
+                playerTextMap.get(plr).setText("" + plr.getCardNumber());
+            }
+        }
+    }
+
+    /**
      * Enables the die counter outline
      * @param roll the number whose color the die counter outline should display
      */
@@ -588,6 +607,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     public Vertex startSettlementTurn(Set<Vertex> availableSpots){
         lastSettlementSpot = null;
+        lastRoadSpot = null;
         thisPlayerHasTurn = true;
         canPass = false;
 
@@ -600,7 +620,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
         }
+
         requestRoadPlacementSP();
+
         while(lastRoadSpot == null){
             try {
                 Thread.sleep(1);
@@ -608,7 +630,15 @@ public class GUIPlayerImpl implements GUIPlayer{
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
         }
+
         return lastSettlementSpot;
+    }
+
+    /**
+     * Forces player to discard half of his hand
+     */
+    public void discardHalfOfHand(){
+
     }
 
     /**
@@ -700,7 +730,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 enableButton(button);
             }
         }
-        currentAction = Action.ActionType.SETTLEMENT;
+        currentState = GUISTate.SETTLEMENT;
     }
 
     private void requestRoadPlacementSP(){
@@ -711,7 +741,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }
             }
         }
-        currentAction = Action.ActionType.ROAD;
+        currentState = GUISTate.ROAD;
     }
 
     private void enableButton(JButton button){
@@ -793,7 +823,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canPass){
                     disableAllButtons();
-                    currentAction = Action.ActionType.PASS;
+                    currentState = GUISTate.NONE;
                     thisPlayerHasTurn = false;
                 }
             }
@@ -808,9 +838,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentAction != Action.ActionType.PASS && currentAction != Action.ActionType.THIEF && mainPhase){
+                if(currentState != GUISTate.NONE && currentState != GUISTate.NONE.THIEF && mainPhase){
                     disableAllButtons();
-                    currentAction = Action.ActionType.PASS;
+                    currentState = GUISTate.NONE;
                 }
             }
         };
@@ -825,10 +855,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                settlers.Action action = new settlers.Action(player, Action.ActionType.CITY);
                 //Checks if player can preform action
-                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn && currentAction == Action.ActionType.PASS){
-                    currentAction = Action.ActionType.CITY;
+                if(main.canBuildCity(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
+                    currentState = GUISTate.CITY;
                     Set<Vertex> availableSpots = main.getAvailableCitySpots(player);
 
                     //Makes the right buttons visible
@@ -850,10 +879,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                settlers.Action action = new settlers.Action(player, Action.ActionType.SETTLEMENT);
                 //Checks if player can preform action
-                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn && currentAction == Action.ActionType.PASS){
-                    currentAction = Action.ActionType.SETTLEMENT;
+                if(main.canBuildSettlement(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
+                    currentState = GUISTate.SETTLEMENT;
                     Set<Vertex> availableSpots = main.getAvailableSettlementSpots(player);
 
                     //Makes the right buttons visible
@@ -875,10 +903,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                settlers.Action action = new settlers.Action(player, Action.ActionType.ROAD);
                 //Checks if player can preform action
-                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn && currentAction == Action.ActionType.PASS){
-                    currentAction = Action.ActionType.ROAD;
+                if(main.canBuildRoad(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
+                    currentState = GUISTate.ROAD;
                     Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
 
                     //Makes the right buttons visible
@@ -903,20 +930,16 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentAction == Action.ActionType.SETTLEMENT) {
-                    settlers.Action action = new settlers.Action(player, Action.ActionType.SETTLEMENT);
-                    action.vertex = vertex;
+                if(currentState == GUISTate.SETTLEMENT) {
                     disableVertexButtons();
-                    main.preformAction(action);
+                    main.buildSettlement(player,vertex);
                     lastSettlementSpot = vertex;
-                    currentAction = Action.ActionType.PASS;
-                }else if(currentAction == Action.ActionType.CITY){
-                    settlers.Action action = new settlers.Action(player, Action.ActionType.CITY);
-                    action.vertex = vertex;
+                    currentState = GUISTate.NONE;
+                }else if(currentState == GUISTate.CITY){
                     disableVertexButtons();
-                    main.preformAction(action);
+                    main.buildCity(player,vertex);
                     lastSettlementSpot = vertex;
-                    currentAction = Action.ActionType.PASS;
+                    currentState = GUISTate.NONE;
                 }
                 focusFrame();
             }
@@ -932,16 +955,32 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentAction == Action.ActionType.ROAD){
-                    settlers.Action action = new settlers.Action(player, Action.ActionType.ROAD);
-                    action.road = edge;
+                if(currentState == GUISTate.ROAD){
                     disableEdgeButtons();
-                    main.preformAction(action);
+                    main.buildRoad(player,edge);
                     lastRoadSpot = edge;
-                    currentAction = Action.ActionType.PASS;
+                    currentState = GUISTate.NONE;
                 }
                 focusFrame();
             }
         };
     }
+
+    private ActionListener hexButtonClickedAction(JButton button){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentState == GUISTate.THIEF){
+                    thiefImage.setBounds(button.getX(),button.getY(),standardObjectSize,standardObjectSize);
+                    currentState = GUISTate.NONE;
+                }
+                focusFrame();
+            }
+        };
+    }
+}
+
+
+enum GUISTate{
+    NONE,ROAD,SETTLEMENT,CITY,THIEF
 }

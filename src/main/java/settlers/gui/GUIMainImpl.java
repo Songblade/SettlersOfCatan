@@ -1,9 +1,6 @@
 package settlers.gui;
 
-import settlers.Action;
-import settlers.Main;
-import settlers.MainImpl;
-import settlers.Player;
+import settlers.*;
 import settlers.card.Resource;
 import settlers.board.*;
 
@@ -30,30 +27,26 @@ public class GUIMainImpl implements GUIMain {
     }
 
 
-    /**
-     *Asks Main if the player can preform the specified action. Returns true if yes, false if no
-     * @param action
-     * @return
-     */
-    @Override
-    public boolean canPreformAction(Action action) {
-        switch (action.type){
-            case CITY:
-                return main.getAvailableCitySpots(action.player).size() > 0;
-            case SETTLEMENT:
-                return main.getAvailableSettlementSpots(action.player).size() > 0;
-            case ROAD:
-                return main.getAvailableRoadSpots(action.player).size() > 0;
-        }
-        return false;
+    public boolean canBuildRoad(Player player){
+        return main.getAvailableCitySpots(player).size() > 0 ;//&& main.playerElementsFor(player, Building.CITY);
     }
+
+    public boolean canBuildSettlement(Player player){
+        return main.getAvailableSettlementSpots(player).size() > 0;//&& main.playerElementsFor(player, Building.SETTLEMENT);
+    }
+
+    public boolean canBuildCity(Player player){
+        return main.getAvailableRoadSpots(player).size() > 0 ;//&& main.playerElementsFor(player, Building.CITY);
+    }
+
 
     /**
      * Tells main and all GUIPlayers that a @player built a road at @edge
      * @param player the builder of the road
      * @param edge the location of the road
      */
-    private void playerBuiltRoad(Player player, Edge edge){
+    @Override
+    public void buildRoad(Player player, Edge edge){
         main.buildRoad(player,edge);
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setRoad(player,edge);
@@ -65,7 +58,8 @@ public class GUIMainImpl implements GUIMain {
      * @param player the builder of the settlement
      * @param vertex the location of the settlement
      */
-    private void playerBuiltSettlement(Player player, Vertex vertex){
+    @Override
+    public void buildSettlement(Player player, Vertex vertex){
         main.buildSettlement(player,vertex);
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setSettlement(player,vertex);
@@ -77,32 +71,11 @@ public class GUIMainImpl implements GUIMain {
      * @param player the builder of the city
      * @param vertex the location of the city
      */
-    private void playerBuiltCity(Player player, Vertex vertex){
+    @Override
+    public void buildCity(Player player, Vertex vertex){
         main.buildCity(player,vertex);
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setCity(player,vertex);
-        }
-    }
-
-    /**
-     * Tells Main to preform the specified action for the player
-     * @param action
-     */
-    @Override
-    public void preformAction(Action action) {
-        switch (action.type){
-            case ROAD:
-                playerBuiltRoad(action.player, action.road);
-                break;
-            case SETTLEMENT:
-                playerBuiltSettlement(action.player,action.vertex);
-                break;
-            case CITY:
-                playerBuiltCity(action.player,action.vertex);
-                break;
-            case THIEF:
-                main.moveThief(action.player,action.vertex,action.hex);
-                break;
         }
     }
 
@@ -136,6 +109,15 @@ public class GUIMainImpl implements GUIMain {
         return main.getAvailableCitySpots(player);
     }
 
+    private boolean allPlayersHaveDiscarded(HashMap<Player,Integer> playerToRequiredCards){
+        for(Player plr : playerToRequiredCards.keySet()){
+            if(plr.getCardNumber() > playerToRequiredCards.get(plr)){
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Starts a turn. Called by Main, updates resources and die number in GUIPlayers
      * @param player the player whose turn it is
@@ -143,13 +125,58 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public void startTurn(Player player, int dieRoll){
-        //Updates dice for all players
+        //Forces players to discard half of their hand if they have more than 7 cards
+        if(dieRoll == 7){
+            HashMap<Player,Integer> playerToRequiredCards = new HashMap<>();
+
+            for(Player plr : main.getPlayers()){
+                if(plr.hasMoreThan7Cards()){
+                    playerGUIs.get(plr).discardHalfOfHand();
+                    playerToRequiredCards.put(plr,plr.getCardNumber()/2 + plr.getCardNumber() % 2);
+                }
+
+                /**
+                while (!allPlayersHaveDiscarded(playerToRequiredCards)){
+                    try {
+                        Thread.sleep(1);
+                    }catch (InterruptedException e){
+                        throw new IllegalStateException("InterrupterException was thrown: " + e);
+                    }
+                }
+                 */
+            }
+        }
+
+        //Updates dice and resources for all players
         for(GUIPlayer gui : playerGUIs.values()){
             gui.updateDieCounter(dieRoll);
+            gui.updateResourceCounters();
         }
 
         //Starts player's turn
         playerGUIs.get(player).startTurn(dieRoll);
+    }
+
+    /**
+     * @return a vertex owned by @player
+     */
+    private Vertex getVertexOwnedByPlayer(Player player){
+        for (Vertex vertex : main.getBoard().getVertices()){
+            if(vertex.getPlayer().equals(player)){
+                return vertex;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Moves the thief
+     * @param player the player who moved the thief
+     * @param otherPlayer the player who @player is stealing from
+     * @param position where the thief is being moved to
+     */
+    public void moveThief(Player player, Player otherPlayer, Hex position){
+        main.moveThief(player,getVertexOwnedByPlayer(otherPlayer),position);
     }
 
     /**
@@ -160,6 +187,11 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
+        //Update the resources for all players
+        for(GUIPlayer gui : playerGUIs.values()){
+            gui.updateResourceCounters();
+        }
+
         return playerGUIs.get(player).startSettlementTurn(validSpots);
     }
 }

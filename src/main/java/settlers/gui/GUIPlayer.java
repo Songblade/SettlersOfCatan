@@ -43,4 +43,14 @@ public interface GUIPlayer {
      * @param roll the number which die counter should display
      */
     void updateDieCounter(int roll);
+
+    /**
+     * Updates the GUIPlayer's resource counters
+     */
+    void updateResourceCounters();
+
+    /**
+     * Forces player to discard half of his hand
+     */
+    void discardHalfOfHand();
 }

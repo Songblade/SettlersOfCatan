@@ -1,31 +1,39 @@
 package settlers.gui;
 
 import settlers.Player;
-import settlers.Action;
 import settlers.board.*;
 
 import java.util.Set;
 
 public class GUIMainDummyImpl implements GUIMain {
 
-    /**
-     * Asks Main if the player can preform the specified action. Returns true if yes, false if no
-     *
-     * @param action
-     * @return
-     */
     @Override
-    public boolean canPreformAction(Action action) {
+    public boolean canBuildRoad(Player player) {
         return false;
     }
 
-    /**
-     * Tells Main to preform the specified action for the player
-     *
-     * @param action
-     */
     @Override
-    public void preformAction(Action action) {
+    public boolean canBuildSettlement(Player player) {
+        return false;
+    }
+
+    @Override
+    public boolean canBuildCity(Player player) {
+        return false;
+    }
+
+    @Override
+    public void buildRoad(Player player, Edge edge) {
+
+    }
+
+    @Override
+    public void buildSettlement(Player player, Vertex vertex) {
+
+    }
+
+    @Override
+    public void buildCity(Player player, Vertex vertex) {
 
     }
 
@@ -65,5 +73,10 @@ public class GUIMainDummyImpl implements GUIMain {
     @Override
     public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
         return null;
+    }
+
+    @Override
+    public void moveThief(Player player, Player otherPlayer, Hex position) {
+
     }
 }
