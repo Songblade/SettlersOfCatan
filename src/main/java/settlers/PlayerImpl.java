@@ -196,9 +196,7 @@ public class PlayerImpl implements Player {
      */
     @Override
     public void addRoad(Edge road) {
-        if (roads.size() < 15) {
-            roads.add(road);
-        }
+        roads.add(road);
     }
 
     /**
@@ -206,11 +204,8 @@ public class PlayerImpl implements Player {
      */
     @Override
     public boolean addSettlement(Vertex settlement) {
-        if (settlements.size() < 5) {
-            settlements.add(settlement);
-            return increaseVictoryPoints(1);
-        }
-        return false;
+        settlements.add(settlement);
+        return increaseVictoryPoints(1);
     }
 
     /**
@@ -218,12 +213,9 @@ public class PlayerImpl implements Player {
      */
     @Override
     public boolean upgradeSettlement(Vertex city) {
-        if (cities.size() < 4) {
-            settlements.remove(city);
-            cities.add(city);
-            return increaseVictoryPoints(1);
-        }
-        return false;
+        settlements.remove(city);
+        cities.add(city);
+        return increaseVictoryPoints(1);
     }
 
     /**

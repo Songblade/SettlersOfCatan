@@ -42,6 +42,7 @@ public class MainImpl implements Main {
                 break;
             }
         }
+        assert thiefIsHere != null;
         // a dummy testGUI that doesn't actually show a board
         gui = testGUI;
     }
