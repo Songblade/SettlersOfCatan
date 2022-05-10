@@ -14,6 +14,8 @@ public class GUIMainImpl implements GUIMain {
     private Main main;
     private HashMap<Player,GUIPlayer> playerGUIs;
 
+    private boolean unlimitedResources = true;
+
     public GUIMainImpl(Main main) {
         this.main = main;
         playerGUIs = new HashMap();
@@ -28,15 +30,15 @@ public class GUIMainImpl implements GUIMain {
 
 
     public boolean canBuildRoad(Player player){
-        return main.getAvailableCitySpots(player).size() > 0 ;//&& main.playerElementsFor(player, Building.CITY);
+        return main.getAvailableCitySpots(player).size() > 0 && (main.playerElementsFor(player, Building.ROAD) || unlimitedResources);
     }
 
     public boolean canBuildSettlement(Player player){
-        return main.getAvailableSettlementSpots(player).size() > 0;//&& main.playerElementsFor(player, Building.SETTLEMENT);
+        return main.getAvailableSettlementSpots(player).size() > 0 && (main.playerElementsFor(player, Building.SETTLEMENT) || unlimitedResources);
     }
 
     public boolean canBuildCity(Player player){
-        return main.getAvailableRoadSpots(player).size() > 0 ;//&& main.playerElementsFor(player, Building.CITY);
+        return main.getAvailableRoadSpots(player).size() > 0 && (main.playerElementsFor(player, Building.CITY) || unlimitedResources);
     }
 
 
@@ -48,9 +50,12 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public void buildRoad(Player player, Edge edge){
         main.buildRoad(player,edge);
+
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setRoad(player,edge);
         }
+
+        updateResourceCounters();
     }
 
     /**
@@ -61,9 +66,12 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public void buildSettlement(Player player, Vertex vertex){
         main.buildSettlement(player,vertex);
+
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setSettlement(player,vertex);
         }
+
+        updateResourceCounters();
     }
 
     /**
@@ -74,9 +82,12 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public void buildCity(Player player, Vertex vertex){
         main.buildCity(player,vertex);
+
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setCity(player,vertex);
         }
+
+        updateResourceCounters();
     }
 
     /**

@@ -863,6 +863,12 @@ public class GUIPlayerImpl implements GUIPlayer{
         frame.requestFocusInWindow();
     }
 
+    private void finishThiefMove(Vertex location){
+        main.moveThief(player,location, thiefRequestSpot);
+        stealPreformed = true;
+        currentState = GUISTate.NONE;
+    }
+
     //Actions
 
     /**
@@ -990,9 +996,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.buildCity(player,vertex);
                     currentState = GUISTate.NONE;
                 }else if(currentState == GUISTate.THIEF){
-                    main.moveThief(player,vertex, thiefRequestSpot);
-                    stealPreformed = true;
-                    currentState = GUISTate.NONE;
+                    finishThiefMove(vertex);
                 }
                 disableVertexButtons();
                 focusFrame();
@@ -1038,8 +1042,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                             }
                         }
                     }else{
-                        main.moveThief(player,hex.getVertices()[0],hex);
-                        stealPreformed = true;
+                        finishThiefMove(hex.getVertices()[0]);
                     }
                 }
 
