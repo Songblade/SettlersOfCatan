@@ -10,12 +10,12 @@ public interface GUIPlayer {
     /**
      * Starts Player's turn
      */
-    void startTurn();
+    void startTurn(int roll);
 
     /**
      * Starts a settlement turn
      */
-    void startSettlementTurn(Set<Vertex> availableSpots);
+    Vertex startSettlementTurn(Set<Vertex> availableSpots);
 
     /**
      * Tells GUIPlayers to make a city
@@ -37,4 +37,10 @@ public interface GUIPlayer {
      * @param player controller of the road
      */
     void setRoad(Player player,Edge edge);
+
+    /**
+     * Updates the die counter. Disables the die counter outline
+     * @param roll the number which die counter should display
+     */
+    void updateDieCounter(int roll);
 }

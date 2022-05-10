@@ -37,7 +37,15 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public boolean canPreformAction(Action action) {
-        return true;
+        switch (action.type){
+            case CITY:
+                return main.getAvailableCitySpots(action.player).size() > 0;
+            case SETTLEMENT:
+                return main.getAvailableSettlementSpots(action.player).size() > 0;
+            case ROAD:
+                return main.getAvailableRoadSpots(action.player).size() > 0;
+        }
+        return false;
     }
 
     /**
@@ -134,8 +142,14 @@ public class GUIMainImpl implements GUIMain {
      * @param dieRoll the sum of both die rolls
      */
     @Override
-    public void startTurn(Player player, int dieRoll) {
+    public void startTurn(Player player, int dieRoll){
+        //Updates dice for all players
+        for(GUIPlayer gui : playerGUIs.values()){
+            gui.updateDieCounter(dieRoll);
+        }
 
+        //Starts player's turn
+        playerGUIs.get(player).startTurn(dieRoll);
     }
 
     /**
@@ -146,6 +160,6 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
-        return null;
+        return playerGUIs.get(player).startSettlementTurn(validSpots);
     }
 }

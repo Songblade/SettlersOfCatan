@@ -1,6 +1,7 @@
 settlers\gui\GUIPlayerImpl$3.class
 settlers\Action$ActionType.class
 settlers\MainImpl.class
+settlers\gui\GUIPlayerImpl$5.class
 settlers\gui\GUIPlayerImpl.class
 settlers\gui\GUIMainImpl.class
 settlers\gui\GUIPlayerImpl$2.class

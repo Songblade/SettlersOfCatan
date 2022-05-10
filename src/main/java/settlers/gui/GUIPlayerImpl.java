@@ -31,6 +31,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private final int boardOffsetX = 468;
     private final int boardOffsetY = 40;
     private final int standardObjectSize = 128;
+    private final int dieCounterSize = 256;
 
     //Button maps
     private HashMap<JButton,Hex> hexButtonMap = new HashMap<>();
@@ -61,6 +62,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     //Functional
     private boolean thisPlayerHasTurn = false;
     private boolean canPass = false;
+    private boolean mainPhase = false;
     private Vertex lastSettlementSpot = null;
     private Edge lastRoadSpot = null;
     private Action.ActionType currentAction = Action.ActionType.PASS;
@@ -464,13 +466,12 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
         }
 
-        //Places the die counter
-        int dieCounterSize = 256;
-
+        //Creates die counter
         dieCounter = createLabel("",64,0,1);
         dieCounter.setSize(dieCounterSize,dieCounterSize);
         dieCounter.setIcon(new ImageIcon(getNumberImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
 
+        //Creates die counter outline
         dieCounterOutline = createLabel("",64,0,2);
         dieCounterOutline.setSize(dieCounterSize,dieCounterSize);
         dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
@@ -553,12 +554,33 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Updates the die counter. Disables the die counter outline
+     * @param roll the number which die counter should display
+     */
+    public void updateDieCounter(int roll){
+        dieCounter.setIcon(new ImageIcon(getNumberImage(roll).getScaledInstance(dieCounterSize,dieCounterSize,0)));
+        dieCounterOutline.setIcon(new ImageIcon(getImage("")));
+    }
+
+    /**
+     * Enables the die counter outline
+     * @param roll the number whose color the die counter outline should display
+     */
+    private void enableDieCounterOutline(int roll){
+        dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(roll).getScaledInstance(dieCounterSize,dieCounterSize,0)));
+    }
+
+    /**
      * Starts Player's turn
      */
     @Override
-    public void startTurn(){
+    public void startTurn(int roll){
         thisPlayerHasTurn = true;
         canPass = true;
+        mainPhase = true;
+
+        enableDieCounterOutline(roll);
+
         while(thisPlayerHasTurn){
             try {
                 Thread.sleep(1);
@@ -569,7 +591,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         System.exit(666);
     }
 
-    public void startSettlementTurn(Set<Vertex> availableSpots){
+    public Vertex startSettlementTurn(Set<Vertex> availableSpots){
+        lastSettlementSpot = null;
         thisPlayerHasTurn = true;
         canPass = false;
         requestSettlementPlacementSP(availableSpots);
@@ -588,7 +611,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
         }
-
+        return lastSettlementSpot;
     }
 
     /**
@@ -596,7 +619,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void mapActions(){
         frame.getRootPane().registerKeyboardAction(passTurn(),KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
-        frame.getRootPane().registerKeyboardAction(passTurn(),KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        frame.getRootPane().registerKeyboardAction(requestRoadPlacement(),KeyStroke.getKeyStroke((char) 49),JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**
@@ -674,8 +697,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void requestSettlementPlacementSP(Set<Vertex> availableSpots){
         for(JButton button : vertexButtonMap.keySet()){
             if(availableSpots.contains(vertexButtonMap.get(button))){
-                button.setEnabled(true);
-                button.setVisible(true);
+                enableButton(button);
             }
         }
         currentAction = Action.ActionType.SETTLEMENT;
@@ -685,12 +707,21 @@ public class GUIPlayerImpl implements GUIPlayer{
         for(Edge edge : lastSettlementSpot.getEdges()){
             for(JButton button : edgeButtonMap.keySet()){
                 if(edgeButtonMap.get(button).equals(edge)){
-                    button.setEnabled(true);
-                    button.setVisible(true);
+                    enableButton(button);
                 }
             }
         }
         currentAction = Action.ActionType.ROAD;
+    }
+
+    private void enableButton(JButton button){
+        button.setEnabled(true);
+        button.setVisible(true);
+    }
+
+    private void disableButton(JButton button){
+        button.setEnabled(false);
+        button.setVisible(false);
     }
 
     /**
@@ -698,8 +729,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void disableHexButtons(){
         for(JButton button : hexButtonMap.keySet()){
-            button.setEnabled(false);
-            button.setVisible(false);
+            disableButton(button);
         }
     }
 
@@ -708,8 +738,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void disableVertexButtons(){
         for(JButton button : vertexButtonMap.keySet()){
-            button.setEnabled(false);
-            button.setVisible(false);
+            disableButton(button);
         }
     }
 
@@ -718,8 +747,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void disableEdgeButtons(){
         for(JButton button : edgeButtonMap.keySet()){
-            button.setEnabled(false);
-            button.setVisible(false);
+            disableButton(button);
         }
     }
 
@@ -728,8 +756,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void disablePlayerButtons(){
         for(JButton button : playerButtonMap.keySet()){
-            button.setEnabled(false);
-            button.setVisible(false);
+            disableButton(button);
         }
     }
 
@@ -738,8 +765,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void disableResourceButtons(){
         for(JButton button : edgeButtonMap.keySet()){
-            button.setEnabled(false);
-            button.setVisible(false);
+            disableButton(button);
         }
     }
 
@@ -751,6 +777,12 @@ public class GUIPlayerImpl implements GUIPlayer{
         disableResourceButtons();
     }
 
+    //Actions
+
+    /**
+     * Passes the turn
+     * @return
+     */
     private ActionListener passTurn(){
         return new AbstractAction() {
             @Override
@@ -764,7 +796,39 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
+    //Keybinds
+    /**
+     * Proscesses road building requests
+     * @return
+     */
+    private ActionListener requestRoadPlacement() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                settlers.Action action = new settlers.Action(player, Action.ActionType.SETTLEMENT);
+                //Checks if player can preform action
+                if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn){
+                    currentAction = Action.ActionType.ROAD;
+                    Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
+
+                    //Makes the right buttons visible
+                    for(JButton button : edgeButtonMap.keySet()){
+                        if(availableSpots.contains(edgeButtonMap.get(button))){
+                            enableButton(button);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
     //Buttons
+
+    /**
+     * Whenever a vertex button is clicked
+     * @param vertex the vertex whose button was clicked
+     * @return
+     */
     private ActionListener vertexButtonClickedAction(Vertex vertex){
         return new AbstractAction() {
             @Override
@@ -781,6 +845,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
+    /**
+     * Whenever an edge button is clicked
+     * @param edge the edge whose button was clicked
+     * @return
+     */
     private ActionListener edgeButtonClickedAction(Edge edge){
         return new AbstractAction() {
             @Override
