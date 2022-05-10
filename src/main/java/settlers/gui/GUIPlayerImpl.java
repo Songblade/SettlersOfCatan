@@ -10,10 +10,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.plaf.basic.BasicMenuUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -245,8 +242,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
-        button.setVisible(false);
-        button.setEnabled(false);
+        disableButton(button);
         button.setRolloverIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PointerHover.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
         button.setBounds(xPos + standardObjectSize / 4,yPos + standardObjectSize / 4,standardObjectSize/2,standardObjectSize/2);
 
@@ -588,14 +584,15 @@ public class GUIPlayerImpl implements GUIPlayer{
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
         }
-        System.exit(666);
     }
 
     public Vertex startSettlementTurn(Set<Vertex> availableSpots){
         lastSettlementSpot = null;
         thisPlayerHasTurn = true;
         canPass = false;
+
         requestSettlementPlacementSP(availableSpots);
+
         while(lastSettlementSpot == null){
             try {
                 Thread.sleep(1);
@@ -777,6 +774,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         disableResourceButtons();
     }
 
+    private void focusFrame(){
+        frame.requestFocusInWindow();
+    }
+
     //Actions
 
     /**
@@ -805,7 +806,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                settlers.Action action = new settlers.Action(player, Action.ActionType.SETTLEMENT);
+                settlers.Action action = new settlers.Action(player, Action.ActionType.ROAD);
                 //Checks if player can preform action
                 if(main.canPreformAction(action) && mainPhase && thisPlayerHasTurn){
                     currentAction = Action.ActionType.ROAD;
@@ -817,6 +818,8 @@ public class GUIPlayerImpl implements GUIPlayer{
                             enableButton(button);
                         }
                     }
+                }else{
+                    System.out.println("CanPreformAction: " + main.canPreformAction(action) + " mainPhase: " + mainPhase + " thisPlayerHasTurn: " + thisPlayerHasTurn);
                 }
             }
         };
@@ -840,6 +843,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.preformAction(action);
                     lastSettlementSpot = vertex;
                     currentAction = Action.ActionType.PASS;
+                    focusFrame();
                 }
             }
         };
@@ -861,6 +865,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.preformAction(action);
                     lastRoadSpot = edge;
                     currentAction = Action.ActionType.PASS;
+                    focusFrame();
                 }
             }
         };
