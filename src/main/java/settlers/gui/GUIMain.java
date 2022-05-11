@@ -95,4 +95,15 @@ public interface GUIMain {
      * @param position where the thief is being moved to
      */
     public void moveThief(Player player, Vertex location, Hex position);
+
+    /**
+     *Calls main.getAvailableThiefSpots
+     */
+    public Set<Hex> getAvailableThiefSpots();
+
+    /**
+     * Signals that the player had discarded resources down to the target amount
+     * @param player the player
+     */
+    public void playerHasTargetResources(Player player);
 }

@@ -79,4 +79,14 @@ public class GUIMainDummyImpl implements GUIMain {
     public void moveThief(Player player, Vertex vertex, Hex position) {
 
     }
+
+    @Override
+    public Set<Hex> getAvailableThiefSpots() {
+        return null;
+    }
+
+    @Override
+    public void playerHasTargetResources(Player player) {
+
+    }
 }
