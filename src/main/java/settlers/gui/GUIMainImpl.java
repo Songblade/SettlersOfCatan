@@ -14,7 +14,7 @@ public class GUIMainImpl implements GUIMain {
     private Main main;
     private HashMap<Player,GUIPlayer> playerGUIs;
 
-    private boolean unlimitedResources = true;
+    private boolean unlimitedResources = false;
 
     public GUIMainImpl(Main main) {
         this.main = main;
