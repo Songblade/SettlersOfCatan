@@ -16,6 +16,9 @@ public class GUIMainImpl implements GUIMain {
 
     private boolean unlimitedResources = true;
 
+    //Functional
+    HashSet<Player> playersWhoHaveNotDiscarded = new HashSet<>();
+
     public GUIMainImpl(Main main) {
         this.main = main;
         playerGUIs = new HashMap();
@@ -120,15 +123,6 @@ public class GUIMainImpl implements GUIMain {
         return main.getAvailableCitySpots(player);
     }
 
-    private boolean allPlayersHaveDiscarded(HashMap<Player,Integer> playerToRequiredCards){
-        for(Player plr : playerToRequiredCards.keySet()){
-            if(plr.getCardNumber() > playerToRequiredCards.get(plr)){
-                return false;
-            }
-        }
-        return true;
-    }
-
     /**
      * Updates all player's resource counters
      */
@@ -156,33 +150,36 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public void startTurn(Player player, int dieRoll){
+        //Updates dice and resources for all players
+        updateResourceCounters(dieRoll);
+
         //Forces players to discard half of their hand if they have more than 7 cards
         if(dieRoll == 7){
-            HashMap<Player,Integer> playerToRequiredCards = new HashMap<>();
 
             for(Player plr : main.getPlayers()){
                 if(plr.hasMoreThan7Cards()){
-                    playerGUIs.get(plr).discardHalfOfHand();
-                    playerToRequiredCards.put(plr,plr.getCardNumber()/2 + plr.getCardNumber() % 2);
+                    playerGUIs.get(plr).discardUntil(plr.getCardNumber()/2 + plr.getCardNumber() % 2);
+                    playersWhoHaveNotDiscarded.add(plr);
                 }
 
-                /**
-                while (!allPlayersHaveDiscarded(playerToRequiredCards)){
+
+                while (playersWhoHaveNotDiscarded.size() > 0){
                     try {
                         Thread.sleep(1);
+                        updateResourceCounters();
                     }catch (InterruptedException e){
                         throw new IllegalStateException("InterrupterException was thrown: " + e);
                     }
                 }
-                 */
             }
         }
 
-        //Updates dice and resources for all players
-        updateResourceCounters(dieRoll);
-
         //Starts player's turn
         playerGUIs.get(player).startTurn(dieRoll);
+    }
+
+    public Set<Hex> getAvailableThiefSpots(){
+        return main.getAvailableThiefSpots();
     }
 
     /**
@@ -213,5 +210,14 @@ public class GUIMainImpl implements GUIMain {
         updateResourceCounters();
 
         return playerGUIs.get(player).startSettlementTurn(validSpots);
+    }
+
+    @Override
+    public void playerHasTargetResources(Player player) {
+        if(playersWhoHaveNotDiscarded.contains(player)) {
+            playersWhoHaveNotDiscarded.remove(player);
+        }else{
+            throw new IllegalStateException("Tried to remove unlisted player from playersWhoHaveNotDiscarded");
+        }
     }
 }

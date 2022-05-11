@@ -57,6 +57,7 @@ public interface GUIPlayer {
 
     /**
      * Forces player to discard half of his hand
+     * @param target the amount the player must discard until
      */
-    void discardHalfOfHand();
+    public void discardUntil(int target);
 }

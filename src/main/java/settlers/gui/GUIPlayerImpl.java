@@ -60,7 +60,8 @@ public class GUIPlayerImpl implements GUIPlayer{
     private boolean thisPlayerHasTurn = false;
     private boolean canPass = false;
     private boolean mainPhase = false;
-    private boolean stealPreformed;
+    private boolean stealPreformed = false;
+    private int targetResourceAmount = 0;
     private Vertex lastSettlementSpot = null;
     private Edge lastRoadSpot = null;
     private Hex thiefRequestSpot = null;
@@ -440,6 +441,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 //Creates a button for the resource
                 JButton thisPlayerResourceButton = createButton(currentXOffset - xOffsetIncrement,550);
+                thisPlayerResourceButton.addActionListener(resourceButtonClickedAction(thisPlayerResourceButton));
                 resourceButtonMap.put(thisPlayerResourceButton,resource);
             }
         }
@@ -593,6 +595,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     @Override
     public void startTurn(int roll){
         enableDieCounterOutline(roll);
+        focusFrame();
 
         if(roll == 7){
             thisPlayerHasTurn = false;
@@ -600,7 +603,12 @@ public class GUIPlayerImpl implements GUIPlayer{
             stealPreformed = false;
 
             currentState = GUISTate.THIEF;
-            enableHexButtons();
+            Set<Hex> availableThiefSpots = main.getAvailableThiefSpots();
+            for(JButton button : hexButtonMap.keySet()){
+                if(availableThiefSpots.contains(hexButtonMap.get(button))){
+                    enableButton(button);
+                }
+            }
 
             while(!stealPreformed){
                 try {
@@ -654,10 +662,14 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * Forces player to discard half of his hand
+     * Forces player to discard  until @target
+     * @param target the amount the player must discard until
      */
-    public void discardHalfOfHand(){
-
+    public void discardUntil(int target){
+        canPass = false;
+        targetResourceAmount = target;
+        currentState = GUISTate.DISCARD;
+        enableButtons(resourceButtonMap.keySet());
     }
 
     /**
@@ -787,6 +799,19 @@ public class GUIPlayerImpl implements GUIPlayer{
         return result;
     }
 
+    /**
+     * Gets the total resource count of a player
+     * @param plr the player
+     * @return the total resource count of plr
+     */
+    private int getPlayerResourceCount(Player plr){
+        int total = 0;
+        for(Resource resource : plr.getResources().keySet()){
+            total += plr.getResources().get(resource);
+        }
+        return total;
+    }
+
     private void enableButton(JButton button){
         button.setEnabled(true);
         button.setVisible(true);
@@ -798,65 +823,31 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * enables all hex buttons
+     * Dnables all buttons within @buttons
+     * @param buttons the set of buttons
      */
-    private void enableHexButtons(){
-        for(JButton button : hexButtonMap.keySet()){
+    private void enableButtons(Set<JButton> buttons){
+        for(JButton button : buttons){
             enableButton(button);
         }
     }
 
     /**
-     * Makes all hex buttons invisible and disables them
+     * Disables all buttons within @buttons
+     * @param buttons the set of buttons
      */
-    private void disableHexButtons(){
-        for(JButton button : hexButtonMap.keySet()){
-            disableButton(button);
-        }
-    }
-
-    /**
-     * Makes all vertex buttons invisible and disables them
-     */
-    private void disableVertexButtons(){
-        for(JButton button : vertexButtonMap.keySet()){
-            disableButton(button);
-        }
-    }
-
-    /**
-     * Makes all edge buttons invisible and disables them
-     */
-    private void disableEdgeButtons(){
-        for(JButton button : edgeButtonMap.keySet()){
-            disableButton(button);
-        }
-    }
-
-    /**
-     * Makes all player buttons invisible and disables them
-     */
-    private void disablePlayerButtons(){
-        for(JButton button : playerButtonMap.keySet()){
-            disableButton(button);
-        }
-    }
-
-    /**
-     * Makes all resource buttons invisible and disables them
-     */
-    private void disableResourceButtons(){
-        for(JButton button : edgeButtonMap.keySet()){
+    private void disableButtons(Set<JButton> buttons){
+        for(JButton button : buttons){
             disableButton(button);
         }
     }
 
     private void disableAllButtons(){
-        disableHexButtons();
-        disableVertexButtons();
-        disableEdgeButtons();
-        disablePlayerButtons();
-        disableResourceButtons();
+        disableButtons(hexButtonMap.keySet());
+        disableButtons(vertexButtonMap.keySet());
+        disableButtons(edgeButtonMap.keySet());
+        disableButtons(resourceButtonMap.keySet());
+        disableButtons(playerButtonMap.keySet());
     }
 
     private void focusFrame(){
@@ -1001,7 +992,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }else if(currentState == GUISTate.THIEF){
                     finishThiefMove(vertex);
                 }
-                disableVertexButtons();
+                disableButtons(vertexButtonMap.keySet());
                 focusFrame();
             }
         };
@@ -1021,7 +1012,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     lastRoadSpot = edge;
                     currentState = GUISTate.NONE;
                 }
-                disableEdgeButtons();
+                disableButtons(edgeButtonMap.keySet());
                 focusFrame();
             }
         };
@@ -1049,8 +1040,29 @@ public class GUIPlayerImpl implements GUIPlayer{
                     }
                 }
 
-                disableHexButtons();
+                disableButtons(hexButtonMap.keySet());
                 focusFrame();
+            }
+        };
+    }
+
+    private ActionListener resourceButtonClickedAction(JButton button){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Resource resource = resourceButtonMap.get(button);
+                if(currentState == GUISTate.DISCARD){
+                    HashMap<Resource,Integer> toRemove = new HashMap<>();
+                    toRemove.put(resource,1);
+
+                    player.removeResources(toRemove);
+
+                    if(getPlayerResourceCount(player) <= targetResourceAmount){
+                        main.playerHasTargetResources(player);
+                        currentState = GUISTate.NONE;
+                        disableButtons(resourceButtonMap.keySet());
+                    }
+                }
             }
         };
     }
@@ -1058,5 +1070,5 @@ public class GUIPlayerImpl implements GUIPlayer{
 
 
 enum GUISTate{
-    NONE,ROAD,SETTLEMENT,CITY,THIEF
+    NONE,ROAD,SETTLEMENT,CITY,THIEF,DISCARD
 }
