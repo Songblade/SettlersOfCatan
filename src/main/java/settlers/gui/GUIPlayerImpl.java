@@ -244,7 +244,6 @@ public class GUIPlayerImpl implements GUIPlayer{
         JButton button = new JButton(new ImageIcon(icon));
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
         disableButton(button);
         button.setRolloverIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PointerHover.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
         button.setBounds(xPos + standardObjectSize / 4,yPos + standardObjectSize / 4,standardObjectSize/2,standardObjectSize/2);
@@ -594,11 +593,12 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     @Override
     public void startTurn(int roll){
+        System.out.println("Turn was started");
         enableDieCounterOutline(roll);
         focusFrame();
 
         if(roll == 7){
-            thisPlayerHasTurn = false;
+            thisPlayerHasTurn = true;
             canPass = false;
             stealPreformed = false;
 
@@ -666,6 +666,8 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param target the amount the player must discard until
      */
     public void discardUntil(int target){
+        System.out.println("discardUntil was called for player " + player.getID());
+        focusFrame();
         canPass = false;
         targetResourceAmount = target;
         currentState = GUISTate.DISCARD;
@@ -870,6 +872,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("player " + player + " tried to pass");
                 if(canPass){
                     disableAllButtons();
                     currentState = GUISTate.NONE;
@@ -887,7 +890,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentState != GUISTate.NONE && currentState != GUISTate.THIEF && mainPhase){
+                if(canPass){
                     disableAllButtons();
                     currentState = GUISTate.NONE;
                 }
@@ -1050,19 +1053,31 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean reEnableButtons = true;
+                disableButtons(resourceButtonMap.keySet());
+
+                System.out.println("Discard started");
                 Resource resource = resourceButtonMap.get(button);
                 if(currentState == GUISTate.DISCARD){
                     HashMap<Resource,Integer> toRemove = new HashMap<>();
                     toRemove.put(resource,1);
 
-                    player.removeResources(toRemove);
+                    System.out.print("+");
+                    System.out.print("Success: " + player.removeResources(toRemove));
+                    System.out.println("+");
 
                     if(getPlayerResourceCount(player) <= targetResourceAmount){
                         main.playerHasTargetResources(player);
                         currentState = GUISTate.NONE;
-                        disableButtons(resourceButtonMap.keySet());
+                        reEnableButtons = false;
                     }
+
+                    System.out.println("Discard finished");
+                }else{
+                    System.out.println("Can't discard because state is " + currentState);
                 }
+                focusFrame();
+                if(reEnableButtons)enableButtons(resourceButtonMap.keySet());
             }
         };
     }

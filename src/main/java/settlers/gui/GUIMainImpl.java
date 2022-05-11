@@ -153,26 +153,27 @@ public class GUIMainImpl implements GUIMain {
         //Updates dice and resources for all players
         updateResourceCounters(dieRoll);
 
-        //Forces players to discard half of their hand if they have more than 7 cards
+        //Forces players to discard half of their hand if they have more than 7 cards. Buggy so commented out
+        /**
         if(dieRoll == 7){
 
-            for(Player plr : main.getPlayers()){
-                if(plr.hasMoreThan7Cards()){
-                    playerGUIs.get(plr).discardUntil(plr.getCardNumber()/2 + plr.getCardNumber() % 2);
+            for(Player plr : main.getPlayers()) {
+                if (plr.hasMoreThan7Cards()) {
+                    playerGUIs.get(plr).discardUntil(plr.getCardNumber() / 2 + plr.getCardNumber() % 2);
                     playersWhoHaveNotDiscarded.add(plr);
                 }
+            }
 
 
-                while (playersWhoHaveNotDiscarded.size() > 0){
-                    try {
-                        Thread.sleep(1);
-                        updateResourceCounters();
-                    }catch (InterruptedException e){
-                        throw new IllegalStateException("InterrupterException was thrown: " + e);
-                    }
+            while (playersWhoHaveNotDiscarded.size() > 0){
+                try {
+                    Thread.sleep(1);
+                    updateResourceCounters();
+                }catch (InterruptedException e){
+                    throw new IllegalStateException("InterrupterException was thrown: " + e);
                 }
             }
-        }
+        }*/
 
         //Starts player's turn
         playerGUIs.get(player).startTurn(dieRoll);
