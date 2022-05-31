@@ -15,74 +15,81 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MainTest {
 
-    private MainImpl main;
+    private final MainImpl main;
 
     public MainTest() {
         main = new MainImpl(4, new GUIMainDummyImpl());
     }
 
-    // start by testing playerElementsFor
+    // start by testing playerCanBuild
     // test that works if player has exactly right elements for every project, road
     // and that doesn't work if player has fewer
     @Test
     public void canBuildRoad() {
         Player player = new PlayerImpl();
-        assertFalse(main.playerElementsFor(player, Building.ROAD));
+        main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+        assertFalse(main.playerCanBuild(player, Building.ROAD));
+
         player.addResource(Resource.WOOD);
-        assertFalse(main.playerElementsFor(player, Building.ROAD));
+        assertFalse(main.playerCanBuild(player, Building.ROAD));
+
         player.addResource(Resource.BRICK);
-        assertTrue(main.playerElementsFor(player, Building.ROAD));
+        assertTrue(main.playerCanBuild(player, Building.ROAD));
     }
 
     // settlement
     @Test
     public void canBuildSettlement() {
         Player player = new PlayerImpl();
-        assertFalse(main.playerElementsFor(player, Building.SETTLEMENT));
+        assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
         player.addResource(Resource.WOOD);
-        assertFalse(main.playerElementsFor(player, Building.SETTLEMENT));
+        assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
         player.addResource(Resource.BRICK);
-        assertFalse(main.playerElementsFor(player, Building.SETTLEMENT));
+        assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
         player.addResource(Resource.WHEAT);
-        assertFalse(main.playerElementsFor(player, Building.SETTLEMENT));
+        assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
         player.addResource(Resource.SHEEP);
-        assertTrue(main.playerElementsFor(player, Building.SETTLEMENT));
+        assertTrue(main.playerCanBuild(player, Building.SETTLEMENT));
     }
 
     // city
     @Test
     public void canBuildCity() {
         Player player = new PlayerImpl();
-        assertFalse(main.playerElementsFor(player, Building.CITY));
+        main.buildSettlement(player, main.getBoard().getVertices()[0]);
+        assertFalse(main.playerCanBuild(player, Building.CITY));
+
         player.addResource(Resource.WHEAT);
-        assertFalse(main.playerElementsFor(player, Building.CITY));
+        assertFalse(main.playerCanBuild(player, Building.CITY));
         player.addResource(Resource.WHEAT);
-        assertFalse(main.playerElementsFor(player, Building.CITY));
+        assertFalse(main.playerCanBuild(player, Building.CITY));
         player.addResource(Resource.ORE);
-        assertFalse(main.playerElementsFor(player, Building.CITY));
+        assertFalse(main.playerCanBuild(player, Building.CITY));
         player.addResource(Resource.ORE);
-        assertFalse(main.playerElementsFor(player, Building.CITY));
+        assertFalse(main.playerCanBuild(player, Building.CITY));
         player.addResource(Resource.ORE);
-        assertTrue(main.playerElementsFor(player, Building.CITY));
+        assertTrue(main.playerCanBuild(player, Building.CITY));
     }
 
     // development card
     @Test
     public void canBuyVelly() {
         Player player = new PlayerImpl();
-        assertFalse(main.playerElementsFor(player, Building.DEVELOPMENT_CARD));
+        assertFalse(main.playerCanBuild(player, Building.DEVELOPMENT_CARD));
         player.addResource(Resource.WHEAT);
-        assertFalse(main.playerElementsFor(player, Building.DEVELOPMENT_CARD));
+        assertFalse(main.playerCanBuild(player, Building.DEVELOPMENT_CARD));
         player.addResource(Resource.SHEEP);
-        assertFalse(main.playerElementsFor(player, Building.DEVELOPMENT_CARD));
+        assertFalse(main.playerCanBuild(player, Building.DEVELOPMENT_CARD));
         player.addResource(Resource.ORE);
-        assertTrue(main.playerElementsFor(player, Building.DEVELOPMENT_CARD));
+        assertTrue(main.playerCanBuild(player, Building.DEVELOPMENT_CARD));
     }
 
     // test that works if player has more than necessary
     @Test
     public void worksIfMoreThanNecessary() {
         Player player = new PlayerImpl();
+        main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+
         player.addResource(Resource.WOOD);
         player.addResource(Resource.BRICK);
         player.addResource(Resource.WOOD);
@@ -90,7 +97,7 @@ public class MainTest {
         player.addResource(Resource.WHEAT);
         player.addResource(Resource.SHEEP);
         player.addResource(Resource.ORE);
-        assertTrue(main.playerElementsFor(player, Building.ROAD));
+        assertTrue(main.playerCanBuild(player, Building.ROAD));
     }
 
     // test that if a player has 5 settlements, it can't build another. I am just assuming it will work equally for the others
@@ -105,10 +112,10 @@ public class MainTest {
 
         Vertex[] vertices = main.getBoard().getVertices();
         for (int i = 0; i < 50; i += 10) { // builds 5, spread out settlements
-            assertTrue(main.playerElementsFor(player, Building.SETTLEMENT));
+            assertTrue(main.playerCanBuild(player, Building.SETTLEMENT));
             main.buildSettlement(player, vertices[i]); // this is setup, so no resource cost
         }
-        assertFalse(main.playerElementsFor(player, Building.SETTLEMENT));
+        assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
     }
 
     // getAvailableSettlementSpots

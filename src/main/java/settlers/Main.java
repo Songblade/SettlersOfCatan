@@ -20,7 +20,7 @@ public interface Main {
      * @param project that the player wants to build
      * @return true if the player has enough resources, false otherwise
      */
-    boolean playerElementsFor(Player player, Building project);
+    boolean playerCanBuild(Player player, Building project);
 
     /**
      * @return spots where the thief can be moved to
@@ -119,32 +119,3 @@ public interface Main {
     // I will add versions of canTrade() and trade() for that
 
 }
-/**
-enum Building {
-    ROAD(15,1, 1, 0, 0, 0),
-    SETTLEMENT(5,1, 1, 1, 0, 1),
-    CITY(4,0, 0, 2, 3, 0),
-    DEVELOPMENT_CARD(25,0, 0, 1, 1, 1);
-
-    Building(int maxNumber, int brickNumber, int woodNumber, int wheatNumber, int oreNumber, int sheepNumber) {
-        this.maxNumber = maxNumber;
-        resources = new HashMap<>();
-        resources.put(Resource.BRICK, brickNumber);
-        resources.put(Resource.WOOD, woodNumber);
-        resources.put(Resource.WHEAT, wheatNumber);
-        resources.put(Resource.ORE, oreNumber);
-        resources.put(Resource.SHEEP, sheepNumber);
-    }
-
-    private final Map<Resource, Integer> resources;
-    private final int maxNumber;
-
-    public Map<Resource, Integer> getResources() {
-        return Collections.unmodifiableMap(resources);
-    }
-    public int getMax() {
-        return maxNumber;
-    }
-
-
-}*/

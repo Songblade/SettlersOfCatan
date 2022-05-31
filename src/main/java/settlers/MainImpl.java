@@ -12,12 +12,12 @@ import java.util.*;
 
 public class MainImpl implements Main {
 
-    private Board board;
-    private Player[] players;
+    private final Board board;
+    private final Player[] players;
     private GUIMain gui;
     private boolean isMainPhase; // starts automatically as false
     private Hex thiefIsHere; // so we don't have to look for it
-    private List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
+    private final List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
 
     public MainImpl(int numberOfPlayers) {
         this(numberOfPlayers, new GUIMainDummyImpl());
@@ -254,15 +254,16 @@ public class MainImpl implements Main {
 
 
     /**
-     * Returns whether or not the player has enough resources to build the project
-     * And also whether or not the player has reached the maximum number of that project
+     * I am going to refactor this method, call it canBuild, and make it check if the player has the resources
+     * And if they have reached the maximum number they can build
+     * And also check if they have anywhere to put it
      * The maximum numbers are 15 roads, 5 settlements, and 4 cities
      * @param player  that wants to build
      * @param project that the player wants to build
      * @return true if the player has enough resources, false otherwise
      */
     @Override
-    public boolean playerElementsFor(Player player, Building project) {
+    public boolean playerCanBuild(Player player, Building project) {
         Map<Resource, Integer> requirements = project.getResources();
         for (Resource resource : requirements.keySet()) {
             if (player.getResources().getOrDefault(resource, 0) < requirements.get(resource)) {
@@ -275,12 +276,21 @@ public class MainImpl implements Main {
         switch (project) {
             case ROAD:
                 projectNumber = player.getRoads().size();
+                if (getAvailableRoadSpots(player).isEmpty()) {
+                    return false;
+                }
                 break;
             case SETTLEMENT:
                 projectNumber = player.getSettlements().size();
+                if (getAvailableSettlementSpots(player).isEmpty()) {
+                    return false;
+                }
                 break;
             case CITY:
                 projectNumber = player.getCities().size();
+                if (getAvailableCitySpots(player).isEmpty()) {
+                    return false;
+                }
                 break;
             default:
                 projectNumber = 0; // so there will be no problems

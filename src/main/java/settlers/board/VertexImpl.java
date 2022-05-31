@@ -4,16 +4,15 @@ import settlers.Player;
 import settlers.card.Resource;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public class VertexImpl implements Vertex {
 
-    private Vertex[] adjVertices; // adjacent vertices
-    private Edge[] adjEdges; // adjacent edges
+    private final Vertex[] adjVertices; // adjacent vertices
+    private final Edge[] adjEdges; // adjacent edges
     private Resource port; // if you would get a port by building a settlement here, this is what you would get
     private Player player; // if a player built a settlement or city here, this is that player
     private boolean isCity; // if this is a city or not, starts false by default
-    private int id;
+    private final int id;
 
     public VertexImpl() {
         adjVertices = new Vertex[3];
@@ -152,18 +151,18 @@ public class VertexImpl implements Vertex {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VertexImpl vertex = (VertexImpl) o;
+        //VertexImpl vertex = (VertexImpl) o;
         return this.hashCode() == o.hashCode();
         //return Arrays.equals(adjEdges, vertex.adjEdges) && port == vertex.port;
     }
-/**
+/*
     @Override
     public int hashCode() {
         int result = Objects.hash(port);
         result = 31 * result + Arrays.hashCode(adjEdges);
         return result;
     }
-    **/
+    */
 
     /**
      * Returns a string representation of the object. In general, the
@@ -190,7 +189,7 @@ public class VertexImpl implements Vertex {
     public String toString() {
         String toStringV = "V: " + id;
         if (player != null) {
-            toStringV += "\n\tplayer " + player.toString();
+            toStringV += "\n\tplayer " + player;
         }
         return toStringV;
     }
