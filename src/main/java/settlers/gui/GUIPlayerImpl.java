@@ -67,9 +67,6 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Hex thiefRequestSpot = null;
     private GUISTate currentState = GUISTate.NONE;
 
-    //Events
-    private ActionListener events;
-
 
     public GUIPlayerImpl(GUIMain main,Board board, Player player, List<Player> players){
         this.main = main;
@@ -223,6 +220,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         JTextField field = new JTextField(text);
         field.setBounds(xPos,yPos,standardObjectSize,standardObjectSize);
         field.setEditable(false);
+        field.setFocusable(false);
         field.setOpaque(false);
         field.setBorder(BorderFactory.createEmptyBorder());
         field.setFont(new Font(Font.DIALOG,Font.BOLD,24));
@@ -1050,6 +1048,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                /**
+                System.out.println("Discard Action Started");
                 boolean reEnableButtons = true;
                 disableButtons(resourceButtonMap.keySet());
 
@@ -1068,8 +1068,10 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 }
 
-                focusFrame();
                 if(reEnableButtons)enableButtons(resourceButtonMap.keySet());
+                 */
+                //focusFrame();
+                //System.out.println("Discard Action Finished");
             }
         };
     }
