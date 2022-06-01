@@ -409,6 +409,19 @@ public class MainImpl implements Main {
     }
 
     /**
+     * Gets the locations where this player can build a road, given that the player is going to build
+     * on this edge first. Used to find the second edge for playRoadBuilding
+     *
+     * @param player      building the road
+     * @param roadToBuild where the player will build a road, but hasn't yet
+     * @return a Set of Edges where this player could build once they build roadToBuild
+     */
+    @Override
+    public Set<Edge> getAvailableRoadSpotsGivenEdge(Player player, Edge roadToBuild) {
+        return null;
+    }
+
+    /**
      * Gets the settlements that this player could upgrade into cities
      *
      * @param player building the city
@@ -558,17 +571,54 @@ public class MainImpl implements Main {
     }
 
     /**
-     * Makes the player use a development card
+     * Plays the player's Knight development card, lets them move the robber and steals a resource
      *
-     * @param player      playing the card
-     * @param development card being played
-     * @throws IllegalArgumentException if the development card is of type VICTORY_POINT
-     * @throws IllegalStateException    if the player does not have that development card
-     *                                  I may decide to make the effects of the card decided by the enum directly
+     * @param stealer    playing the knight card
+     * @param settlement being stolen from
+     * @param location   hexagon being blocked, adjacent to the settlement
+     * @return true if the card was successfully played, false if the player didn't have the card
      */
     @Override
-    public void playDevelopmentCard(Player player, DevelopmentCard development) {
+    public boolean playKnight(Player stealer, Vertex settlement, Hex location) {
+        return false;
+    }
 
+    /**
+     * Plays the player's Year of Plenty development card, gives them 2 resources of their choice
+     *
+     * @param player         playing the card
+     * @param firstResource  the player receives
+     * @param secondResource the player receives
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    @Override
+    public boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource) {
+        return false;
+    }
+
+    /**
+     * Plays the player's Monopoly development card, stealing every copy of that resource from all other players
+     *
+     * @param player   playing the card
+     * @param resource the player steals from all other players
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    @Override
+    public boolean playMonopoly(Player player, Resource resource) {
+        return false;
+    }
+
+    /**
+     * Plays the player's Road Building development card, letting them place 2 roads
+     *
+     * @param player         playing the card
+     * @param firstLocation  an empty edge where this player can build
+     * @param secondLocation an empty edge where this player can build after building firstLocation
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    @Override
+    public boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation) {
+        return false;
     }
 
     /**
