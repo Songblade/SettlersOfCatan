@@ -1048,8 +1048,6 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /**
-                System.out.println("Discard Action Started");
                 boolean reEnableButtons = true;
                 disableButtons(resourceButtonMap.keySet());
 
@@ -1069,9 +1067,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }
 
                 if(reEnableButtons)enableButtons(resourceButtonMap.keySet());
-                 */
-                //focusFrame();
-                //System.out.println("Discard Action Finished");
+                focusFrame();
             }
         };
     }

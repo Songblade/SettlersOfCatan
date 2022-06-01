@@ -161,8 +161,6 @@ public class GUIMainImpl implements GUIMain {
                 throw new IllegalStateException("InterrupterException was thrown: " + e);
             }
         }
-
-        System.out.println("Discards have finished");
     }
 
     /**
