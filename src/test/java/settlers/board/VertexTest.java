@@ -312,8 +312,8 @@ class TestPlayer implements Player {
      * @param development card being added to the player's hand
      */
     @Override
-    public void addDevelopmentCard(DevelopmentCard development) {
-
+    public boolean addDevelopmentCard(DevelopmentCard development) {
+        return false;
     }
 
     /**

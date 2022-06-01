@@ -18,6 +18,8 @@ public class MainImpl implements Main {
     private boolean isMainPhase; // starts automatically as false
     private Hex thiefIsHere; // so we don't have to look for it
     private final List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
+    private final Queue<DevelopmentCard> vellyDeck; // where all the vellies are kept
+    // I made it a queue, because we only ever take from the top
 
     public MainImpl(int numberOfPlayers) {
         this(numberOfPlayers, new GUIMainDummyImpl());
@@ -45,6 +47,8 @@ public class MainImpl implements Main {
         assert thiefIsHere != null;
         // a dummy testGUI that doesn't actually show a board
         gui = testGUI;
+        // now we set up the vellyDeck
+        vellyDeck = shuffleVellyDeck();
     }
 
     /**
@@ -62,6 +66,32 @@ public class MainImpl implements Main {
             turnOrder.add(numberSource.remove(generator.nextInt(i)));
         }
         return turnOrder;
+    }
+
+    private Queue<DevelopmentCard> shuffleVellyDeck() {
+        // first I add all the cards to an unshuffled deck
+        List<DevelopmentCard> unshuffledDeck = new ArrayList<>();
+        for (int i = 0; i < 14; i++) {
+            unshuffledDeck.add(DevelopmentCard.KNIGHT);
+        }
+        for (int i = 0; i < 5; i++) {
+            unshuffledDeck.add(DevelopmentCard.VICTORY_POINT);
+        }
+        unshuffledDeck.add(DevelopmentCard.MONOPOLY);
+        unshuffledDeck.add(DevelopmentCard.MONOPOLY);
+        unshuffledDeck.add(DevelopmentCard.YEAR_OF_PLENTY);
+        unshuffledDeck.add(DevelopmentCard.YEAR_OF_PLENTY);
+        unshuffledDeck.add(DevelopmentCard.ROAD_BUILDING);
+        unshuffledDeck.add(DevelopmentCard.ROAD_BUILDING);
+
+        // now we shuffle the cards into a new deck in a random order
+        Random random = new Random();
+        Queue<DevelopmentCard> shuffledDeck = new LinkedList<>();
+        for (int i = 25; i > 0; i--) { // should add all the cards in randomly
+            shuffledDeck.add(unshuffledDeck.remove(random.nextInt(i)));
+        }
+
+        return shuffledDeck;
     }
 
     /*
@@ -292,6 +322,10 @@ public class MainImpl implements Main {
                     return false;
                 }
                 break;
+            case DEVELOPMENT_CARD:
+                projectNumber = vellyDeck.size();
+                // since it isn't put down anywhere, we don't need to check that the board is good
+                break;
             default:
                 projectNumber = 0; // so there will be no problems
         }
@@ -508,7 +542,17 @@ public class MainImpl implements Main {
      */
     @Override
     public void buildDevelopmentCard(Player player) {
-
+        // removes a card from the deck and gives it to the player
+        // isWinner is true if this point card made the player win the game
+        boolean isWinner = player.addDevelopmentCard(vellyDeck.remove());
+        // remove expended resources, only in main phase to help testing
+        if (isMainPhase) {
+            player.removeResources(Building.DEVELOPMENT_CARD.getResources());
+        }
+        // no need to report to GUI, it will know from the method ending
+        if (isWinner) { // if the player has won, end the game
+            endGame(player);
+        }
     }
 
     /**

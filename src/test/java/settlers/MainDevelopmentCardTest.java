@@ -71,7 +71,7 @@ public class MainDevelopmentCardTest {
         }
         Map<DevelopmentCard, Integer> playerDeck = player.getDevelopmentCards();
         assertEquals(14, playerDeck.get(DevelopmentCard.KNIGHT));
-        assertEquals(6, playerDeck.get(DevelopmentCard.VICTORY_POINT));
+        assertEquals(5, playerDeck.get(DevelopmentCard.VICTORY_POINT));
         assertEquals(2, playerDeck.get(DevelopmentCard.MONOPOLY));
         assertEquals(2, playerDeck.get(DevelopmentCard.YEAR_OF_PLENTY));
         assertEquals(2, playerDeck.get(DevelopmentCard.ROAD_BUILDING));
