@@ -323,7 +323,9 @@ public class MainImpl implements Main {
                 }
                 break;
             case DEVELOPMENT_CARD:
-                projectNumber = vellyDeck.size();
+                projectNumber = 25 - vellyDeck.size();
+                // I do 25 -, so that it will start with 0, much less than the max, but will reach the
+                    // max of 25 when all vellies are purchased
                 // since it isn't put down anywhere, we don't need to check that the board is good
                 break;
             default:
