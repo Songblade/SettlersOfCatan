@@ -20,7 +20,7 @@ public interface Main {
      * @param project that the player wants to build
      * @return true if the player has enough resources, false otherwise
      */
-    boolean playerElementsFor(Player player, Building project);
+    boolean playerCanBuild(Player player, Building project);
 
     /**
      * @return spots where the thief can be moved to
@@ -40,6 +40,15 @@ public interface Main {
      * @return a Set of Edges where this player could build
      */
     Set<Edge> getAvailableRoadSpots(Player player);
+
+    /**
+     * Gets the locations where this player can build a road, given that the player is going to build
+     * on this edge first. Used to find the second edge for playRoadBuilding
+     * @param player building the road
+     * @param roadToBuild where the player will build a road, but hasn't yet
+     * @return a Set of Edges where this player could build once they build roadToBuild
+     */
+    Set<Edge> getAvailableRoadSpotsGivenEdge(Player player, Edge roadToBuild);
 
     /**
      * Gets the settlements that this player could upgrade into cities
@@ -86,14 +95,39 @@ public interface Main {
     void buildDevelopmentCard(Player player);
 
     /**
-     * Makes the player use a development card
-     * @param player playing the card
-     * @param development card being played
-     * @throws IllegalArgumentException if the development card is of type VICTORY_POINT
-     * @throws IllegalStateException if the player does not have that development card
-     * I may decide to make the effects of the card decided by the enum directly
+     * Plays the player's Knight development card, lets them move the robber and steals a resource
+     * @param stealer playing the knight card
+     * @param settlement being stolen from
+     * @param location hexagon being blocked, adjacent to the settlement
+     * @return true if the card was successfully played, false if the player didn't have the card
      */
-    void playDevelopmentCard(Player player, DevelopmentCard development);
+    boolean playKnight(Player stealer, Vertex settlement, Hex location);
+
+    /**
+     * Plays the player's Year of Plenty development card, gives them 2 resources of their choice
+     * @param player playing the card
+     * @param firstResource the player receives
+     * @param secondResource the player receives
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource);
+
+    /**
+     * Plays the player's Monopoly development card, stealing every copy of that resource from all other players
+     * @param player playing the card
+     * @param resource the player steals from all other players
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    boolean playMonopoly(Player player, Resource resource);
+
+    /**
+     * Plays the player's Road Building development card, letting them place 2 roads
+     * @param player playing the card
+     * @param firstLocation an empty edge where this player can build
+     * @param secondLocation an empty edge where this player can build after building firstLocation
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation);
 
     /**
      * Checks if this trade with the bank would work
@@ -119,32 +153,3 @@ public interface Main {
     // I will add versions of canTrade() and trade() for that
 
 }
-/**
-enum Building {
-    ROAD(15,1, 1, 0, 0, 0),
-    SETTLEMENT(5,1, 1, 1, 0, 1),
-    CITY(4,0, 0, 2, 3, 0),
-    DEVELOPMENT_CARD(25,0, 0, 1, 1, 1);
-
-    Building(int maxNumber, int brickNumber, int woodNumber, int wheatNumber, int oreNumber, int sheepNumber) {
-        this.maxNumber = maxNumber;
-        resources = new HashMap<>();
-        resources.put(Resource.BRICK, brickNumber);
-        resources.put(Resource.WOOD, woodNumber);
-        resources.put(Resource.WHEAT, wheatNumber);
-        resources.put(Resource.ORE, oreNumber);
-        resources.put(Resource.SHEEP, sheepNumber);
-    }
-
-    private final Map<Resource, Integer> resources;
-    private final int maxNumber;
-
-    public Map<Resource, Integer> getResources() {
-        return Collections.unmodifiableMap(resources);
-    }
-    public int getMax() {
-        return maxNumber;
-    }
-
-
-}*/

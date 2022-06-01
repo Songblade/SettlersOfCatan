@@ -117,11 +117,12 @@ public class PlayerImpl implements Player {
      * @param development card being added to the player's hand
      */
     @Override
-    public void addDevelopmentCard(DevelopmentCard development) {
+    public boolean addDevelopmentCard(DevelopmentCard development) {
         vellies.put(development, vellies.getOrDefault(development, 0) + 1);
         if (development == DevelopmentCard.VICTORY_POINT) {
-            victoryPoints++;
+            return(increaseVictoryPoints(1));
         }
+        return false; // since it wasn't a point card, the player can't win
     }
 
     /**

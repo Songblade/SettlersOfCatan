@@ -44,8 +44,9 @@ public interface Player {
 
     /**
      * @param development card being added to the player's hand
+     * @return whether or not this adds a point allowing the player to win
      */
-    void addDevelopmentCard(DevelopmentCard development);
+    boolean addDevelopmentCard(DevelopmentCard development);
 
     /**
      * @param development card being removed from the player's hand

@@ -29,12 +29,6 @@ public class HexTest {
     }
 
     // Tests for set and get number
-    // makes sure get number throws when not set yet
-    @Test
-    public void getNumberThrowsUnset() {
-        Hex hex = new HexImpl(Resource.WOOD);
-        //assertThrows(IllegalStateException.class, hex::getNumber);
-    }
 
     // makes sure set number throws when number is out of bounds
     @Test

@@ -12,12 +12,14 @@ import java.util.*;
 
 public class MainImpl implements Main {
 
-    private Board board;
-    private Player[] players;
+    private final Board board;
+    private final Player[] players;
     private GUIMain gui;
     private boolean isMainPhase; // starts automatically as false
     private Hex thiefIsHere; // so we don't have to look for it
-    private List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
+    private final List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
+    private final Queue<DevelopmentCard> vellyDeck; // where all the vellies are kept
+    // I made it a queue, because we only ever take from the top
 
     public MainImpl(int numberOfPlayers) {
         this(numberOfPlayers, new GUIMainDummyImpl());
@@ -45,6 +47,8 @@ public class MainImpl implements Main {
         assert thiefIsHere != null;
         // a dummy testGUI that doesn't actually show a board
         gui = testGUI;
+        // now we set up the vellyDeck
+        vellyDeck = shuffleVellyDeck();
     }
 
     /**
@@ -62,6 +66,32 @@ public class MainImpl implements Main {
             turnOrder.add(numberSource.remove(generator.nextInt(i)));
         }
         return turnOrder;
+    }
+
+    private Queue<DevelopmentCard> shuffleVellyDeck() {
+        // first I add all the cards to an unshuffled deck
+        List<DevelopmentCard> unshuffledDeck = new ArrayList<>();
+        for (int i = 0; i < 14; i++) {
+            unshuffledDeck.add(DevelopmentCard.KNIGHT);
+        }
+        for (int i = 0; i < 5; i++) {
+            unshuffledDeck.add(DevelopmentCard.VICTORY_POINT);
+        }
+        unshuffledDeck.add(DevelopmentCard.MONOPOLY);
+        unshuffledDeck.add(DevelopmentCard.MONOPOLY);
+        unshuffledDeck.add(DevelopmentCard.YEAR_OF_PLENTY);
+        unshuffledDeck.add(DevelopmentCard.YEAR_OF_PLENTY);
+        unshuffledDeck.add(DevelopmentCard.ROAD_BUILDING);
+        unshuffledDeck.add(DevelopmentCard.ROAD_BUILDING);
+
+        // now we shuffle the cards into a new deck in a random order
+        Random random = new Random();
+        Queue<DevelopmentCard> shuffledDeck = new LinkedList<>();
+        for (int i = 25; i > 0; i--) { // should add all the cards in randomly
+            shuffledDeck.add(unshuffledDeck.remove(random.nextInt(i)));
+        }
+
+        return shuffledDeck;
     }
 
     /*
@@ -254,15 +284,16 @@ public class MainImpl implements Main {
 
 
     /**
-     * Returns whether or not the player has enough resources to build the project
-     * And also whether or not the player has reached the maximum number of that project
+     * I am going to refactor this method, call it canBuild, and make it check if the player has the resources
+     * And if they have reached the maximum number they can build
+     * And also check if they have anywhere to put it
      * The maximum numbers are 15 roads, 5 settlements, and 4 cities
      * @param player  that wants to build
      * @param project that the player wants to build
      * @return true if the player has enough resources, false otherwise
      */
     @Override
-    public boolean playerElementsFor(Player player, Building project) {
+    public boolean playerCanBuild(Player player, Building project) {
         Map<Resource, Integer> requirements = project.getResources();
         for (Resource resource : requirements.keySet()) {
             if (player.getResources().getOrDefault(resource, 0) < requirements.get(resource)) {
@@ -275,12 +306,27 @@ public class MainImpl implements Main {
         switch (project) {
             case ROAD:
                 projectNumber = player.getRoads().size();
+                if (getAvailableRoadSpots(player).isEmpty()) {
+                    return false;
+                }
                 break;
             case SETTLEMENT:
                 projectNumber = player.getSettlements().size();
+                if (getAvailableSettlementSpots(player).isEmpty()) {
+                    return false;
+                }
                 break;
             case CITY:
                 projectNumber = player.getCities().size();
+                if (getAvailableCitySpots(player).isEmpty()) {
+                    return false;
+                }
+                break;
+            case DEVELOPMENT_CARD:
+                projectNumber = 25 - vellyDeck.size();
+                // I do 25 -, so that it will start with 0, much less than the max, but will reach the
+                    // max of 25 when all vellies are purchased
+                // since it isn't put down anywhere, we don't need to check that the board is good
                 break;
             default:
                 projectNumber = 0; // so there will be no problems
@@ -360,6 +406,19 @@ public class MainImpl implements Main {
         roadSpots.retainAll(board.getEmptyEdges());
         roadSpots.remove(null);
         return roadSpots;
+    }
+
+    /**
+     * Gets the locations where this player can build a road, given that the player is going to build
+     * on this edge first. Used to find the second edge for playRoadBuilding
+     *
+     * @param player      building the road
+     * @param roadToBuild where the player will build a road, but hasn't yet
+     * @return a Set of Edges where this player could build once they build roadToBuild
+     */
+    @Override
+    public Set<Edge> getAvailableRoadSpotsGivenEdge(Player player, Edge roadToBuild) {
+        return null;
     }
 
     /**
@@ -498,21 +557,68 @@ public class MainImpl implements Main {
      */
     @Override
     public void buildDevelopmentCard(Player player) {
-
+        // removes a card from the deck and gives it to the player
+        // isWinner is true if this point card made the player win the game
+        boolean isWinner = player.addDevelopmentCard(vellyDeck.remove());
+        // remove expended resources, only in main phase to help testing
+        if (isMainPhase) {
+            player.removeResources(Building.DEVELOPMENT_CARD.getResources());
+        }
+        // no need to report to GUI, it will know from the method ending
+        if (isWinner) { // if the player has won, end the game
+            endGame(player);
+        }
     }
 
     /**
-     * Makes the player use a development card
+     * Plays the player's Knight development card, lets them move the robber and steals a resource
      *
-     * @param player      playing the card
-     * @param development card being played
-     * @throws IllegalArgumentException if the development card is of type VICTORY_POINT
-     * @throws IllegalStateException    if the player does not have that development card
-     *                                  I may decide to make the effects of the card decided by the enum directly
+     * @param stealer    playing the knight card
+     * @param settlement being stolen from
+     * @param location   hexagon being blocked, adjacent to the settlement
+     * @return true if the card was successfully played, false if the player didn't have the card
      */
     @Override
-    public void playDevelopmentCard(Player player, DevelopmentCard development) {
+    public boolean playKnight(Player stealer, Vertex settlement, Hex location) {
+        return false;
+    }
 
+    /**
+     * Plays the player's Year of Plenty development card, gives them 2 resources of their choice
+     *
+     * @param player         playing the card
+     * @param firstResource  the player receives
+     * @param secondResource the player receives
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    @Override
+    public boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource) {
+        return false;
+    }
+
+    /**
+     * Plays the player's Monopoly development card, stealing every copy of that resource from all other players
+     *
+     * @param player   playing the card
+     * @param resource the player steals from all other players
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    @Override
+    public boolean playMonopoly(Player player, Resource resource) {
+        return false;
+    }
+
+    /**
+     * Plays the player's Road Building development card, letting them place 2 roads
+     *
+     * @param player         playing the card
+     * @param firstLocation  an empty edge where this player can build
+     * @param secondLocation an empty edge where this player can build after building firstLocation
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    @Override
+    public boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation) {
+        return false;
     }
 
     /**
