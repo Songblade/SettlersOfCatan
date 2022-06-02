@@ -616,7 +616,18 @@ public class MainImpl implements Main {
      */
     @Override
     public boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource) {
-        return false;
+        if (firstResource == Resource.MISC || secondResource == Resource.MISC) {
+            throw new IllegalArgumentException("players can't get MISC resources");
+        }
+        if (isMainPhase && !player.removeDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY)) {
+            // for testing, in setup phase, you don't need the card
+            // the if statement removes the development card if there is one
+            // if it returns false, it means that the player never had one
+            return false;
+        }
+        player.addResource(firstResource);
+        player.addResource(secondResource);
+        return true;
     }
 
     /**
