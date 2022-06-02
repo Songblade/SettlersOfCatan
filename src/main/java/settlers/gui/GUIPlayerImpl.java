@@ -40,6 +40,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
     private HashMap<Resource,JTextField> resourceTextMap = new HashMap<>();
     private HashMap<Player,JTextField> playerTextMap = new HashMap<>();
+    private HashMap<Move,JTextField> moveTextMap = new HashMap<>();
 
     //Other maps
     private HashMap<Edge, String> edgeDirectionMap = new HashMap<>();
@@ -98,6 +99,9 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Adds the ports
         putPorts();
+
+        //Adds the possible move text fields
+        putPossibleMoveFields();
 
         //Adds other elements
         putOtherElements();
@@ -231,6 +235,15 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Sets the frame's Z order
         paintLayerMap.put(field,zOrder);
 
+        return field;
+    }
+
+
+    private JTextField createMoveText(Move move, String keybind, String description){
+        JTextField field = createText(keybind + " - " + description, 1152, 0, 2);
+        field.setHorizontalAlignment(JTextField.LEFT);
+        field.setSize(384,128);
+        moveTextMap.put(move,field);
         return field;
     }
 
@@ -420,6 +433,17 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Puts all possible move text fields onto the GUI
+     */
+    private void putPossibleMoveFields(){
+        createMoveText(Move.PASS,"Space","Pass the turn");
+        createMoveText(Move.ROAD,"1","Build a road");
+        createMoveText(Move.SETTLEMENT,"2","Build a settlement");
+        createMoveText(Move.CITY,"3","Build a city");
+        createMoveText(Move.CANCEL,"Backspace","Cancel move");
+    }
+
+    /**
      * Puts all non-board related elements onto the GUI
      */
     private void putOtherElements(){
@@ -472,12 +496,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Creates die counter
         dieCounter = createLabel("",64,0,1);
         dieCounter.setSize(dieCounterSize,dieCounterSize);
-        //dieCounter.setIcon(new ImageIcon(getNumberImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
 
         //Creates die counter outline
         dieCounterOutline = createLabel("",64,0,2);
         dieCounterOutline.setSize(dieCounterSize,dieCounterSize);
-        //dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
     }
 
     /**
@@ -866,13 +888,18 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param move the move being checked for
      * @return true if toCheck is null or if it contains @move, false if neither condition is met
      */
-    private boolean checkMoveListForMove(List<Move> toCheck, Move move){
+    private boolean checkMoveListForMove(Set<Move> toCheck, Move move){
         if(toCheck == null || toCheck.contains(move))return true;
         return false;
     }
 
-    private List<Move> getPossibleMoves(List<Move> toCheck){
-        List<Move> moves = new LinkedList<>();
+    /**
+     * Gets all possible moves assuming they are on toCheck list. A null toCheck list would count as a complete toCheck list
+     * @param toCheck
+     * @return all possible moves which are in the toCheck list
+     */
+    private Set<Move> getPossibleMoves(Set<Move> toCheck){
+        Set<Move> moves = new HashSet<>();
 
         //Moves can only be preformed when it's your turn
         if(thisPlayerHasTurn) {
@@ -903,6 +930,45 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
 
         return moves;
+    }
+
+    /**
+     * Updates all possible moves
+     * @param toCheck the moves you should update. If null, will check all moves for updates.
+     */
+    private void updatePossibleMoves(Set<Move> toCheck){
+        Set currentlyPossibleMoves = getPossibleMoves(toCheck);
+
+        Move[] movesToCheck = toCheck == null ? Move.values() : (Move[]) toCheck.toArray();
+
+        for(Move move : movesToCheck){
+            if(currentlyPossibleMoves.contains(move)){
+                possibleMoves.put(move,true);
+            }else{
+                possibleMoves.put(move,true);
+            }
+        }
+    }
+
+    private void reloadPossibleMovesGUI(Set<Move> movesWhichMayHaveChanged){
+        updatePossibleMoves(movesWhichMayHaveChanged);
+
+        int currentXOffset = 1152;
+        int currentYOffset = 0;
+        int yIncrement = 128;
+
+        for(Move move : moveTextMap.keySet()){
+            if(possibleMoves.get(move)){
+                JTextField field = moveTextMap.get(move);
+                field.setVisible(true);
+                field.setBounds(currentXOffset,currentYOffset,384,128);
+                currentYOffset += yIncrement;
+            }
+        }
+    }
+
+    private void reloadPossibleMovesGUI(){
+        reloadPossibleMovesGUI(null);
     }
 
     //Actions
