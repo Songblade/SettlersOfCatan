@@ -44,8 +44,11 @@ public class GUIPlayerImpl implements GUIPlayer{
     //Other maps
     private HashMap<Edge, String> edgeDirectionMap = new HashMap<>();
 
-    //Render Ordering Sets
+    //Render Ordering Maps
     private HashMap<Component,Integer> paintLayerMap = new HashMap<>();
+
+    //Possible Moves Map
+    private HashMap<Move,Boolean> possibleMoves = new HashMap();
 
     //Frame and image
     private JFrame frame;
@@ -858,6 +861,50 @@ public class GUIPlayerImpl implements GUIPlayer{
         currentState = GUISTate.NONE;
     }
 
+    /**
+     * @param toCheck checks this list for @move
+     * @param move the move being checked for
+     * @return true if toCheck is null or if it contains @move, false if neither condition is met
+     */
+    private boolean checkMoveListForMove(List<Move> toCheck, Move move){
+        if(toCheck == null || toCheck.contains(move))return true;
+        return false;
+    }
+
+    private List<Move> getPossibleMoves(List<Move> toCheck){
+        List<Move> moves = new LinkedList<>();
+
+        //Moves can only be preformed when it's your turn
+        if(thisPlayerHasTurn) {
+            //Asks if the player can pass
+            if (checkMoveListForMove(toCheck, Move.PASS) && canPass) {
+                moves.add(Move.PASS);
+            }
+
+            //Asks if the player can build a road
+            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && this.currentState == GUISTate.NONE) {
+                moves.add(Move.ROAD);
+            }
+
+            //Asks if the player can build a settlement
+            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && this.currentState == GUISTate.NONE) {
+                moves.add(Move.SETTLEMENT);
+            }
+
+            //Asks if the player can build a city
+            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && this.currentState == GUISTate.NONE) {
+                moves.add(Move.CITY);
+            }
+
+            //Asks if the player can cancel a move
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && currentState.isCancelable()) {
+                moves.add(Move.ROAD);
+            }
+        }
+
+        return moves;
+    }
+
     //Actions
 
     /**
@@ -1075,5 +1122,23 @@ public class GUIPlayerImpl implements GUIPlayer{
 
 
 enum GUISTate{
-    NONE,ROAD,SETTLEMENT,CITY,THIEF,DISCARD
+    NONE(false),
+    ROAD(true),
+    SETTLEMENT(true),
+    CITY(true),
+    THIEF(false),
+    DISCARD(false);
+
+    GUISTate(boolean cancelable){
+        this.cancelable = cancelable;
+    }
+    private final boolean cancelable;
+
+    boolean isCancelable(){
+        return this.isCancelable();
+    }
+}
+
+enum Move{
+    PASS,ROAD,SETTLEMENT,CITY,CANCEL
 }
