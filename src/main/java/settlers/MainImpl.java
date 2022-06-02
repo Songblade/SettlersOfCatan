@@ -418,7 +418,22 @@ public class MainImpl implements Main {
      */
     @Override
     public Set<Edge> getAvailableRoadSpotsGivenEdge(Player player, Edge roadToBuild) {
-        return null;
+        // first we take the normal list
+        Set<Edge> roadSpots = new HashSet<>();
+        // then we remove roadToBuild
+        // then we add what is adjacent to it
+        for (Vertex vertex : board.getVertices()) {
+            for (Edge edge : vertex.getEdges()) {
+                if (edge != null && (player.equals(edge.getPlayer()) || edge == roadToBuild)) {
+                    // if this edge is this player's road or will be soon
+                    roadSpots.addAll(Arrays.asList(vertex.getEdges()));
+                }
+            }
+        }
+        roadSpots.retainAll(board.getEmptyEdges());
+        roadSpots.remove(null);
+        roadSpots.remove(roadToBuild); // because you can't build here, that was your first road
+        return roadSpots;
     }
 
     /**

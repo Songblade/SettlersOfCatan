@@ -1073,7 +1073,7 @@ public class MainTest {
 
     // tests for getAvailableRoadSpotsGivenEdge
     // test that it returns all available spots from getAvailableRoadSpots besides the given edge
-    //@Test
+    @Test
     public void returnsAllFromNormalMethodBesidesGivenEdge() {
         Player player = main.getPlayers().get(0);
         Vertex vertex = main.getBoard().getVertices()[13];
@@ -1104,7 +1104,7 @@ public class MainTest {
     }
 
     // tests that it returns all the new spots given from that edge
-    //@Test
+    @Test
     public void returnsAllNewAdjacentEdges() {
         Player player = main.getPlayers().get(0);
         Vertex vertex = main.getBoard().getVertices()[13];
@@ -1118,7 +1118,7 @@ public class MainTest {
     }
 
     // tests that it doesn't return the edge we are looking at
-    //@Test
+    @Test
     public void getAllWithEdgeDoesNotReturnThatEdge() {
         Player player = main.getPlayers().get(0);
         Vertex vertex = main.getBoard().getVertices()[13];
@@ -1128,7 +1128,7 @@ public class MainTest {
     }
 
     // tests that it does not return spots adjacent to that edge where there are already roads
-    //@Test
+    @Test
     public void getAllWithEdgeDoesNotReturnPlayerRoad() {
         Player player = main.getPlayers().get(0);
         Vertex vertex = main.getBoard().getVertices()[13];
@@ -1138,7 +1138,7 @@ public class MainTest {
     }
 
     // tests that it doesn't return spots adjacent to that edge where other players have roads
-    //@Test
+    @Test
     public void getAllWithEdgeDoesNotReturnOtherRoad() {
         Player player = main.getPlayers().get(0);
         Vertex vertex = main.getBoard().getVertices()[13];
