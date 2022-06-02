@@ -217,17 +217,6 @@ public class MainDevelopmentCardTest {
         assertFalse(victim.hasMoreThan7Cards());
     }
 
-    /**
-     * @return an empty hand of development cards
-     */
-    private Map<DevelopmentCard, Integer> emptyDevelopmentMap() {
-        HashMap<DevelopmentCard, Integer> emptyMap = new HashMap<>();
-        for (DevelopmentCard resource : DevelopmentCard.values()) {
-            emptyMap.put(resource, 0);
-        }
-        return emptyMap;
-    }
-
     // makes sure that if main phase, the player has no more knight cards
     @Test
     public void playKnightBringsCardsTo0() {
@@ -236,9 +225,11 @@ public class MainDevelopmentCardTest {
         main.setPhase(true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
-        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+        main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
 
-        assertEquals(emptyDevelopmentMap(), player.getDevelopmentCards());
+        Map<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.KNIGHT, 0);
+        assertEquals(result, player.getDevelopmentCards());
     }
 
     // makes sure that if main phase, the player has 1 fewer knight card
@@ -251,12 +242,16 @@ public class MainDevelopmentCardTest {
         main.setPhase(true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
-        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+        main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
 
-        Map<DevelopmentCard, Integer> result = emptyDevelopmentMap();
+        Map<DevelopmentCard, Integer> result = new HashMap<>();
         result.put(DevelopmentCard.KNIGHT, 1);
         result.put(DevelopmentCard.YEAR_OF_PLENTY, 1);
         assertEquals(result, player.getDevelopmentCards());
     }
+
+    // also add tests that it returns true if the player has a knight
+    // and false if he has no development cards
+    // or has the wrong type of development cards
 
 }
