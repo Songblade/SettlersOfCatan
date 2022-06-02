@@ -156,7 +156,6 @@ public class GUIMainImpl implements GUIMain {
             try {
                 Thread.sleep(1);
                 updateResourceCounters();
-                System.out.println("Discard Loop Updated");
             }catch (InterruptedException e){
                 throw new IllegalStateException("InterrupterException was thrown: " + e);
             }

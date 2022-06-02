@@ -645,6 +645,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         canPass = true;
         mainPhase = true;
 
+        reloadPossibleMovesGUI();
+
         while(thisPlayerHasTurn){
             try {
                 Thread.sleep(1);
@@ -661,6 +663,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         canPass = false;
 
         requestSettlementPlacementSP(availableSpots);
+        reloadPossibleMovesGUI();
 
         while(lastSettlementSpot == null){
             try {
@@ -909,23 +912,23 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             //Asks if the player can build a road
-            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && this.currentState == GUISTate.NONE) {
+            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && this.currentState == GUISTate.NONE && thisPlayerHasTurn) {
                 moves.add(Move.ROAD);
             }
 
             //Asks if the player can build a settlement
-            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && this.currentState == GUISTate.NONE) {
+            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && this.currentState == GUISTate.NONE && thisPlayerHasTurn) {
                 moves.add(Move.SETTLEMENT);
             }
 
             //Asks if the player can build a city
-            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && this.currentState == GUISTate.NONE) {
+            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && this.currentState == GUISTate.NONE && thisPlayerHasTurn) {
                 moves.add(Move.CITY);
             }
 
             //Asks if the player can cancel a move
-            if (checkMoveListForMove(toCheck, Move.CANCEL) && currentState.isCancelable()) {
-                moves.add(Move.ROAD);
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable()) {
+                moves.add(Move.CANCEL);
             }
         }
 
@@ -945,7 +948,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             if(currentlyPossibleMoves.contains(move)){
                 possibleMoves.put(move,true);
             }else{
-                possibleMoves.put(move,true);
+                possibleMoves.put(move,false);
             }
         }
     }
@@ -955,7 +958,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         int currentXOffset = 1152;
         int currentYOffset = 0;
-        int yIncrement = 128;
+        int yIncrement = 64;
 
         for(Move move : moveTextMap.keySet()){
             if(possibleMoves.get(move)){
@@ -963,6 +966,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                 field.setVisible(true);
                 field.setBounds(currentXOffset,currentYOffset,384,128);
                 currentYOffset += yIncrement;
+            }else{
+                JTextField field = moveTextMap.get(move);
+                field.setVisible(false);
             }
         }
     }
@@ -985,6 +991,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     disableAllButtons();
                     currentState = GUISTate.NONE;
                     thisPlayerHasTurn = false;
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -998,9 +1005,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass){
+                if(canPass && currentState.isCancelable()){
                     disableAllButtons();
                     currentState = GUISTate.NONE;
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1027,6 +1035,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                             enableButton(button);
                         }
                     }
+
+                    //Reloads the possible moves
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1052,6 +1063,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                             enableButton(button);
                         }
                     }
+
+                    //Reloads the possible moves
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1077,6 +1091,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                             enableButton(button);
                         }
                     }
+
+                    //Reloads the possible moves
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1105,6 +1122,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }
                 disableButtons(vertexButtonMap.keySet());
                 focusFrame();
+                reloadPossibleMovesGUI();
             }
         };
     }
@@ -1125,6 +1143,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }
                 disableButtons(edgeButtonMap.keySet());
                 focusFrame();
+                reloadPossibleMovesGUI();
             }
         };
     }
@@ -1153,6 +1172,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 disableButtons(hexButtonMap.keySet());
                 focusFrame();
+                reloadPossibleMovesGUI();
             }
         };
     }
@@ -1201,7 +1221,7 @@ enum GUISTate{
     private final boolean cancelable;
 
     boolean isCancelable(){
-        return this.isCancelable();
+        return this.cancelable;
     }
 }
 
