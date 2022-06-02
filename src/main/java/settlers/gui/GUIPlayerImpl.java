@@ -469,12 +469,12 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Creates die counter
         dieCounter = createLabel("",64,0,1);
         dieCounter.setSize(dieCounterSize,dieCounterSize);
-        dieCounter.setIcon(new ImageIcon(getNumberImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
+        //dieCounter.setIcon(new ImageIcon(getNumberImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
 
         //Creates die counter outline
         dieCounterOutline = createLabel("",64,0,2);
         dieCounterOutline.setSize(dieCounterSize,dieCounterSize);
-        dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
+        //dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(7).getScaledInstance(dieCounterSize,dieCounterSize,0)));
     }
 
     /**
