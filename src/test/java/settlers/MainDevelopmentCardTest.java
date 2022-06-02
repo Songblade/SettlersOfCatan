@@ -250,8 +250,37 @@ public class MainDevelopmentCardTest {
         assertEquals(result, player.getDevelopmentCards());
     }
 
-    // also add tests that it returns true if the player has a knight
+    // also add tests that it returns true if the player has a knight, in main phase
+    @Test
+    public void playKnightReturnsTrueIfHasCard() {
+        Player player = main.getPlayers().get(0);
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        main.setPhase(true);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        assertTrue(main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere));
+    }
+
     // and false if he has no development cards
+    @Test
+    public void playKnightReturnsFalseIfNoCards() {
+        Player player = main.getPlayers().get(0);
+        main.setPhase(true);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        assertFalse(main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere));
+    }
+
     // or has the wrong type of development cards
+    @Test
+    public void playKnightReturnsFalseIfWrongCards() {
+        Player player = main.getPlayers().get(0);
+        player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        main.setPhase(true);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        assertFalse(main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere));
+    }
 
 }
