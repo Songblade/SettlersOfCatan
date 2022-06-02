@@ -1,12 +1,12 @@
 package settlers;
 
 import org.junit.jupiter.api.Test;
+import settlers.board.Hex;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 import settlers.gui.GUIMainDummyImpl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -120,4 +120,143 @@ public class MainDevelopmentCardTest {
         result.put(Resource.WOOD, 1);
         assertEquals(result, player.getResources());
     }
+
+    // tests for playKnight
+    // makes sure that all the tests I made for moveThief also work here
+    @Test
+    public void getAvailableThiefSpotsWorksAfterKnight() {
+        Player player = main.getPlayers().get(0);
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
+        Set<Hex> result = new HashSet<>(Arrays.asList(main.getBoard().getHexes()));
+        result.remove(thiefIsHere);
+        assertEquals(result, main.getAvailableThiefSpots());
+    }
+
+    // tests that this works even if the thief was already moved by moveThief
+    @Test
+    public void playKnightWorksAfterMoveThief() {
+        Player player = main.getPlayers().get(0);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+        thiefIsHere = main.getBoard().getHexes()[1];
+        main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        Set<Hex> result = new HashSet<>(Arrays.asList(main.getBoard().getHexes()));
+        result.remove(thiefIsHere);
+        assertEquals(result, main.getAvailableThiefSpots());
+    }
+
+    // tests that this works even if the thief was already moved by playKnight
+    @Test
+    public void playKnightWorksTwice() {
+        Player player = main.getPlayers().get(0);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
+        thiefIsHere = main.getBoard().getHexes()[1];
+        main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        Set<Hex> result = new HashSet<>(Arrays.asList(main.getBoard().getHexes()));
+        result.remove(thiefIsHere);
+        assertEquals(result, main.getAvailableThiefSpots());
+    }
+
+    // tests that the first player gets a resource, and second one loses it
+    @Test
+    public void playKnightMovesResource() {
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+
+        Player badGuy = main.getPlayers().get(0);
+        badGuy.addResource(Resource.WOOD);
+        badGuy.addResource(Resource.ORE);
+
+        Player victim = main.getPlayers().get(1);
+        victim.addResource(Resource.BRICK);
+        main.buildSettlement(victim, thiefIsHere.getVertices()[0]);
+
+        main.playKnight(badGuy, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        HashMap<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        result.put(Resource.ORE, 1);
+        result.put(Resource.BRICK, 1);
+        assertEquals(result, badGuy.getResources());
+        assertEquals(emptyResourceMap(), victim.getResources());
+    }
+
+    // test that stealing works even if other player has many resources, using first with 7 and second with 8
+    @Test
+    public void playKnightMovesResourceFromRich() {
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+
+        Player badGuy = main.getPlayers().get(0);
+        badGuy.addResource(Resource.WOOD);
+        badGuy.addResource(Resource.ORE);
+        badGuy.addResource(Resource.WOOD);
+        badGuy.addResource(Resource.ORE);
+        badGuy.addResource(Resource.BRICK);
+        badGuy.addResource(Resource.SHEEP);
+        badGuy.addResource(Resource.WHEAT);
+
+        Player victim = main.getPlayers().get(1);
+        victim.addResource(Resource.WOOD);
+        victim.addResource(Resource.ORE);
+        victim.addResource(Resource.WOOD);
+        victim.addResource(Resource.ORE);
+        victim.addResource(Resource.BRICK);
+        victim.addResource(Resource.SHEEP);
+        victim.addResource(Resource.WHEAT);
+        victim.addResource(Resource.WHEAT);
+        main.buildSettlement(victim, thiefIsHere.getVertices()[0]);
+
+        main.playKnight(badGuy, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        assertTrue(badGuy.hasMoreThan7Cards());
+        assertFalse(victim.hasMoreThan7Cards());
+    }
+
+    /**
+     * @return an empty hand of development cards
+     */
+    private Map<DevelopmentCard, Integer> emptyDevelopmentMap() {
+        HashMap<DevelopmentCard, Integer> emptyMap = new HashMap<>();
+        for (DevelopmentCard resource : DevelopmentCard.values()) {
+            emptyMap.put(resource, 0);
+        }
+        return emptyMap;
+    }
+
+    // makes sure that if main phase, the player has no more knight cards
+    @Test
+    public void playKnightBringsCardsTo0() {
+        Player player = main.getPlayers().get(0);
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        main.setPhase(true);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        assertEquals(emptyDevelopmentMap(), player.getDevelopmentCards());
+    }
+
+    // makes sure that if main phase, the player has 1 fewer knight card
+    @Test
+    public void playKnightBringsCards1Less() {
+        Player player = main.getPlayers().get(0);
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
+        main.setPhase(true);
+
+        Hex thiefIsHere = main.getBoard().getHexes()[0];
+        main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
+
+        Map<DevelopmentCard, Integer> result = emptyDevelopmentMap();
+        result.put(DevelopmentCard.KNIGHT, 1);
+        result.put(DevelopmentCard.YEAR_OF_PLENTY, 1);
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
 }

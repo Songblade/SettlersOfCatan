@@ -595,7 +595,15 @@ public class MainImpl implements Main {
      */
     @Override
     public boolean playKnight(Player stealer, Vertex settlement, Hex location) {
-        return false;
+        if (isMainPhase) { // for testing, in setup phase, you don't need the card
+            if (!stealer.removeDevelopmentCard(DevelopmentCard.KNIGHT)) {
+                // that removes the development card if there is one
+                // if it returns false, it means that the player never had one
+                return false;
+            }
+        }
+        moveThief(stealer, settlement, location);
+        return true; // because the stealing was successful
     }
 
     /**
