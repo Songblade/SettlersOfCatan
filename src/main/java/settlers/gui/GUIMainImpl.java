@@ -143,6 +143,25 @@ public class GUIMainImpl implements GUIMain {
         }
     }
 
+    private void forcePlayersToDiscardHalfOfHand(){
+
+        for(Player plr : main.getPlayers()) {
+            if (plr.hasMoreThan7Cards()) {
+                playerGUIs.get(plr).discardUntil(plr.getCardNumber() / 2 + plr.getCardNumber() % 2);
+                playersWhoHaveNotDiscarded.add(plr);
+            }
+        }
+
+        while (playersWhoHaveNotDiscarded.size() > 0){
+            try {
+                Thread.sleep(1);
+                updateResourceCounters();
+            }catch (InterruptedException e){
+                throw new IllegalStateException("InterrupterException was thrown: " + e);
+            }
+        }
+    }
+
     /**
      * Starts a turn. Called by Main, updates resources and die number in GUIPlayers
      * @param player the player whose turn it is
@@ -154,26 +173,9 @@ public class GUIMainImpl implements GUIMain {
         updateResourceCounters(dieRoll);
 
         //Forces players to discard half of their hand if they have more than 7 cards. Buggy so commented out
-        /**
         if(dieRoll == 7){
-
-            for(Player plr : main.getPlayers()) {
-                if (plr.hasMoreThan7Cards()) {
-                    playerGUIs.get(plr).discardUntil(plr.getCardNumber() / 2 + plr.getCardNumber() % 2);
-                    playersWhoHaveNotDiscarded.add(plr);
-                }
-            }
-
-
-            while (playersWhoHaveNotDiscarded.size() > 0){
-                try {
-                    Thread.sleep(1);
-                    updateResourceCounters();
-                }catch (InterruptedException e){
-                    throw new IllegalStateException("InterrupterException was thrown: " + e);
-                }
-            }
-        }*/
+            forcePlayersToDiscardHalfOfHand();
+        }
 
         //Starts player's turn
         playerGUIs.get(player).startTurn(dieRoll);
