@@ -243,6 +243,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         JTextField field = createText(keybind + " - " + description, 1152, 0, 2);
         field.setHorizontalAlignment(JTextField.LEFT);
         field.setSize(384,128);
+        field.setVisible(false);
         moveTextMap.put(move,field);
         return field;
     }
@@ -662,8 +663,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         thisPlayerHasTurn = true;
         canPass = false;
 
+        //Requests to place a settlement in settlement phase
         requestSettlementPlacementSP(availableSpots);
-        reloadPossibleMovesGUI();
 
         while(lastSettlementSpot == null){
             try {
@@ -673,6 +674,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
         }
 
+        //Requests to place a road neat to that settlement
         requestRoadPlacementSP();
 
         while(lastRoadSpot == null){
@@ -682,6 +684,8 @@ public class GUIPlayerImpl implements GUIPlayer{
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
         }
+
+        thisPlayerHasTurn = false;
 
         return lastSettlementSpot;
     }
