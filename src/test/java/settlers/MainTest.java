@@ -1071,4 +1071,81 @@ public class MainTest {
 
     // test that if two people each have a settlement by the two hexes, they both get the resource of their hex
 
+    // tests for getAvailableRoadSpotsGivenEdge
+    // test that it returns all available spots from getAvailableRoadSpots besides the given edge
+    //@Test
+    public void returnsAllFromNormalMethodBesidesGivenEdge() {
+        Player player = main.getPlayers().get(0);
+        Vertex vertex = main.getBoard().getVertices()[13];
+        addPlayer(vertex.getEdges()[0], player);
+
+        Set<Edge> normalResultWithoutEdge = main.getAvailableRoadSpots(player);
+        normalResultWithoutEdge.remove(vertex.getEdges()[1]); // since that one won't be available anymore
+        assertTrue(main.getAvailableRoadSpotsGivenEdge(player, vertex.getEdges()[1]).containsAll(normalResultWithoutEdge));
+    }
+
+    /**
+     * @param edge you are looking for edges that connect with
+     * @param vertexWeHave you already know
+     * @return the other 2 edges that connect to this edge but not the vertex
+     */
+    private Set<Edge> getOtherAdjacentEdges(Edge edge, Vertex vertexWeHave) {
+        for (Vertex vertex : main.getBoard().getVertices()) {
+            for (Edge otherEdge : vertex.getEdges()) {
+                if (otherEdge == edge) {
+                    Set<Edge> edges = new HashSet<>(Arrays.asList(vertex.getEdges()));
+                    edges.removeAll(Arrays.asList(vertexWeHave.getEdges()));
+                    // removes this edge and the 2 next to it in that vertex
+                    return edges;
+                }
+            }
+        }
+        return new HashSet<>();
+    }
+
+    // tests that it returns all the new spots given from that edge
+    //@Test
+    public void returnsAllNewAdjacentEdges() {
+        Player player = main.getPlayers().get(0);
+        Vertex vertex = main.getBoard().getVertices()[13];
+        addPlayer(vertex.getEdges()[0], player);
+
+        //13's 0 is already occupied, and its 2 was already available beforehand
+        // so we only care about the 2 on the other side
+
+        Set<Edge> newEdges = getOtherAdjacentEdges(vertex.getEdges()[0], vertex);
+        assertTrue(main.getAvailableRoadSpotsGivenEdge(player, vertex.getEdges()[1]).containsAll(newEdges));
+    }
+
+    // tests that it doesn't return the edge we are looking at
+    //@Test
+    public void getAllWithEdgeDoesNotReturnThatEdge() {
+        Player player = main.getPlayers().get(0);
+        Vertex vertex = main.getBoard().getVertices()[13];
+        addPlayer(vertex.getEdges()[0], player);
+
+        assertFalse(main.getAvailableRoadSpotsGivenEdge(player, vertex.getEdges()[1]).contains(vertex.getEdges()[1]));
+    }
+
+    // tests that it does not return spots adjacent to that edge where there are already roads
+    //@Test
+    public void getAllWithEdgeDoesNotReturnPlayerRoad() {
+        Player player = main.getPlayers().get(0);
+        Vertex vertex = main.getBoard().getVertices()[13];
+        addPlayer(vertex.getEdges()[0], player);
+
+        assertFalse(main.getAvailableRoadSpotsGivenEdge(player, vertex.getEdges()[1]).contains(vertex.getEdges()[0]));
+    }
+
+    // tests that it doesn't return spots adjacent to that edge where other players have roads
+    //@Test
+    public void getAllWithEdgeDoesNotReturnOtherRoad() {
+        Player player = main.getPlayers().get(0);
+        Vertex vertex = main.getBoard().getVertices()[13];
+        addPlayer(vertex.getEdges()[0], player);
+        addPlayer(vertex.getEdges()[2], main.getPlayers().get(1));
+
+        assertFalse(main.getAvailableRoadSpotsGivenEdge(player, vertex.getEdges()[1]).contains(vertex.getEdges()[2]));
+    }
+
 }

@@ -5,6 +5,7 @@ import settlers.Player;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -224,10 +225,28 @@ public class VertexTest {
 // this class is so I can distinguish between the different edges on each side
 class TestEdge implements Edge {
 
-    private int id;
+    private final int id;
 
     TestEdge(int id) {
         this.id = id;
+    }
+
+    /**
+     * @return a length 3 array containing the adjacent vertices, where 0 is up, increasing clockwise
+     */
+    @Override
+    public List<Edge> getAdjacentEdges() {
+        return null;
+    }
+
+    /**
+     * @param edge     being set adjacent to this Edge
+     * @param position from 0 to 3, where the edge is set, where 0 is the upper left, increasing clockwise
+     * @throws IllegalStateException if this position's vertex is already set
+     */
+    @Override
+    public void setEdge(Edge edge, int position) {
+
     }
 
     /**
