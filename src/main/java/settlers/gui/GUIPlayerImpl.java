@@ -723,6 +723,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         mapAction(50,requestSettlementPlacement());
         mapAction(51,requestCityPlacement());
         mapAction(52,buildDevelopmentCard());
+        mapAction(113,requestKnight());
+        mapAction(119,requestYearOfPlenty());
+        mapAction(101,requestRoadBuilding());
+        mapAction(114,requestMonopoly());
     }
 
     /**
