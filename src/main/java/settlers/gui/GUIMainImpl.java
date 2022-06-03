@@ -14,7 +14,7 @@ public class GUIMainImpl implements GUIMain {
     private Main main;
     private HashMap<Player,GUIPlayer> playerGUIs;
 
-    private boolean unlimitedResources = false;
+    private boolean unlimitedResources = true;
 
     //Functional
     HashSet<Player> playersWhoHaveNotDiscarded = new HashSet<>();
@@ -41,7 +41,7 @@ public class GUIMainImpl implements GUIMain {
     }
 
     public boolean canBuildCity(Player player){
-        return main.getAvailableRoadSpots(player).size() > 0 && (main.playerCanBuild(player, Building.CITY) || unlimitedResources);
+        return main.getAvailableCitySpots(player).size() > 0 && (main.playerCanBuild(player, Building.CITY) || unlimitedResources);
     }
 
     public boolean canBuyDevelopmentCard(Player player){
