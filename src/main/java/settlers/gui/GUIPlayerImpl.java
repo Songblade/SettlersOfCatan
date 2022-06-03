@@ -242,8 +242,10 @@ public class GUIPlayerImpl implements GUIPlayer{
     private JTextField createMoveText(Move move, String keybind, String description){
         JTextField field = createText(keybind + " - " + description, 1152, 0, 2);
         field.setHorizontalAlignment(JTextField.LEFT);
-        field.setSize(384,128);
+        field.setSize(384,32);
         field.setVisible(false);
+        field.setFont(new Font(Font.DIALOG,Font.BOLD,20));
+
         moveTextMap.put(move,field);
         return field;
     }
@@ -702,15 +704,23 @@ public class GUIPlayerImpl implements GUIPlayer{
         enableButtons(resourceButtonMap.keySet());
     }
 
+    private void mapAction(int keyId, ActionListener action){
+        frame.getRootPane().registerKeyboardAction(action,KeyStroke.getKeyStroke((char) keyId),JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
     /**
      * Maps all of the frame's actions
      */
     private void mapActions(){
-        frame.getRootPane().registerKeyboardAction(cancelMove(),KeyStroke.getKeyStroke((char) 8),JComponent.WHEN_IN_FOCUSED_WINDOW);
-        frame.getRootPane().registerKeyboardAction(passTurn(),KeyStroke.getKeyStroke((char) 32),JComponent.WHEN_IN_FOCUSED_WINDOW);
-        frame.getRootPane().registerKeyboardAction(requestRoadPlacement(),KeyStroke.getKeyStroke((char) 49),JComponent.WHEN_IN_FOCUSED_WINDOW);
-        frame.getRootPane().registerKeyboardAction(requestSettlementPlacement(),KeyStroke.getKeyStroke((char) 50),JComponent.WHEN_IN_FOCUSED_WINDOW);
-        frame.getRootPane().registerKeyboardAction(requestCityPlacement(),KeyStroke.getKeyStroke((char) 51),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        mapAction(8,cancelMove());
+        mapAction(32,passTurn());
+        mapAction(49,requestRoadPlacement());
+        mapAction(50,requestSettlementPlacement());
+        mapAction(51,requestCityPlacement());
+        mapAction(52,requestKnight());
+        mapAction(53,requestYearOfPlenty());
+        mapAction(54,requestRoadBuilding());
+        mapAction(55,requestMonopoly());
     }
 
     /**
@@ -962,7 +972,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         int currentXOffset = 1152;
         int currentYOffset = 0;
-        int yIncrement = 64;
+        int yIncrement = 32;
 
         for(Move move : moveTextMap.keySet()){
             if(possibleMoves.get(move)){
@@ -1103,8 +1113,42 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    //Buttons
+    private ActionListener requestKnight() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+            }
+        };
+    }
+
+    private ActionListener requestYearOfPlenty() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        };
+    }
+
+    private ActionListener requestRoadBuilding() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        };
+    }
+
+    private ActionListener requestMonopoly() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        };
+    }
+    //Buttons
     /**
      * Whenever a vertex button is clicked
      * @param vertex the vertex whose button was clicked
@@ -1217,7 +1261,10 @@ enum GUISTate{
     SETTLEMENT(true),
     CITY(true),
     THIEF(false),
-    DISCARD(false);
+    DISCARD(false),
+    ROADBUILDING(false),
+    YEAROFPLENTY(false),
+    MONOPOLY(false);
 
     GUISTate(boolean cancelable){
         this.cancelable = cancelable;
@@ -1230,5 +1277,5 @@ enum GUISTate{
 }
 
 enum Move{
-    PASS,ROAD,SETTLEMENT,CITY,CANCEL
+    PASS,ROAD,SETTLEMENT,CITY,KNIGHT,YEAROFPLENTY,ROADBUILDING,MONOPOLY,CANCEL
 }
