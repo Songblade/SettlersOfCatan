@@ -451,12 +451,12 @@ public class MainDevelopmentCardTest {
         assertEquals(result, player.getResources());
 
         // now for player 1
-        result.clear();
+        result.put(Resource.WOOD, 0);
         result.put(Resource.ORE, 1);
         assertEquals(result, players.get(1).getResources());
 
         // now for player 2
-        result.clear();
+        result.put(Resource.ORE, 0);
         result.put(Resource.WHEAT, 1);
         assertEquals(result, players.get(2).getResources());
     }
@@ -476,12 +476,12 @@ public class MainDevelopmentCardTest {
         assertEquals(result, player.getResources());
 
         // now for player 1
-        result.clear();
+        result.put(Resource.WOOD, 0);
         result.put(Resource.ORE, 1);
         assertEquals(result, players.get(1).getResources());
 
         // now for player 2
-        result.clear();
+        result.put(Resource.ORE, 0);
         result.put(Resource.WHEAT, 1);
         assertEquals(result, players.get(2).getResources());
     }

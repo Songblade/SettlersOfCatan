@@ -658,7 +658,45 @@ public class MainImpl implements Main {
      */
     @Override
     public boolean playMonopoly(Player player, Resource resource) {
-        return false;
+        if (resource == Resource.MISC) {
+            throw new IllegalArgumentException("players can't get MISC resources");
+        }
+        if (isMainPhase && !player.removeDevelopmentCard(DevelopmentCard.MONOPOLY)) {
+            // for testing, in setup phase, you don't need the card
+            // the if statement removes the development card if there is one
+            // if it returns false, it means that the player never had one
+            return false;
+        }
+        int numberOfCards = 0;
+        for (Player otherPlayer : players) {
+            if (otherPlayer != player) { // no point in removing cards from this player
+                int playerResourceNum = otherPlayer.getResources().get(resource);
+                // the number of this resource that that player has
+                numberOfCards += playerResourceNum;
+                Map<Resource, Integer> takenResources = emptyResourceMap();
+                takenResources.put(resource, playerResourceNum);
+                otherPlayer.removeResources(takenResources);
+                // that should remove all of that player's resources of that kind
+            }
+        }
+        // now we give all the new resources to the player who played the card
+        for (int i = 0; i < numberOfCards; i++) {
+            player.addResource(resource);
+        }
+        return true;
+    }
+
+    /**
+     * @return a map containing 0 of each resource
+     */
+    private HashMap<Resource, Integer> emptyResourceMap() {
+        HashMap<Resource, Integer> emptyMap = new HashMap<>();
+        for (Resource resource : Resource.values()) {
+            if (resource != Resource.MISC) {
+                emptyMap.put(resource, 0);
+            }
+        }
+        return emptyMap;
     }
 
     /**
