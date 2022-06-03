@@ -95,6 +95,14 @@ public interface Main {
     void buildDevelopmentCard(Player player);
 
     /**
+     * Does this player have this development
+     * @param player who wants to play the card
+     * @param card the player wants to play
+     * @return false if it is VICTORY_POINT or the player doesn't have it, true otherwise
+     */
+    boolean canPlay(Player player, DevelopmentCard card);
+
+    /**
      * Plays the player's Knight development card, lets them move the robber and steals a resource
      * @param stealer playing the knight card
      * @param settlement being stolen from

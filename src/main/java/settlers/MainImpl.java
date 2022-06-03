@@ -586,6 +586,25 @@ public class MainImpl implements Main {
     }
 
     /**
+     * Does this player have this development
+     *
+     * @param player who wants to play the card
+     * @param card   the player wants to play
+     * @return false if it is VICTORY_POINT or the player doesn't have it, true otherwise
+     */
+    @Override
+    public boolean canPlay(Player player, DevelopmentCard card) {
+        if (player == null || card == null) {
+            throw new IllegalArgumentException("One or more inputs are null");
+        }
+        if (card == DevelopmentCard.VICTORY_POINT) { // can't play this type of card, ever
+            return false;
+        }
+        return player.getDevelopmentCards().getOrDefault(card, 0) > 0;
+        // returns true if the player has the card, false otherwise
+    }
+
+    /**
      * Plays the player's Knight development card, lets them move the robber and steals a resource
      *
      * @param stealer    playing the knight card
