@@ -976,7 +976,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void reloadPossibleMovesGUI(Set<Move> movesWhichMayHaveChanged){
         updatePossibleMoves(movesWhichMayHaveChanged);
 
-        int currentXOffset = 1152;
+        int currentXOffset = 1040;
         int currentYOffset = 0;
         int yIncrement = 32;
 
