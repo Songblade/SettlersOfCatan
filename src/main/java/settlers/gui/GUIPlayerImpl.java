@@ -443,17 +443,17 @@ public class GUIPlayerImpl implements GUIPlayer{
         createMoveText(Move.ROAD,"1","Build a road");
         createMoveText(Move.SETTLEMENT,"2","Build a settlement");
         createMoveText(Move.CITY,"3","Build a city");
+        createMoveText(Move.DEVELOPMENT_CARD,"4","Buy a development card");
         createMoveText(Move.CANCEL,"Backspace","Cancel move");
     }
 
-    /**
-     * Puts all non-board related elements onto the GUI
-     */
-    private void putOtherElements(){
+    private void putPlayerLabel(){
         //Places the label for this player
         JLabel thisPlayerLabel = createLabel("",50,550,1);
         thisPlayerLabel.setIcon(new ImageIcon(getConstructionImage(player.getID(),2).getScaledInstance(256,256,0)));
+    }
 
+    private void putPlayerResourceLabels(){
         //Places the resources to the side of the player label
         int currentXOffset = 140;
         int xOffsetIncrement = 80;
@@ -472,7 +472,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                 resourceButtonMap.put(thisPlayerResourceButton,resource);
             }
         }
+    }
 
+    private void putOtherPlayerLabels(){
         //Places the labels for other players
         int currentYOffset = 240;
         int yOffsetIncrement = 60;
@@ -495,7 +497,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                 playerButtonMap.put(playerButton,plr);
             }
         }
+    }
 
+    private void putDieCounterAssets(){
         //Creates die counter
         dieCounter = createLabel("",64,0,1);
         dieCounter.setSize(dieCounterSize,dieCounterSize);
@@ -503,6 +507,16 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Creates die counter outline
         dieCounterOutline = createLabel("",64,0,2);
         dieCounterOutline.setSize(dieCounterSize,dieCounterSize);
+    }
+
+    /**
+     * Puts all non-board related elements onto the GUI
+     */
+    private void putOtherElements(){
+         putPlayerLabel();
+         putPlayerResourceLabels();
+         putOtherPlayerLabels();
+         putDieCounterAssets();
     }
 
     /**
@@ -932,18 +946,23 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             //Asks if the player can build a road
-            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && this.currentState == GUISTate.NONE && thisPlayerHasTurn) {
+            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canMakePurchases()) {
                 moves.add(Move.ROAD);
             }
 
             //Asks if the player can build a settlement
-            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && this.currentState == GUISTate.NONE && thisPlayerHasTurn) {
+            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && canMakePurchases()) {
                 moves.add(Move.SETTLEMENT);
             }
 
             //Asks if the player can build a city
-            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && this.currentState == GUISTate.NONE && thisPlayerHasTurn) {
+            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && canMakePurchases()) {
                 moves.add(Move.CITY);
+            }
+
+            //Asks if the player can build a development card
+            if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canMakePurchases()) {
+                moves.add(Move.DEVELOPMENT_CARD);
             }
 
             //Asks if the player can cancel a move
@@ -1296,5 +1315,5 @@ enum GUISTate{
 }
 
 enum Move{
-    PASS,ROAD,SETTLEMENT,CITY,KNIGHT,YEAROFPLENTY,ROADBUILDING,MONOPOLY,CANCEL
+    PASS,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,CANCEL
 }
