@@ -1,6 +1,7 @@
 package settlers.gui;
 
 import settlers.*;
+import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 import settlers.board.*;
 
@@ -46,6 +47,11 @@ public class GUIMainImpl implements GUIMain {
 
     public boolean canBuyDevelopmentCard(Player player){
         return main.playerCanBuild(player,Building.DEVELOPMENT_CARD) || unlimitedResources;
+    }
+
+    @Override
+    public boolean canPlayDevelopmentCard(Player player, DevelopmentCard card){
+        return main.canPlay(player,card);
     }
 
 
@@ -95,6 +101,28 @@ public class GUIMainImpl implements GUIMain {
         }
 
         updateResourceCounters();
+    }
+
+    @Override
+    public boolean playKnight(Player stealer, Vertex settlement, Hex location){
+        boolean toReturn = main.playKnight(stealer,settlement,location);
+        updateGUISAfterThiefMove(location);
+        return toReturn;
+    }
+
+    @Override
+    public boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource){
+        return main.playYearOfPlenty(player,firstResource,secondResource);
+    }
+
+    @Override
+    public boolean playMonopoly(Player player, Resource resource){
+        return main.playMonopoly(player,resource);
+    }
+
+    @Override
+    public boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation){
+        return main.playRoadBuilding(player,firstLocation,secondLocation);
     }
 
     /**
@@ -199,6 +227,18 @@ public class GUIMainImpl implements GUIMain {
     }
 
     /**
+     * Updates the thief's position to thiefPosition and updates all players' resource counters
+     * @param thiefPosition the thief's position
+     */
+    private void updateGUISAfterThiefMove(Hex thiefPosition){
+        for(Player plr : main.getPlayers()){
+            playerGUIs.get(plr).moveThiefImage(thiefPosition);
+        }
+
+        updateResourceCounters();
+    }
+
+    /**
      * Moves the thief
      * @param player the player who moved the thief
      * @param location the settlement which @player is stealing from
@@ -206,12 +246,7 @@ public class GUIMainImpl implements GUIMain {
      */
     public void moveThief(Player player, Vertex location, Hex position){
         main.moveThief(player, location, position);
-
-        for(Player plr : main.getPlayers()){
-            playerGUIs.get(plr).moveThiefImage(position);
-        }
-
-        updateResourceCounters();
+        updateGUISAfterThiefMove(position);
     }
 
     /**

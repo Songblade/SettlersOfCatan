@@ -2,6 +2,8 @@ package settlers.gui;
 
 import settlers.Player;
 import settlers.board.*;
+import settlers.card.DevelopmentCard;
+import settlers.card.Resource;
 
 import java.util.Set;
 
@@ -28,6 +30,11 @@ public class GUIMainDummyImpl implements GUIMain {
     }
 
     @Override
+    public boolean canPlayDevelopmentCard(Player player, DevelopmentCard card) {
+        return false;
+    }
+
+    @Override
     public void buildRoad(Player player, Edge edge) {
 
     }
@@ -45,6 +52,26 @@ public class GUIMainDummyImpl implements GUIMain {
     @Override
     public void buildDevelopmentCard(Player player) {
 
+    }
+
+    @Override
+    public boolean playKnight(Player stealer, Vertex settlement, Hex location) {
+        return false;
+    }
+
+    @Override
+    public boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource) {
+        return false;
+    }
+
+    @Override
+    public boolean playMonopoly(Player player, Resource resource) {
+        return false;
+    }
+
+    @Override
+    public boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation) {
+        return false;
     }
 
     @Override
