@@ -125,7 +125,6 @@ public class MainDevelopmentCardTest {
     // makes sure that all the tests I made for moveThief also work here
     @Test
     public void getAvailableThiefSpotsWorksAfterKnight() {
-        Player player = main.getPlayers().get(0);
         Hex thiefIsHere = main.getBoard().getHexes()[0];
         main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
         Set<Hex> result = new HashSet<>(Arrays.asList(main.getBoard().getHexes()));
@@ -136,8 +135,6 @@ public class MainDevelopmentCardTest {
     // tests that this works even if the thief was already moved by moveThief
     @Test
     public void playKnightWorksAfterMoveThief() {
-        Player player = main.getPlayers().get(0);
-
         Hex thiefIsHere = main.getBoard().getHexes()[0];
         main.moveThief(player, thiefIsHere.getVertices()[0], thiefIsHere);
         thiefIsHere = main.getBoard().getHexes()[1];
@@ -151,8 +148,6 @@ public class MainDevelopmentCardTest {
     // tests that this works even if the thief was already moved by playKnight
     @Test
     public void playKnightWorksTwice() {
-        Player player = main.getPlayers().get(0);
-
         Hex thiefIsHere = main.getBoard().getHexes()[0];
         main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
         thiefIsHere = main.getBoard().getHexes()[1];
@@ -220,7 +215,6 @@ public class MainDevelopmentCardTest {
     // makes sure that if main phase, the player has no more knight cards
     @Test
     public void playKnightBringsCardsTo0() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         main.setPhase(true);
 
@@ -235,7 +229,6 @@ public class MainDevelopmentCardTest {
     // makes sure that if main phase, the player has 1 fewer knight card
     @Test
     public void playKnightBringsCards1Less() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
@@ -253,7 +246,6 @@ public class MainDevelopmentCardTest {
     // also add tests that it returns true if the player has a knight, in main phase
     @Test
     public void playKnightReturnsTrueIfHasCard() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         main.setPhase(true);
 
@@ -264,7 +256,6 @@ public class MainDevelopmentCardTest {
     // and false if he has no development cards
     @Test
     public void playKnightReturnsFalseIfNoCards() {
-        Player player = main.getPlayers().get(0);
         main.setPhase(true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
@@ -281,7 +272,6 @@ public class MainDevelopmentCardTest {
     // or has the wrong type of development cards
     @Test
     public void playKnightReturnsFalseIfWrongCards() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
         player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
         main.setPhase(true);
@@ -294,8 +284,6 @@ public class MainDevelopmentCardTest {
     // tests that the player can get 2 of the same card
     @Test
     public void playYearOfPlentyGives2OfSameCard() {
-        Player player = main.getPlayers().get(0);
-
         main.playYearOfPlenty(player, Resource.WOOD, Resource.WOOD);
 
         Map<Resource, Integer> result = emptyResourceMap();
@@ -306,8 +294,6 @@ public class MainDevelopmentCardTest {
     // tests that the player can get 2 different cards
     @Test
     public void playYearOfPlentyGives2DifCards() {
-        Player player = main.getPlayers().get(0);
-
         main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK);
 
         Map<Resource, Integer> result = emptyResourceMap();
@@ -319,7 +305,6 @@ public class MainDevelopmentCardTest {
     // tests that this stacks with cars the player already has
     @Test
     public void playYearOfPlentyResourcesStack() {
-        Player player = main.getPlayers().get(0);
         player.addResource(Resource.WOOD);
         player.addResource(Resource.SHEEP);
 
@@ -335,7 +320,6 @@ public class MainDevelopmentCardTest {
     // tests that reduces number of yop cards to 0 if main
     @Test
     public void playYearOfPlentyReducesCardTo0() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
         main.setPhase(true);
 
@@ -349,7 +333,6 @@ public class MainDevelopmentCardTest {
     // tests that reduces number of yop cards to 1 if had 2, and ignores other cards
     @Test
     public void playYearOfPlentyReducesCardTo1() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
@@ -366,7 +349,6 @@ public class MainDevelopmentCardTest {
     // tests that returns true in main phase if the player had the card
     @Test
     public void playYearOfPlentyReturnsTrueIfHasCard() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
         main.setPhase(true);
 
@@ -376,7 +358,6 @@ public class MainDevelopmentCardTest {
     // tests that return false in main phase if the player didn't have any cards
     @Test
     public void playYearOfPlentyReturnsFalseIfNoCards() {
-        Player player = main.getPlayers().get(0);
         main.setPhase(true);
 
         assertFalse(main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK));
@@ -385,7 +366,6 @@ public class MainDevelopmentCardTest {
     // tests that return false in main phase if the player had the wrong cards
     @Test
     public void playYearOfPlentyReturnsFalseIfWrongCards() {
-        Player player = main.getPlayers().get(0);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
         main.setPhase(true);
@@ -396,10 +376,182 @@ public class MainDevelopmentCardTest {
     // tests that in main phase, if it returns false, the player gains no resources
     @Test
     public void playYearOfPlentyFalseGivesNoResources() {
-        Player player = main.getPlayers().get(0);
         main.setPhase(true);
 
         assertFalse(main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK));
         assertEquals(emptyResourceMap(), player.getResources());
+    }
+
+    // tests for playMonopoly
+    // tests that if one player has 2 cards, the that player loses both and this gains both
+    @Test
+    public void playMonopolyMoves2From1() {
+        List<Player> players = main.getPlayers();
+        players.get(1).addResource(Resource.WOOD);
+        players.get(1).addResource(Resource.WOOD);
+
+        main.playMonopoly(player, Resource.WOOD);
+
+        Map<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 2);
+        assertEquals(result, player.getResources());
+        assertEquals(emptyResourceMap(), players.get(1).getResources());
+    }
+
+    // tests that if 2 players have 3 cards, this player gets all three and they lose all three
+    @Test
+    public void playMonopolyMoves3From2() {
+        List<Player> players = main.getPlayers();
+        players.get(1).addResource(Resource.WOOD);
+        players.get(1).addResource(Resource.WOOD);
+        players.get(2).addResource(Resource.WOOD);
+
+        main.playMonopoly(player, Resource.WOOD);
+
+        Map<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 3);
+        assertEquals(result, player.getResources());
+        assertEquals(emptyResourceMap(), players.get(1).getResources());
+        assertEquals(emptyResourceMap(), players.get(2).getResources());
+    }
+
+    // tests that cards from monopoly stack with what the player already had
+    @Test
+    public void playMonopolyNewCardsStackWithOld() {
+        List<Player> players = main.getPlayers();
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.ORE);
+
+        players.get(1).addResource(Resource.WOOD);
+        players.get(1).addResource(Resource.WOOD);
+        players.get(2).addResource(Resource.WOOD);
+
+        main.playMonopoly(player, Resource.WOOD);
+
+        Map<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 4);
+        result.put(Resource.ORE, 1);
+        assertEquals(result, player.getResources());
+        assertEquals(emptyResourceMap(), players.get(1).getResources());
+        assertEquals(emptyResourceMap(), players.get(2).getResources());
+    }
+
+    // tests that monopoly doesn't steal cards besides the selected card
+    @Test
+    public void playMonopolyOnlyStealsSelectedCard() {
+        List<Player> players = main.getPlayers();
+        players.get(1).addResource(Resource.WOOD);
+        players.get(1).addResource(Resource.ORE);
+        players.get(2).addResource(Resource.WHEAT);
+
+        main.playMonopoly(player, Resource.WOOD);
+
+        Map<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        assertEquals(result, player.getResources());
+
+        // now for player 1
+        result.clear();
+        result.put(Resource.ORE, 1);
+        assertEquals(result, players.get(1).getResources());
+
+        // now for player 2
+        result.clear();
+        result.put(Resource.WHEAT, 1);
+        assertEquals(result, players.get(2).getResources());
+    }
+
+    // tests that if no one has the resource, nothing happens
+    @Test
+    public void playMonopolyDoesNothingIfNoOneHas() {
+        List<Player> players = main.getPlayers();
+        player.addResource(Resource.WOOD);
+        players.get(1).addResource(Resource.ORE);
+        players.get(2).addResource(Resource.WHEAT);
+
+        main.playMonopoly(player, Resource.WOOD);
+
+        Map<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+        assertEquals(result, player.getResources());
+
+        // now for player 1
+        result.clear();
+        result.put(Resource.ORE, 1);
+        assertEquals(result, players.get(1).getResources());
+
+        // now for player 2
+        result.clear();
+        result.put(Resource.WHEAT, 1);
+        assertEquals(result, players.get(2).getResources());
+    }
+
+    // tests that reduces number of monopoly cards to 0 in main phase
+    @Test
+    public void playMonopolyReducesCardTo0() {
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        main.setPhase(true);
+
+        main.playMonopoly(player, Resource.BRICK);
+
+        Map<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.MONOPOLY, 0);
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // tests that reduces 2 to 1 and ignores other cards in main phase
+    @Test
+    public void playMonopolyReducesCardTo1() {
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        main.setPhase(true);
+
+        main.playMonopoly(player, Resource.WOOD);
+
+        Map<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.MONOPOLY, 1);
+        result.put(DevelopmentCard.KNIGHT, 1);
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // tests that returns true in main phase if the player had the card
+    @Test
+    public void playMonopolyReturnsTrueIfHasCard() {
+        player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
+        main.setPhase(true);
+
+        assertTrue(main.playMonopoly(player, Resource.BRICK));
+    }
+
+    // tests that return false in main phase if the player didn't have any cards or had wrong ones
+    @Test
+    public void playMonopolyReturnsFalseIfNoCardsOrWrong() {
+        main.setPhase(true);
+
+        assertFalse(main.playMonopoly(player, Resource.BRICK));
+
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
+
+        assertFalse(main.playMonopoly(player, Resource.BRICK));
+    }
+
+    // tests that in main phase, if it returns false, the player gains no resources and no players lose
+    @Test
+    public void playMonopolyFalseMovesNoResources() {
+        List<Player> players = main.getPlayers();
+        players.get(1).addResource(Resource.WOOD);
+        players.get(2).addResource(Resource.WOOD);
+        main.setPhase(true);
+
+        assertFalse(main.playMonopoly(player, Resource.BRICK));
+        assertEquals(emptyResourceMap(), player.getResources());
+
+        Map<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 1);
+
+        assertEquals(result, players.get(1).getResources());
+        assertEquals(result, players.get(2).getResources());
     }
 }
