@@ -44,6 +44,10 @@ public class GUIMainImpl implements GUIMain {
         return main.getAvailableRoadSpots(player).size() > 0 && (main.playerCanBuild(player, Building.CITY) || unlimitedResources);
     }
 
+    public boolean canBuyDevelopmentCard(Player player){
+        return main.playerCanBuild(player,Building.DEVELOPMENT_CARD) || unlimitedResources;
+    }
+
 
     /**
      * Tells main and all GUIPlayers that a @player built a road at @edge
@@ -91,6 +95,15 @@ public class GUIMainImpl implements GUIMain {
         }
 
         updateResourceCounters();
+    }
+
+    /**
+     * Tells main to purchase a development card for the player
+     * @param player
+     */
+    @Override
+    public void buildDevelopmentCard(Player player){
+        main.buildDevelopmentCard(player);
     }
 
     /**

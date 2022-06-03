@@ -29,6 +29,13 @@ public interface GUIMain {
     public boolean canBuildCity(Player player);
 
     /**
+     * Asks main if player can buy a development card
+     * @param player
+     * @return
+     */
+    public boolean canBuyDevelopmentCard(Player player);
+
+    /**
      * Tells main to build a road at edge for player
      * @param player
      * @param edge
@@ -51,6 +58,12 @@ public interface GUIMain {
      * @return
      */
     public void buildCity(Player player, Vertex vertex);
+
+    /**
+     * Tells main to purchase a development card for the player
+     * @param player
+     */
+    public void buildDevelopmentCard(Player player);
 
     /**
      * Calls respective method in Main

@@ -23,6 +23,11 @@ public class GUIMainDummyImpl implements GUIMain {
     }
 
     @Override
+    public boolean canBuyDevelopmentCard(Player player) {
+        return false;
+    }
+
+    @Override
     public void buildRoad(Player player, Edge edge) {
 
     }
@@ -34,6 +39,11 @@ public class GUIMainDummyImpl implements GUIMain {
 
     @Override
     public void buildCity(Player player, Vertex vertex) {
+
+    }
+
+    @Override
+    public void buildDevelopmentCard(Player player) {
 
     }
 

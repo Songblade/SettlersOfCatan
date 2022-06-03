@@ -704,6 +704,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         enableButtons(resourceButtonMap.keySet());
     }
 
+    /**
+     * Maps an action to a key
+     * @param keyId the ASCII identifier of the key
+     * @param action the action to be performed whenever the key is pressed
+     */
     private void mapAction(int keyId, ActionListener action){
         frame.getRootPane().registerKeyboardAction(action,KeyStroke.getKeyStroke((char) keyId),JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
@@ -717,10 +722,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         mapAction(49,requestRoadPlacement());
         mapAction(50,requestSettlementPlacement());
         mapAction(51,requestCityPlacement());
-        mapAction(52,requestKnight());
-        mapAction(53,requestYearOfPlenty());
-        mapAction(54,requestRoadBuilding());
-        mapAction(55,requestMonopoly());
+        mapAction(52,buildDevelopmentCard());
     }
 
     /**
@@ -987,6 +989,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    private boolean canMakePurchases(){return mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE;}
+
     private void reloadPossibleMovesGUI(){
         reloadPossibleMovesGUI(null);
     }
@@ -1039,7 +1043,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 //System.out.println("City placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildCity(player));
                 //Checks if player can preform action
-                if(main.canBuildCity(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
+                if(canMakePurchases() && main.canBuildCity(player)){
                     currentState = GUISTate.CITY;
                     Set<Vertex> availableSpots = main.getAvailableCitySpots(player);
 
@@ -1067,7 +1071,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 //System.out.println("Settlement placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildSettlement(player));
                 //Checks if player can preform action
-                if(main.canBuildSettlement(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
+                if(canMakePurchases() && main.canBuildSettlement(player)){
                     currentState = GUISTate.SETTLEMENT;
                     Set<Vertex> availableSpots = main.getAvailableSettlementSpots(player);
 
@@ -1095,7 +1099,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 //System.out.println("Road placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildRoad(player));
                 //Checks if player can preform action
-                if(main.canBuildRoad(player) && mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE){
+                if(canMakePurchases() && main.canBuildRoad(player)){
                     currentState = GUISTate.ROAD;
                     Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
 
@@ -1108,6 +1112,17 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                     //Reloads the possible moves
                     reloadPossibleMovesGUI();
+                }
+            }
+        };
+    }
+
+    private ActionListener buildDevelopmentCard() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(canMakePurchases() && main.canBuyDevelopmentCard(player)){
+                    main.buildDevelopmentCard(player);
                 }
             }
         };
