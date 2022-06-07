@@ -103,6 +103,16 @@ public class GUIMainImpl implements GUIMain {
         updateResourceCounters();
     }
 
+    /**
+     * Tells main to purchase a development card for the player
+     * @param player
+     */
+    @Override
+    public void buildDevelopmentCard(Player player){
+        main.buildDevelopmentCard(player);
+        updateResourceCounters();
+    }
+
     @Override
     public boolean playKnight(Player stealer, Vertex settlement, Hex location){
         boolean toReturn = main.playKnight(stealer,settlement,location);
@@ -112,7 +122,9 @@ public class GUIMainImpl implements GUIMain {
 
     @Override
     public boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource){
-        return main.playYearOfPlenty(player,firstResource,secondResource);
+        boolean toReturn = main.playYearOfPlenty(player,firstResource,secondResource);
+        updateResourceCounters();
+        return toReturn;
     }
 
     @Override
@@ -123,15 +135,6 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation){
         return main.playRoadBuilding(player,firstLocation,secondLocation);
-    }
-
-    /**
-     * Tells main to purchase a development card for the player
-     * @param player
-     */
-    @Override
-    public void buildDevelopmentCard(Player player){
-        main.buildDevelopmentCard(player);
     }
 
     /**

@@ -1206,9 +1206,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                currentState = GUIState.YEAR_OF_PLENTY_FIRST;
-                reloadPossibleMovesGUI();
-                enableButtons(resourceButtonMap.keySet());
+                if(main.canPlayDevelopmentCard(player,DevelopmentCard.YEAR_OF_PLENTY)){
+                    currentState = GUIState.YEAR_OF_PLENTY_FIRST;
+                    reloadPossibleMovesGUI();
+                    enableButtons(resourceButtonMap.keySet());
+                }
             }
         };
     }
