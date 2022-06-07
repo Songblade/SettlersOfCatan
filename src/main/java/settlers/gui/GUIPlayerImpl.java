@@ -70,7 +70,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Vertex lastSettlementSpot = null;
     private Edge lastRoadSpot = null;
     private Hex thiefRequestSpot = null;
-    private GUISTate currentState = GUISTate.NONE;
+    private GUIState currentState = GUIState.NONE;
 
 
     public GUIPlayerImpl(GUIMain main,Board board, Player player, List<Player> players){
@@ -646,7 +646,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             canPass = false;
             stealPreformed = false;
 
-            currentState = GUISTate.THIEF;
+            currentState = GUIState.THIEF;
             startThiefMove();
 
             while(!stealPreformed){
@@ -714,7 +714,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         focusFrame();
         canPass = false;
         targetResourceAmount = target;
-        currentState = GUISTate.DISCARD;
+        currentState = GUIState.DISCARD;
         enableButtons(resourceButtonMap.keySet());
     }
 
@@ -833,7 +833,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 enableButton(button);
             }
         }
-        currentState = GUISTate.SETTLEMENT;
+        currentState = GUIState.SETTLEMENT;
     }
 
     private void requestRoadPlacementSP(){
@@ -844,7 +844,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }
             }
         }
-        currentState = GUISTate.ROAD;
+        currentState = GUIState.ROAD;
     }
 
     private HashSet<Vertex> getOccupiedAdjacentVertices(Hex hex, boolean selfSearch){
@@ -915,13 +915,13 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     private void finishThiefMove(Vertex location){
-        if(currentState == GUISTate.KNIGHT) {
+        if(currentState == GUIState.KNIGHT) {
             main.playKnight(player, location, thiefRequestSpot);
-        }else if(currentState == GUISTate.THIEF){
+        }else if(currentState == GUIState.THIEF){
             main.moveThief(player, location, thiefRequestSpot);
         }
         stealPreformed = true;
-        currentState = GUISTate.NONE;
+        currentState = GUIState.NONE;
     }
 
     private void startThiefMove(){
@@ -1046,7 +1046,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
-    private boolean canMakePurchases(){return mainPhase && thisPlayerHasTurn && currentState == GUISTate.NONE;}
+    private boolean canMakePurchases(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
 
     private void reloadPossibleMovesGUI(){
         reloadPossibleMovesGUI(null);
@@ -1063,7 +1063,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canPass){
                     disableAllButtons();
-                    currentState = GUISTate.NONE;
+                    currentState = GUIState.NONE;
                     thisPlayerHasTurn = false;
                     reloadPossibleMovesGUI();
                 }
@@ -1081,7 +1081,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canPass && currentState.isCancelable()){
                     disableAllButtons();
-                    currentState = GUISTate.NONE;
+                    currentState = GUIState.NONE;
                     reloadPossibleMovesGUI();
                 }
             }
@@ -1100,7 +1100,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 //System.out.println("City placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildCity(player));
                 //Checks if player can preform action
                 if(canMakePurchases() && main.canBuildCity(player)){
-                    currentState = GUISTate.CITY;
+                    currentState = GUIState.CITY;
                     Set<Vertex> availableSpots = main.getAvailableCitySpots(player);
 
                     //Makes the right buttons visible
@@ -1128,7 +1128,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 //System.out.println("Settlement placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildSettlement(player));
                 //Checks if player can preform action
                 if(canMakePurchases() && main.canBuildSettlement(player)){
-                    currentState = GUISTate.SETTLEMENT;
+                    currentState = GUIState.SETTLEMENT;
                     Set<Vertex> availableSpots = main.getAvailableSettlementSpots(player);
 
                     //Makes the right buttons visible
@@ -1156,7 +1156,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 //System.out.println("Road placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildRoad(player));
                 //Checks if player can preform action
                 if(canMakePurchases() && main.canBuildRoad(player)){
-                    currentState = GUISTate.ROAD;
+                    currentState = GUIState.ROAD;
                     Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
 
                     //Makes the right buttons visible
@@ -1191,7 +1191,10 @@ public class GUIPlayerImpl implements GUIPlayer{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
-                    currentState = GUISTate.KNIGHT;
+                    currentState = GUIState.KNIGHT;
+
+                    reloadPossibleMovesGUI();
+
                     startThiefMove();
                 }
             }
@@ -1235,7 +1238,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentState == GUISTate.THIEF || currentState == GUISTate.KNIGHT){
+                if(currentState == GUIState.THIEF || currentState == GUIState.KNIGHT){
                     thiefRequestSpot = hex;
                     HashSet<Vertex> potentialRobberySpots = getOccupiedAdjacentVertices(hex,false);
 
@@ -1268,14 +1271,14 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentState == GUISTate.SETTLEMENT) {
+                if(currentState == GUIState.SETTLEMENT) {
                     main.buildSettlement(player,vertex);
                     lastSettlementSpot = vertex;
-                    currentState = GUISTate.NONE;
-                }else if(currentState == GUISTate.CITY){
+                    currentState = GUIState.NONE;
+                }else if(currentState == GUIState.CITY){
                     main.buildCity(player,vertex);
-                    currentState = GUISTate.NONE;
-                }else if(currentState == GUISTate.THIEF || currentState == GUISTate.KNIGHT){
+                    currentState = GUIState.NONE;
+                }else if(currentState == GUIState.THIEF || currentState == GUIState.KNIGHT){
                     finishThiefMove(vertex);
                 }
                 disableButtons(vertexButtonMap.keySet());
@@ -1294,10 +1297,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(currentState == GUISTate.ROAD){
+                if(currentState == GUIState.ROAD){
                     main.buildRoad(player,edge);
                     lastRoadSpot = edge;
-                    currentState = GUISTate.NONE;
+                    currentState = GUIState.NONE;
                 }
                 disableButtons(edgeButtonMap.keySet());
                 focusFrame();
@@ -1309,11 +1312,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean reEnableButtons = true;
-                disableButtons(resourceButtonMap.keySet());
-
                 Resource resource = resourceButtonMap.get(button);
-                if(currentState == GUISTate.DISCARD){
+
+                if(currentState == GUIState.DISCARD){
+                    boolean reEnableButtons = true;
+
                     HashMap<Resource,Integer> toRemove = new HashMap<>();
                     toRemove.put(resource,1);
 
@@ -1321,13 +1324,23 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                     if(getPlayerResourceCount(player) <= targetResourceAmount){
                         main.playerHasTargetResources(player);
-                        currentState = GUISTate.NONE;
-                        reEnableButtons = false;
+                        currentState = GUIState.NONE;
+                        disableButtons(resourceButtonMap.keySet());
                     }
+                }else if(currentState == GUIState.YEAR_OF_PLENTY_FIRST || currentState == GUIState.YEAR_OF_PLENTY_SECOND){
+                    player.addResource(resource);
 
+                    switch(currentState){
+                        case YEAR_OF_PLENTY_FIRST:
+                            currentState = GUIState.YEAR_OF_PLENTY_SECOND;
+                            break;
+                        case YEAR_OF_PLENTY_SECOND:
+                            currentState = GUIState.NONE;
+                            disableButtons(resourceButtonMap.keySet());
+                            break;
+                    }
                 }
 
-                if(reEnableButtons)enableButtons(resourceButtonMap.keySet());
                 focusFrame();
             }
         };
@@ -1335,7 +1348,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 }
 
 
-enum GUISTate{
+enum GUIState{
     NONE(false),
     ROAD(true),
     SETTLEMENT(true),
@@ -1343,11 +1356,12 @@ enum GUISTate{
     KNIGHT(true),
     THIEF(false),
     DISCARD(false),
-    ROADBUILDING(false),
-    YEAROFPLENTY(false),
+    ROAD_BUILDING(false),
+    YEAR_OF_PLENTY_FIRST(true),
+    YEAR_OF_PLENTY_SECOND(false),
     MONOPOLY(false);
 
-    GUISTate(boolean cancelable){
+    GUIState(boolean cancelable){
         this.cancelable = cancelable;
     }
     private final boolean cancelable;
