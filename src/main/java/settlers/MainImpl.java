@@ -18,6 +18,7 @@ public class MainImpl implements Main {
     private boolean isMainPhase; // starts automatically as false
     private Hex thiefIsHere; // so we don't have to look for it
     private final List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
+    private Player currentTurn; // a link to the player whose turn it currently is
     private final Queue<DevelopmentCard> vellyDeck; // where all the vellies are kept
     // I made it a queue, because we only ever take from the top
 
@@ -182,14 +183,14 @@ public class MainImpl implements Main {
      * Completing this method will just require uncommenting some lines and changing some method names
      */
     private void setupTurn(int turnNumber, boolean isSecondLoop) {
-        Player player = players[turnNumber];
+        currentTurn = players[turnNumber];
         // we ask gui where the player wants to put the settlement
         // gui will then call buildSettlement on the appropriate spot to actually build the settlement
         // It will also find out what road to build, and build that too
-        Vertex settlement = gui.startSetupTurn(player, getAvailableSettlementSpots(player));
+        Vertex settlement = gui.startSetupTurn(currentTurn, getAvailableSettlementSpots(currentTurn));
         // now the player does its setup turn over in guiland
         if (isSecondLoop) {
-            givePlayerSettlementResources(player, settlement);
+            givePlayerSettlementResources(currentTurn, settlement);
         }
     }
 
@@ -228,14 +229,14 @@ public class MainImpl implements Main {
     }
 
     private void mainTurn(int turnNumber) {
-        Player player = players[turnNumber]; // the player whose turn it is
+        currentTurn = players[turnNumber]; // the player whose turn it is
         Random dieRoller = new Random();
         // gets the value of the dice being rolled
         // since nextInt(6) gives 0 to 5, I then add 1 per die to make each die 1 to 6
         int dieValue = 2 + dieRoller.nextInt(6) + dieRoller.nextInt(6);
         // gui.insertMethodNameHere(dieValue); // displays the die value
         applyDice(dieValue); // changes values and stuff
-        gui.startTurn(player, dieValue); // tells GUI to get input and call the methods, when they end,
+        gui.startTurn(currentTurn, dieValue); // tells GUI to get input and call the methods, when they end,
             // this method will end, and it will be the next player's turn
             // updates number and resources and also does 7 stuff, so I don't worry about it
     }
@@ -287,13 +288,17 @@ public class MainImpl implements Main {
      * I am going to refactor this method, call it canBuild, and make it check if the player has the resources
      * And if they have reached the maximum number they can build
      * And also check if they have anywhere to put it
+     * And also if it is their turn
      * The maximum numbers are 15 roads, 5 settlements, and 4 cities
      * @param player  that wants to build
      * @param project that the player wants to build
-     * @return true if the player has enough resources, false otherwise
+     * @return true if the player has enough resources and it is that player's turn, false otherwise
      */
     @Override
     public boolean playerCanBuild(Player player, Building project) {
+        if (currentTurn != player) { // if it is not this player's turn
+            return false;
+        }
         Map<Resource, Integer> requirements = project.getResources();
         for (Resource resource : requirements.keySet()) {
             if (player.getResources().getOrDefault(resource, 0) < requirements.get(resource)) {
@@ -597,6 +602,9 @@ public class MainImpl implements Main {
         if (player == null || card == null) {
             throw new IllegalArgumentException("One or more inputs are null");
         }
+        if (currentTurn != player) { // if it is not this player's turn
+            return false;
+        }
         if (card == DevelopmentCard.VICTORY_POINT) { // can't play this type of card, ever
             return false;
         }
@@ -759,11 +767,23 @@ public class MainImpl implements Main {
     }
 
     /**
+     * Deprecated: Use setTurn instead
      * This is used only for testing purposes, so I can change the stage from MainTest
      * @param changingToMain whether or not we are changing to main
      */
+    @Deprecated
     protected void setPhase(boolean changingToMain) {
         isMainPhase = changingToMain;
+    }
+
+    /**
+     * Changes to main phase if necessary and makes it this player's turn
+     * Must be implemented
+     * @param player whose turn it now is
+     */
+    protected void setTurn(Player player, boolean turnToMain) {
+        isMainPhase = turnToMain;
+        currentTurn = player;
     }
 
     private void endGame(Player victor) {
