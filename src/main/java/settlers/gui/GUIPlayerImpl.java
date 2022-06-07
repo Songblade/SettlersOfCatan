@@ -3,6 +3,7 @@ package settlers.gui;
 import settlers.Player;
 import settlers.PlayerImpl;
 import settlers.board.*;
+import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
 import javax.swing.*;
@@ -302,7 +303,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             //Creates hex button and adds it to the hexButtonMap
             JButton hexButton = createButton(xPos,yPos);
             hexButtonMap.put(hexButton,hex);
-            hexButton.addActionListener(hexButtonClickedAction(hexButton));
+            hexButton.addActionListener(hexButtonClickedAction(hexButtonMap.get(hexButton)));
 
             //Puts thief at current position, if position is desert
             if(hex.getResource() == Resource.MISC){
@@ -444,6 +445,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         createMoveText(Move.SETTLEMENT,"2","Build a settlement");
         createMoveText(Move.CITY,"3","Build a city");
         createMoveText(Move.DEVELOPMENT_CARD,"4","Buy a development card");
+        createMoveText(Move.KNIGHT,"Q","Play kinght");
+        createMoveText(Move.YEAR_OF_PLENTY,"W","Play year of planty");
+        createMoveText(Move.ROAD_BUILDING,"E","Play road building");
+        createMoveText(Move.MONOPOLY,"R","Play monopoly");
         createMoveText(Move.CANCEL,"Backspace","Cancel move");
     }
 
@@ -642,12 +647,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             stealPreformed = false;
 
             currentState = GUISTate.THIEF;
-            Set<Hex> availableThiefSpots = main.getAvailableThiefSpots();
-            for(JButton button : hexButtonMap.keySet()){
-                if(availableThiefSpots.contains(hexButtonMap.get(button))){
-                    enableButton(button);
-                }
-            }
+            startThiefMove();
 
             while(!stealPreformed){
                 try {
@@ -915,9 +915,23 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     private void finishThiefMove(Vertex location){
-        main.moveThief(player,location, thiefRequestSpot);
+        if(currentState == GUISTate.KNIGHT) {
+            main.playKnight(player, location, thiefRequestSpot);
+        }else if(currentState == GUISTate.THIEF){
+            main.moveThief(player, location, thiefRequestSpot);
+        }
         stealPreformed = true;
         currentState = GUISTate.NONE;
+    }
+
+    private void startThiefMove(){
+        Set<Hex> availableThiefSpots = main.getAvailableThiefSpots();
+
+        for(JButton button : hexButtonMap.keySet()){
+            if(availableThiefSpots.contains(hexButtonMap.get(button))){
+                enableButton(button);
+            }
+        }
     }
 
     /**
@@ -963,6 +977,26 @@ public class GUIPlayerImpl implements GUIPlayer{
             //Asks if the player can build a development card
             if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canMakePurchases()) {
                 moves.add(Move.DEVELOPMENT_CARD);
+            }
+
+            //Asks if the player can play knight
+            if (checkMoveListForMove(toCheck, Move.KNIGHT) && main.canPlayDevelopmentCard(player, DevelopmentCard.KNIGHT) && canMakePurchases()) {
+                moves.add(Move.KNIGHT);
+            }
+
+            //Asks if the player can play year of plenty
+            if (checkMoveListForMove(toCheck, Move.YEAR_OF_PLENTY) && main.canPlayDevelopmentCard(player, DevelopmentCard.YEAR_OF_PLENTY) && canMakePurchases()) {
+                moves.add(Move.YEAR_OF_PLENTY);
+            }
+
+            //Asks if the player can play road building
+            if (checkMoveListForMove(toCheck, Move.ROAD_BUILDING) && main.canPlayDevelopmentCard(player, DevelopmentCard.ROAD_BUILDING) && canMakePurchases()) {
+                moves.add(Move.ROAD_BUILDING);
+            }
+
+            //Asks if the player can play monopoly
+            if (checkMoveListForMove(toCheck, Move.MONOPOLY) && main.canPlayDevelopmentCard(player, DevelopmentCard.MONOPOLY) && canMakePurchases()) {
+                moves.add(Move.MONOPOLY);
             }
 
             //Asks if the player can cancel a move
@@ -1019,7 +1053,6 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     //Actions
-
     /**
      * Passes the turn
      * @return
@@ -1146,6 +1179,8 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canMakePurchases() && main.canBuyDevelopmentCard(player)){
                     main.buildDevelopmentCard(player);
+
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1155,7 +1190,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                if(main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
+                    currentState = GUISTate.KNIGHT;
+                    startThiefMove();
+                }
             }
         };
     }
@@ -1187,6 +1225,40 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
     //Buttons
+
+    /**
+     * Whenever a hex button is clicked
+     * @param hex
+     * @return
+     */
+    private ActionListener hexButtonClickedAction(Hex hex){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentState == GUISTate.THIEF || currentState == GUISTate.KNIGHT){
+                    thiefRequestSpot = hex;
+                    HashSet<Vertex> potentialRobberySpots = getOccupiedAdjacentVertices(hex,false);
+
+                    //Does the stealing mechanic
+                    if(potentialRobberySpots.size() > 0){
+                        //Enables adjacent vertex buttons which have settlements/cities on them
+                        for(JButton vertexButton : vertexButtonMap.keySet()){
+                            if(potentialRobberySpots.contains(vertexButtonMap.get(vertexButton))){
+                                enableButton(vertexButton);
+                            }
+                        }
+                    }else{
+                        finishThiefMove(hex.getVertices()[0]);
+                    }
+                }
+
+                disableButtons(hexButtonMap.keySet());
+                focusFrame();
+                reloadPossibleMovesGUI();
+            }
+        };
+    }
+
     /**
      * Whenever a vertex button is clicked
      * @param vertex the vertex whose button was clicked
@@ -1203,7 +1275,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }else if(currentState == GUISTate.CITY){
                     main.buildCity(player,vertex);
                     currentState = GUISTate.NONE;
-                }else if(currentState == GUISTate.THIEF){
+                }else if(currentState == GUISTate.THIEF || currentState == GUISTate.KNIGHT){
                     finishThiefMove(vertex);
                 }
                 disableButtons(vertexButtonMap.keySet());
@@ -1233,36 +1305,6 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
         };
     }
-
-    private ActionListener hexButtonClickedAction(JButton button){
-        return new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(currentState == GUISTate.THIEF){
-                    Hex hex = hexButtonMap.get(button);
-                    thiefRequestSpot = hex;
-                    HashSet<Vertex> potentialRobberySpots = getOccupiedAdjacentVertices(hex,false);
-
-                    //Does the stealing mechanic
-                    if(potentialRobberySpots.size() > 0){
-                        //Enables adjacent vertex buttons which have settlements/cities on them
-                        for(JButton vertexButton : vertexButtonMap.keySet()){
-                            if(potentialRobberySpots.contains(vertexButtonMap.get(vertexButton))){
-                                enableButton(vertexButton);
-                            }
-                        }
-                    }else{
-                        finishThiefMove(hex.getVertices()[0]);
-                    }
-                }
-
-                disableButtons(hexButtonMap.keySet());
-                focusFrame();
-                reloadPossibleMovesGUI();
-            }
-        };
-    }
-
     private ActionListener resourceButtonClickedAction(JButton button){
         return new AbstractAction() {
             @Override
@@ -1298,6 +1340,7 @@ enum GUISTate{
     ROAD(true),
     SETTLEMENT(true),
     CITY(true),
+    KNIGHT(true),
     THIEF(false),
     DISCARD(false),
     ROADBUILDING(false),

@@ -2,6 +2,8 @@ package settlers.gui;
 
 import settlers.Player;
 import settlers.board.*;
+import settlers.card.DevelopmentCard;
+import settlers.card.Resource;
 
 import java.util.Set;
 
@@ -35,6 +37,8 @@ public interface GUIMain {
      */
     public boolean canBuyDevelopmentCard(Player player);
 
+    public boolean canPlayDevelopmentCard(Player player, DevelopmentCard card);
+
     /**
      * Tells main to build a road at edge for player
      * @param player
@@ -64,6 +68,41 @@ public interface GUIMain {
      * @param player
      */
     public void buildDevelopmentCard(Player player);
+
+    /**
+     * Plays the player's Knight development card, lets them move the robber and steals a resource
+     * @param stealer playing the knight card
+     * @param settlement being stolen from
+     * @param location hexagon being blocked, adjacent to the settlement
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    boolean playKnight(Player stealer, Vertex settlement, Hex location);
+
+    /**
+     * Plays the player's Year of Plenty development card, gives them 2 resources of their choice
+     * @param player playing the card
+     * @param firstResource the player receives
+     * @param secondResource the player receives
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource);
+
+    /**
+     * Plays the player's Monopoly development card, stealing every copy of that resource from all other players
+     * @param player playing the card
+     * @param resource the player steals from all other players
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    boolean playMonopoly(Player player, Resource resource);
+
+    /**
+     * Plays the player's Road Building development card, letting them place 2 roads
+     * @param player playing the card
+     * @param firstLocation an empty edge where this player can build
+     * @param secondLocation an empty edge where this player can build after building firstLocation
+     * @return true if the card was successfully played, false if the player didn't have the card
+     */
+    boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation);
 
     /**
      * Calls respective method in Main
