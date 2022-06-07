@@ -94,7 +94,7 @@ public class MainDevelopmentCardTest {
     // tests that if we are in the main phase, player resources are reduced by the right number
     @Test
     public void playerResourcesTo0() {
-        main.setPhase(true);
+        main.setTurn(player, true);
         player.addResource(Resource.ORE);
         player.addResource(Resource.SHEEP);
         player.addResource(Resource.WHEAT);
@@ -107,7 +107,7 @@ public class MainDevelopmentCardTest {
     // tests for the same, when the player has extra resources
     @Test
     public void playerReduceResourceWhenHasMore() {
-        main.setPhase(true);
+        main.setTurn(player, true);
         player.addResource(Resource.ORE);
         player.addResource(Resource.SHEEP);
         player.addResource(Resource.WHEAT);
@@ -120,6 +120,29 @@ public class MainDevelopmentCardTest {
         result.put(Resource.SHEEP, 1);
         result.put(Resource.WOOD, 1);
         assertEquals(result, player.getResources());
+    }
+
+    // tests for canPlay
+    // make sure returns true if is player's turn and has card
+    @Test
+    public void canPlayReturnsTrueIfHasCardAndTurn() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        main.setTurn(player, true);
+        assertTrue(main.canPlay(player, DevelopmentCard.KNIGHT));
+    }
+
+    // makes sure returns false if doesn't have card, even if is player's turn
+    @Test
+    public void canPlayReturnsFalseIfNoCard() {
+        main.setTurn(player, true);
+        assertFalse(main.canPlay(player, DevelopmentCard.KNIGHT));
+    }
+
+    @Test
+    public void canPlayReturnsFalseIfNotTurn() {
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        main.setTurn(main.getPlayers().get(1), true);
+        assertFalse(main.canPlay(player, DevelopmentCard.KNIGHT));
     }
 
     // tests for playKnight
@@ -217,7 +240,7 @@ public class MainDevelopmentCardTest {
     @Test
     public void playKnightBringsCardsTo0() {
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
         main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
@@ -233,7 +256,7 @@ public class MainDevelopmentCardTest {
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
         main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere);
@@ -248,7 +271,7 @@ public class MainDevelopmentCardTest {
     @Test
     public void playKnightReturnsTrueIfHasCard() {
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
         assertTrue(main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere));
@@ -257,7 +280,7 @@ public class MainDevelopmentCardTest {
     // and false if he has no development cards
     @Test
     public void playKnightReturnsFalseIfNoCards() {
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
 
@@ -275,7 +298,7 @@ public class MainDevelopmentCardTest {
     public void playKnightReturnsFalseIfWrongCards() {
         player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
         player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         Hex thiefIsHere = main.getBoard().getHexes()[0];
         assertFalse(main.playKnight(player, thiefIsHere.getVertices()[0], thiefIsHere));
@@ -322,7 +345,7 @@ public class MainDevelopmentCardTest {
     @Test
     public void playYearOfPlentyReducesCardTo0() {
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK);
 
@@ -337,7 +360,7 @@ public class MainDevelopmentCardTest {
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK);
 
@@ -351,7 +374,7 @@ public class MainDevelopmentCardTest {
     @Test
     public void playYearOfPlentyReturnsTrueIfHasCard() {
         player.addDevelopmentCard(DevelopmentCard.YEAR_OF_PLENTY);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertTrue(main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK));
     }
@@ -359,7 +382,7 @@ public class MainDevelopmentCardTest {
     // tests that return false in main phase if the player didn't have any cards
     @Test
     public void playYearOfPlentyReturnsFalseIfNoCards() {
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertFalse(main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK));
     }
@@ -369,7 +392,7 @@ public class MainDevelopmentCardTest {
     public void playYearOfPlentyReturnsFalseIfWrongCards() {
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
         player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertFalse(main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK));
     }
@@ -377,7 +400,7 @@ public class MainDevelopmentCardTest {
     // tests that in main phase, if it returns false, the player gains no resources
     @Test
     public void playYearOfPlentyFalseGivesNoResources() {
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertFalse(main.playYearOfPlenty(player, Resource.WOOD, Resource.BRICK));
         assertEquals(emptyResourceMap(), player.getResources());
@@ -491,7 +514,7 @@ public class MainDevelopmentCardTest {
     @Test
     public void playMonopolyReducesCardTo0() {
         player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playMonopoly(player, Resource.BRICK);
 
@@ -506,7 +529,7 @@ public class MainDevelopmentCardTest {
         player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
         player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playMonopoly(player, Resource.WOOD);
 
@@ -520,7 +543,7 @@ public class MainDevelopmentCardTest {
     @Test
     public void playMonopolyReturnsTrueIfHasCard() {
         player.addDevelopmentCard(DevelopmentCard.MONOPOLY);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertTrue(main.playMonopoly(player, Resource.BRICK));
     }
@@ -528,7 +551,7 @@ public class MainDevelopmentCardTest {
     // tests that return false in main phase if the player didn't have any cards or had wrong ones
     @Test
     public void playMonopolyReturnsFalseIfNoCardsOrWrong() {
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertFalse(main.playMonopoly(player, Resource.BRICK));
 
@@ -544,7 +567,7 @@ public class MainDevelopmentCardTest {
         List<Player> players = main.getPlayers();
         players.get(1).addResource(Resource.WOOD);
         players.get(2).addResource(Resource.WOOD);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertFalse(main.playMonopoly(player, Resource.BRICK));
         assertEquals(emptyResourceMap(), player.getResources());
@@ -584,7 +607,7 @@ public class MainDevelopmentCardTest {
         Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
         Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
         player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playRoadBuilding(player, edge1, edge2);
 
@@ -603,7 +626,7 @@ public class MainDevelopmentCardTest {
         player.addResource(Resource.BRICK);
         player.addResource(Resource.BRICK);
 
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playRoadBuilding(player, edge1, edge2);
 
@@ -620,7 +643,7 @@ public class MainDevelopmentCardTest {
         Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
         Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
         player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playRoadBuilding(player, edge1, edge2);
 
@@ -639,7 +662,7 @@ public class MainDevelopmentCardTest {
         player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
         player.addDevelopmentCard(DevelopmentCard.KNIGHT);
 
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playRoadBuilding(player, edge1, edge2);
 
@@ -656,7 +679,7 @@ public class MainDevelopmentCardTest {
         Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
         Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
         player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertTrue(main.playRoadBuilding(player, edge1, edge2));
     }
@@ -666,7 +689,7 @@ public class MainDevelopmentCardTest {
     public void playRoadBuilderReturnsFalseIfNoCardsOrWrong() {
         Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
         Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         assertFalse(main.playRoadBuilding(player, edge1, edge2));
 
@@ -681,7 +704,7 @@ public class MainDevelopmentCardTest {
     public void playRoadBuildingFalsePlacesNoRoads() {
         Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
         Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.playRoadBuilding(player, edge1, edge2);
 

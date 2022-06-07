@@ -18,7 +18,7 @@ public interface Main {
      * The maximum numbers are 15 roads, 5 settlements, and 4 cities
      * @param player  that wants to build
      * @param project that the player wants to build
-     * @return true if the player has enough resources, false otherwise
+     * @return true if the player has enough resources and it is that player's turn, false otherwise
      */
     boolean playerCanBuild(Player player, Building project);
 

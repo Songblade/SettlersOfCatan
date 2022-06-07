@@ -26,8 +26,9 @@ public class MainTest {
     // and that doesn't work if player has fewer
     @Test
     public void canBuildRoad() {
-        Player player = new PlayerImpl();
+        Player player = main.getPlayers().get(0);
         main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+        main.setTurn(player, true);
         assertFalse(main.playerCanBuild(player, Building.ROAD));
 
         player.addResource(Resource.WOOD);
@@ -40,7 +41,9 @@ public class MainTest {
     // settlement
     @Test
     public void canBuildSettlement() {
-        Player player = new PlayerImpl();
+        Player player = main.getPlayers().get(0);
+        main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+        main.setTurn(player, true);
         assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
         player.addResource(Resource.WOOD);
         assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
@@ -55,8 +58,9 @@ public class MainTest {
     // city
     @Test
     public void canBuildCity() {
-        Player player = new PlayerImpl();
+        Player player = main.getPlayers().get(0);
         main.buildSettlement(player, main.getBoard().getVertices()[0]);
+        main.setTurn(player, true);
         assertFalse(main.playerCanBuild(player, Building.CITY));
 
         player.addResource(Resource.WHEAT);
@@ -74,7 +78,8 @@ public class MainTest {
     // development card
     @Test
     public void canBuyVelly() {
-        Player player = new PlayerImpl();
+        Player player = main.getPlayers().get(0);
+        main.setTurn(player, true);
         assertFalse(main.playerCanBuild(player, Building.DEVELOPMENT_CARD));
         player.addResource(Resource.WHEAT);
         assertFalse(main.playerCanBuild(player, Building.DEVELOPMENT_CARD));
@@ -87,8 +92,9 @@ public class MainTest {
     // test that works if player has more than necessary
     @Test
     public void worksIfMoreThanNecessary() {
-        Player player = new PlayerImpl();
+        Player player = main.getPlayers().get(0);
         main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+        main.setTurn(player, true);
 
         player.addResource(Resource.WOOD);
         player.addResource(Resource.BRICK);
@@ -104,17 +110,41 @@ public class MainTest {
         // even though the player has the right resources
     @Test
     public void cantBuildSettlementIfHasMax() {
-        Player player = new PlayerImpl();
+        Player player = main.getPlayers().get(0);
         player.addResource(Resource.WOOD);
         player.addResource(Resource.BRICK);
         player.addResource(Resource.WHEAT);
         player.addResource(Resource.SHEEP);
+        main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+        main.setTurn(player, false);
 
         Vertex[] vertices = main.getBoard().getVertices();
         for (int i = 0; i < 50; i += 10) { // builds 5, spread out settlements
             assertTrue(main.playerCanBuild(player, Building.SETTLEMENT));
             main.buildSettlement(player, vertices[i]); // this is setup, so no resource cost
         }
+        assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
+    }
+
+    // tests for my new keeping track of whose turn it is
+    // that canDo methods don't work when it is not your turn
+    // test for canBuildRoad
+    @Test
+    public void canBuildRoadFalseIfWrongTurn() {
+        Player player = setUpPlayer(Building.ROAD);
+        main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+        main.setTurn(main.getPlayers().get(1), true); // a different player's turn
+
+        assertFalse(main.playerCanBuild(player, Building.ROAD));
+    }
+
+    // test that also works for a different building
+    @Test
+    public void canBuildSettlementFalseIfWrongTurn() {
+        Player player = setUpPlayer(Building.SETTLEMENT);
+        main.buildRoad(player, main.getBoard().getVertices()[0].getEdges()[1]);
+        main.setTurn(main.getPlayers().get(1), true); // a different player's turn
+
         assertFalse(main.playerCanBuild(player, Building.SETTLEMENT));
     }
 
@@ -174,7 +204,7 @@ public class MainTest {
         List<Vertex> verticesCopy = new ArrayList<>();
         Hex verticesSource = main.getBoard().getHexes()[9];
         List<Player> playerCopy = main.getPlayers();
-        main.setPhase(true);
+        main.setTurn(playerCopy.get(0), true);
 
         Vertex firstVertex = verticesSource.getVertices()[0];
         Edge firstRoad = firstVertex.getEdges()[0];
@@ -229,7 +259,7 @@ public class MainTest {
     public void gameSettlementNotInOrNearSettlement() {
         Hex verticesSource = main.getBoard().getHexes()[9];
         List<Player> playerCopy = main.getPlayers();
-        main.setPhase(true);
+        main.setTurn(playerCopy.get(0), true);
 
         Vertex firstVertex = verticesSource.getVertices()[0];
         Edge firstRoad = firstVertex.getEdges()[0];
@@ -254,7 +284,7 @@ public class MainTest {
     public void roadNextToRoadAndSettlement() {
         Hex verticesSource = main.getBoard().getHexes()[9];
         List<Player> playerCopy = main.getPlayers();
-        main.setPhase(true);
+        main.setTurn(playerCopy.get(0), true);
 
         Vertex firstVertex = verticesSource.getVertices()[0];
         Edge firstRoad = firstVertex.getEdges()[0];
@@ -276,7 +306,7 @@ public class MainTest {
     public void roadNextToOtherPlayersRoad() {
         Hex verticesSource = main.getBoard().getHexes()[9];
         List<Player> playerCopy = main.getPlayers();
-        main.setPhase(true);
+        main.setTurn(playerCopy.get(0), true);
 
         Vertex firstVertex = verticesSource.getVertices()[0];
         Edge firstRoad = firstVertex.getEdges()[0];
@@ -296,7 +326,7 @@ public class MainTest {
     public void roadNextToOtherPlayersSettlement() {
         Hex verticesSource = main.getBoard().getHexes()[9];
         List<Player> playerCopy = main.getPlayers();
-        main.setPhase(true);
+        main.setTurn(playerCopy.get(0), true);
 
         Vertex firstVertex = verticesSource.getVertices()[0];
         Edge firstRoad = firstVertex.getEdges()[0];
@@ -317,7 +347,7 @@ public class MainTest {
     public void roadEdgeOfBoard() {
         Vertex firstVertex = main.getBoard().getVertices()[0];
         List<Player> playerCopy = main.getPlayers();
-        main.setPhase(true);
+        main.setTurn(playerCopy.get(0), true);
 
         Edge firstRoad = firstVertex.getEdges()[2];
         addPlayer(firstRoad, playerCopy.get(0));
@@ -348,7 +378,7 @@ public class MainTest {
     public void testSettlementIsBuilt() {
         Player player = setUpPlayer(Building.SETTLEMENT);
         Vertex vertex = main.getBoard().getVertices()[4];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildSettlement(player, vertex);
 
@@ -372,7 +402,7 @@ public class MainTest {
     public void testPlayerHasPort() {
         Player player = setUpPlayer(Building.SETTLEMENT);
         Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0]; // a vertex with a port
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildSettlement(player, vertex);
 
@@ -398,7 +428,7 @@ public class MainTest {
     public void testPlayerLosesAllResourcesSettlement() {
         Player player = setUpPlayer(Building.SETTLEMENT);
         Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0]; // a vertex with a port
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildSettlement(player, vertex);
 
@@ -413,7 +443,7 @@ public class MainTest {
         player.addResource(Resource.ORE);
 
         Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildSettlement(player, vertex);
 
@@ -447,7 +477,7 @@ public class MainTest {
     public void buildSettlementLetsBuildCity() {
         Player player = setUpPlayer(Building.SETTLEMENT);
         Vertex vertex = main.getBoard().getHexes()[0].getVertices()[0]; // a vertex with a port
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildSettlement(player, vertex);
 
@@ -467,7 +497,7 @@ public class MainTest {
         Player player = setUpPlayer(Building.ROAD);
         Vertex vertex = main.getBoard().getVertices()[4];
         Edge edge = vertex.getEdges()[0];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildRoad(player, edge);
 
@@ -488,7 +518,7 @@ public class MainTest {
         Player player = setUpPlayer(Building.ROAD);
         Vertex vertex = main.getBoard().getVertices()[4];
         Edge edge = vertex.getEdges()[0];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildRoad(player, edge);
 
@@ -504,7 +534,7 @@ public class MainTest {
 
         Vertex vertex = main.getBoard().getVertices()[4];
         Edge edge = vertex.getEdges()[0];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildRoad(player, edge);
 
@@ -538,7 +568,7 @@ public class MainTest {
         Player player = setUpPlayer(Building.ROAD);
         Vertex vertex = main.getBoard().getVertices()[4];
         Edge edge = vertex.getEdges()[0];
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildRoad(player, edge);
 
@@ -594,7 +624,7 @@ public class MainTest {
         Player player = setUpPlayer(Building.CITY);
         Vertex vertex = main.getBoard().getVertices()[4];
         main.buildSettlement(player, vertex); // in setup phase, so no resources used
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildCity(player, vertex);
 
@@ -610,7 +640,7 @@ public class MainTest {
         Player player = setUpPlayer(Building.CITY);
         Vertex vertex = main.getBoard().getVertices()[4];
         main.buildSettlement(player, vertex); // in setup phase, so no resources used
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildCity(player, vertex);
 
@@ -637,7 +667,7 @@ public class MainTest {
         Player player = setUpPlayer(Building.CITY);
         Vertex vertex = main.getBoard().getVertices()[4];
         main.buildSettlement(player, vertex); // in setup phase, so no resources used
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildCity(player, vertex);
 
@@ -653,7 +683,7 @@ public class MainTest {
 
         Vertex vertex = main.getBoard().getVertices()[4];
         main.buildSettlement(player, vertex); // in setup phase, so no resources used
-        main.setPhase(true);
+        main.setTurn(player, true);
 
         main.buildCity(player, vertex);
 
