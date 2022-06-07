@@ -1,6 +1,7 @@
 package settlers;
 
 import org.junit.jupiter.api.Test;
+import settlers.board.Edge;
 import settlers.board.Hex;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
@@ -553,5 +554,138 @@ public class MainDevelopmentCardTest {
 
         assertEquals(result, players.get(1).getResources());
         assertEquals(result, players.get(2).getResources());
+    }
+
+    // tests for playRoadBuilding
+    // tests that both locations now have roads
+    // I will assume that these roads act as normal roads, even though maybe I shouldn't
+    @Test
+    public void playRoadBuildingPlacesRoads() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+        main.playRoadBuilding(player, edge1, edge2);
+
+        assertEquals(player, edge1.getPlayer());
+        assertEquals(player, edge2.getPlayer());
+    }
+
+    // tests that can make the second edge null with no problems
+    @Test
+    public void playRoadBuildingCanHaveSecondEdgeNull() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        main.playRoadBuilding(player, edge1, null);
+
+        assertEquals(player, edge1.getPlayer());
+    }
+
+    // tests that the player has not lost any resources when he never had any
+    @Test
+    public void playRoadBuildingDoesntTakeResourcesEmpty() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        main.setPhase(true);
+
+        main.playRoadBuilding(player, edge1, edge2);
+
+        assertEquals(emptyResourceMap(), player.getResources());
+    }
+
+    // tests that the player has not lost any resources when he had enough to build both roads
+    @Test
+    public void playRoadBuildingDoesntTakeResourcesWhenHas() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.WOOD);
+        player.addResource(Resource.BRICK);
+        player.addResource(Resource.BRICK);
+
+        main.setPhase(true);
+
+        main.playRoadBuilding(player, edge1, edge2);
+
+        Map<Resource, Integer> result = emptyResourceMap();
+        result.put(Resource.WOOD, 2);
+        result.put(Resource.BRICK, 2);
+
+        assertEquals(result, player.getResources());
+    }
+
+    // tests that in main, the player lost the card when playing it
+    @Test
+    public void playRoadBuildingMovesCardTo0() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        main.setPhase(true);
+
+        main.playRoadBuilding(player, edge1, edge2);
+
+        Map<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.ROAD_BUILDING, 0);
+
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // tests that reduces card to 1 and ignores other cards when many vellies
+    @Test
+    public void playRoadBuildingMovesCardTo1() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+
+        main.setPhase(true);
+
+        main.playRoadBuilding(player, edge1, edge2);
+
+        Map<DevelopmentCard, Integer> result = new HashMap<>();
+        result.put(DevelopmentCard.ROAD_BUILDING, 1);
+        result.put(DevelopmentCard.KNIGHT, 1);
+
+        assertEquals(result, player.getDevelopmentCards());
+    }
+
+    // tests that returns true if player has the card in main
+    @Test
+    public void playRoadBuildingReturnsTrueIfHasCard() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+        player.addDevelopmentCard(DevelopmentCard.ROAD_BUILDING);
+        main.setPhase(true);
+
+        assertTrue(main.playRoadBuilding(player, edge1, edge2));
+    }
+
+    // tests that if player doesn't have the card or has wrong one, returns false
+    @Test
+    public void playRoadBuilderReturnsFalseIfNoCardsOrWrong() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+        main.setPhase(true);
+
+        assertFalse(main.playRoadBuilding(player, edge1, edge2));
+
+        player.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        player.addDevelopmentCard(DevelopmentCard.VICTORY_POINT);
+
+        assertFalse(main.playRoadBuilding(player, edge1, edge2));
+    }
+
+    // tests that if returns false, no roads are built
+    @Test
+    public void playRoadBuildingFalsePlacesNoRoads() {
+        Edge edge1 = main.getBoard().getVertices()[0].getEdges()[1];
+        Edge edge2 = main.getBoard().getVertices()[0].getEdges()[2];
+        main.setPhase(true);
+
+        main.playRoadBuilding(player, edge1, edge2);
+
+        assertNull(edge1.getPlayer());
+        assertNull(edge2.getPlayer());
     }
 }

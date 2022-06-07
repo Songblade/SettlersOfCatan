@@ -705,6 +705,7 @@ public class MainImpl implements Main {
      * @param player         playing the card
      * @param firstLocation  an empty edge where this player can build
      * @param secondLocation an empty edge where this player can build after building firstLocation
+     *                       Can be null if the player only has space to build one road
      * @return true if the card was successfully played, false if the player didn't have the card
      */
     @Override
