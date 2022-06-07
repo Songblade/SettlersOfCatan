@@ -710,7 +710,26 @@ public class MainImpl implements Main {
      */
     @Override
     public boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation) {
-        return false;
+        if (isMainPhase && !player.removeDevelopmentCard(DevelopmentCard.ROAD_BUILDING)) {
+            // for testing, in setup phase, you don't need the card
+            // the if statement removes the development card if there is one
+            // if it returns false, it means that the player never had one
+            return false;
+        }
+        buildRoadWithoutResources(player, firstLocation);
+        if (secondLocation != null) {
+            buildRoadWithoutResources(player, secondLocation);
+        }
+        return true;
+    }
+
+    private void buildRoadWithoutResources(Player player, Edge location) {
+        if (isMainPhase) { // so that in the main phase, doesn't have any net loss of resources
+            // not doing this in test phase, because won't lose any either way
+            player.addResource(Resource.WOOD);
+            player.addResource(Resource.BRICK);
+        }
+        buildRoad(player, location);
     }
 
     /**
