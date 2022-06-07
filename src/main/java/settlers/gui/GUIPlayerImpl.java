@@ -52,6 +52,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     //Possible Moves Map
     private HashMap<Move,Boolean> possibleMoves = new HashMap();
 
+    //Year of plenty request table
+    private Resource[] yearOfPlentyRequest = new Resource[2];
+
     //Frame and image
     private JFrame frame;
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -473,7 +476,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 //Creates a button for the resource
                 JButton thisPlayerResourceButton = createButton(currentXOffset - xOffsetIncrement,550);
-                thisPlayerResourceButton.addActionListener(resourceButtonClickedAction(thisPlayerResourceButton));
+                thisPlayerResourceButton.addActionListener(resourceButtonClickedAction(resource));
                 resourceButtonMap.put(thisPlayerResourceButton,resource);
             }
         }
@@ -1192,9 +1195,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
                     currentState = GUIState.KNIGHT;
-
                     reloadPossibleMovesGUI();
-
                     startThiefMove();
                 }
             }
@@ -1205,7 +1206,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                currentState = GUIState.YEAR_OF_PLENTY_FIRST;
+                reloadPossibleMovesGUI();
+                enableButtons(resourceButtonMap.keySet());
             }
         };
     }
@@ -1308,15 +1311,17 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
         };
     }
-    private ActionListener resourceButtonClickedAction(JButton button){
+
+    /**
+     * Whenever a resource button is clicked
+     * @param resource the resource corresponding to the button that was clicked
+     * @return
+     */
+    private ActionListener resourceButtonClickedAction(Resource resource){
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Resource resource = resourceButtonMap.get(button);
-
                 if(currentState == GUIState.DISCARD){
-                    boolean reEnableButtons = true;
-
                     HashMap<Resource,Integer> toRemove = new HashMap<>();
                     toRemove.put(resource,1);
 
@@ -1328,15 +1333,21 @@ public class GUIPlayerImpl implements GUIPlayer{
                         disableButtons(resourceButtonMap.keySet());
                     }
                 }else if(currentState == GUIState.YEAR_OF_PLENTY_FIRST || currentState == GUIState.YEAR_OF_PLENTY_SECOND){
-                    player.addResource(resource);
 
                     switch(currentState){
                         case YEAR_OF_PLENTY_FIRST:
                             currentState = GUIState.YEAR_OF_PLENTY_SECOND;
+                            yearOfPlentyRequest[0] = resource;
+
+                            reloadPossibleMovesGUI();
                             break;
                         case YEAR_OF_PLENTY_SECOND:
                             currentState = GUIState.NONE;
+                            yearOfPlentyRequest[1] = resource;
+                            main.playYearOfPlenty(player,yearOfPlentyRequest[0],yearOfPlentyRequest[1]);
+
                             disableButtons(resourceButtonMap.keySet());
+                            reloadPossibleMovesGUI();
                             break;
                     }
                 }
