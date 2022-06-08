@@ -1186,7 +1186,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
+                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
                     currentState = GUIState.KNIGHT;
                     reloadPossibleMovesGUI();
                     startThiefMove();
@@ -1199,7 +1199,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(main.canPlayDevelopmentCard(player,DevelopmentCard.YEAR_OF_PLENTY)){
+                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.YEAR_OF_PLENTY)){
                     currentState = GUIState.YEAR_OF_PLENTY_FIRST;
                     reloadPossibleMovesGUI();
                     enableButtons(resourceButtonMap.keySet());
@@ -1212,7 +1212,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(main.canPlayDevelopmentCard(player,DevelopmentCard.ROAD_BUILDING)){
+                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.ROAD_BUILDING)){
                     currentState = GUIState.ROAD_BUILDING_FIRST;
                     Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
                     enableSpecifiedButtons(edgeButtonMap.keySet(),edgeButtonMap,availableSpots);
