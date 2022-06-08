@@ -85,6 +85,11 @@ public class GUIMainDummyImpl implements GUIMain {
     }
 
     @Override
+    public Set<Edge> getAvailableRoadSpotsGivenEdge(Player player, Edge roadToBuild) {
+        return null;
+    }
+
+    @Override
     public Set<Vertex> getAvailableCitySpots(Player player) {
         return null;
     }

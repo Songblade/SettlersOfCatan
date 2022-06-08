@@ -119,6 +119,15 @@ public interface GUIMain {
     Set<Edge> getAvailableRoadSpots(Player player);
 
     /**
+     * Gets the locations where this player can build a road, given that the player is going to build
+     * on this edge first. Used to find the second edge for playRoadBuilding
+     * @param player building the road
+     * @param roadToBuild where the player will build a road, but hasn't yet
+     * @return a Set of Edges where this player could build once they build roadToBuild
+     */
+    Set<Edge> getAvailableRoadSpotsGivenEdge(Player player, Edge roadToBuild);
+
+    /**
      * Calls respective method in Main
      * @param player building the city
      * @return a Set of Vertices where this player could build

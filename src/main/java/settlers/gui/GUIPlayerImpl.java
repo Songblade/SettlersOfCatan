@@ -307,7 +307,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             //Creates hex button and adds it to the hexButtonMap
             JButton hexButton = createButton(xPos,yPos);
             hexButtonMap.put(hexButton,hex);
-            hexButton.addActionListener(hexButtonClickedAction(hexButton));
+            hexButton.addActionListener(hexButtonClickedAction(hex));
 
             //Puts thief at current position, if position is desert
             if(hex.getResource() == Resource.MISC){
@@ -329,7 +329,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         JLabel edgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGray" + direction + ".png",offsetX,offsetY,3);
         JButton edgeButton = createButton(offsetX,offsetY);
 
-        edgeButton.addActionListener(edgeButtonClickedAction(edgeButton));
+        edgeButton.addActionListener(edgeButtonClickedAction(edge));
 
         edgeButtonMap.put(edgeButton,edge);
         edgeLabelMap.put(edge,edgeLabel);
@@ -372,7 +372,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
             //Create vertex button
             JButton vertexButton = createButton(xPos,yPos);
-            vertexButton.addActionListener(vertexButtonClickedAction(vertexButton));
+            vertexButton.addActionListener(vertexButtonClickedAction(vertex));
 
             //Create all adjacent right facing roads
             if(row % 2 == 0){
@@ -477,7 +477,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 //Creates a button for the resource
                 JButton thisPlayerResourceButton = createButton(currentXOffset - xOffsetIncrement,550);
-                thisPlayerResourceButton.addActionListener(resourceButtonClickedAction(thisPlayerResourceButton));
+                thisPlayerResourceButton.addActionListener(resourceButtonClickedAction(resource));
                 resourceButtonMap.put(thisPlayerResourceButton,resource);
             }
         }
@@ -1239,11 +1239,10 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     /**
      * Whenever a hex button is clicked
-     * @param hexButton the button that was clicked
+     * @param hex the hex corresponding to the button that was clicked
      * @return
      */
-    private ActionListener hexButtonClickedAction(JButton hexButton){
-        Hex hex = hexButtonMap.get(hexButton);
+    private ActionListener hexButtonClickedAction(Hex hex){
 
         return new AbstractAction() {
             @Override
@@ -1269,11 +1268,10 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     /**
      * Whenever a vertex button is clicked
-     * @param vertexButton the button that was clicked
+     * @param vertex the vertex corresponding to the button that was clicked
      * @return
      */
-    private ActionListener vertexButtonClickedAction(JButton vertexButton){
-        Vertex vertex = vertexButtonMap.get(vertexButton);
+    private ActionListener vertexButtonClickedAction(Vertex vertex){
 
         return new AbstractAction() {
             @Override
@@ -1297,11 +1295,10 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     /**
      * Whenever an edge button is clicked
-     * @param edgeButton the button that was clicked
+     * @param edge the edge corresponding to the button that was clicked
      * @return
      */
-    private ActionListener edgeButtonClickedAction(JButton edgeButton){
-        Edge edge = edgeButtonMap.get(edgeButton);
+    private ActionListener edgeButtonClickedAction(Edge edge){
 
         return new AbstractAction() {
             @Override
@@ -1313,8 +1310,16 @@ public class GUIPlayerImpl implements GUIPlayer{
                     disableButtons(edgeButtonMap.keySet());
                 }else if(currentState == GUIState.ROAD_BUILDING_FIRST){
                     roadBuildingRequest[0] = edge;
-                    disableButton(edgeButton);
+                    disableButtons(edgeButtonMap.keySet());
 
+                    Set<Edge> availableSpots = main.getAvailableRoadSpotsGivenEdge(player,edge);
+                    enableSpecifiedButtons(edgeButtonMap.keySet(),edgeButtonMap,availableSpots);
+                    currentState = GUIState.ROAD_BUILDING_SECOND;
+                }else if(currentState == GUIState.ROAD_BUILDING_SECOND){
+                    roadBuildingRequest[1] = edge;
+                    disableButtons(edgeButtonMap.keySet());
+
+                    main.playRoadBuilding(player,roadBuildingRequest[0],roadBuildingRequest[1]);
                 }
                 focusFrame();
                 reloadPossibleMovesGUI();
@@ -1324,12 +1329,10 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     /**
      * Whenever a resource button is clicked
-     * @param resourceButton the button that was clicked
+     * @param resource the resource corresponding to the button that was clicked
      * @return
      */
-    private ActionListener resourceButtonClickedAction(JButton resourceButton){
-        Resource resource = resourceButtonMap.get(resourceButton);
-
+    private ActionListener resourceButtonClickedAction(Resource resource){
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -134,7 +134,14 @@ public class GUIMainImpl implements GUIMain {
 
     @Override
     public boolean playRoadBuilding(Player player, Edge firstLocation, Edge secondLocation){
-        return main.playRoadBuilding(player,firstLocation,secondLocation);
+        boolean toReturn = main.playRoadBuilding(player,firstLocation,secondLocation);
+
+        for(GUIPlayer gui : playerGUIs.values()){
+            gui.setRoad(player,firstLocation);
+            gui.setRoad(player,secondLocation);
+        }
+
+        return toReturn;
     }
 
     /**
@@ -155,6 +162,18 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public Set<Edge> getAvailableRoadSpots(Player player){
         return main.getAvailableRoadSpots(player);
+    }
+
+    /**
+     * Gets the locations where this player can build a road, given that the player is going to build
+     * on this edge first. Used to find the second edge for playRoadBuilding
+     * @param player building the road
+     * @param roadToBuild where the player will build a road, but hasn't yet
+     * @return a Set of Edges where this player could build once they build roadToBuild
+     */
+    @Override
+    public Set<Edge> getAvailableRoadSpotsGivenEdge(Player player, Edge roadToBuild){
+        return main.getAvailableRoadSpotsGivenEdge(player,roadToBuild);
     }
 
     /**
