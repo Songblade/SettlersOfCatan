@@ -745,12 +745,32 @@ public class MainImpl implements Main {
      *
      * @param player         considering the trade
      * @param resourceGiven  resource type that would be given
-     * @param resourceNumber number of resources that would be given
      * @return true if the player can make this trade, false if the player lacks the port or resources
      */
     @Override
-    public boolean canTrade(Player player, Resource resourceGiven, int resourceNumber) {
-        return false;
+    public boolean canTrade(Player player, Resource resourceGiven) {
+        if (player == null || resourceGiven == null) {
+            throw new IllegalArgumentException("null values not permitted");
+        }
+        if (resourceGiven == Resource.MISC) {
+            throw new IllegalArgumentException("Players can't have MISC to trade in");
+        }
+        if (currentTurn != player) {
+            return false; // you can only trade with the bank on your turn
+        }
+        int resourceNumber = getPlayerTradeNumber(player, resourceGiven);
+        return player.getResources().get(resourceGiven) >= resourceNumber;
+    }
+
+    private int getPlayerTradeNumber(Player player, Resource resource) {
+        int tradeNumber = 4;
+        if (player.getPorts().contains(Resource.MISC)) {
+            tradeNumber = 3;
+        }
+        if (player.getPorts().contains(resource)) {
+            tradeNumber = 2;
+        }
+        return tradeNumber;
     }
 
     /**
@@ -758,11 +778,10 @@ public class MainImpl implements Main {
      *
      * @param player         doing the trade
      * @param resourceGiven  resource type being given
-     * @param resourceNumber number of that resource being given
      * @param resourceGotten resource type being received
      */
     @Override
-    public void trade(Player player, Resource resourceGiven, int resourceNumber, Resource resourceGotten) {
+    public void trade(Player player, Resource resourceGiven, Resource resourceGotten) {
 
     }
 

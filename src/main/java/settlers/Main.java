@@ -142,19 +142,17 @@ public interface Main {
      * Checks if this trade with the bank would work
      * @param player considering the trade
      * @param resourceGiven resource type that would be given
-     * @param resourceNumber number of resources that would be given
      * @return true if the player can make this trade, false if the player lacks the port or resources
      */
-    boolean canTrade(Player player, Resource resourceGiven, int resourceNumber);
+    boolean canTrade(Player player, Resource resourceGiven);
 
     /**
      * This simulates a trade with the bank, updating the Player appropriately
      * @param player doing the trade
      * @param resourceGiven resource type being given
-     * @param resourceNumber number of that resource being given
      * @param resourceGotten resource type being received
      */
-    void trade(Player player, Resource resourceGiven, int resourceNumber, Resource resourceGotten);
+    void trade(Player player, Resource resourceGiven, Resource resourceGotten);
 
     List<Player> getPlayers();
 
