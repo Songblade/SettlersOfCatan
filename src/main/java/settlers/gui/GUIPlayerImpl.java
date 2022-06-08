@@ -1176,6 +1176,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 if(canMakePurchases() && main.canBuyDevelopmentCard(player)){
                     main.buildDevelopmentCard(player);
 
+                    //Reloads the possible moves
                     reloadPossibleMovesGUI();
                 }
             }
@@ -1188,8 +1189,10 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
                     currentState = GUIState.KNIGHT;
-                    reloadPossibleMovesGUI();
                     startThiefMove();
+
+                    //Reloads the possible moves
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1201,8 +1204,10 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.YEAR_OF_PLENTY)){
                     currentState = GUIState.YEAR_OF_PLENTY_FIRST;
-                    reloadPossibleMovesGUI();
                     enableButtons(resourceButtonMap.keySet());
+
+                    //Reloads the possible moves
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1228,7 +1233,13 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.MONOPOLY)){
+                    currentState = GUIState.MONOPOLY;
+                    enableButtons(resourceButtonMap.keySet());
 
+                    //Reloads the possible moves
+                    reloadPossibleMovesGUI();
+                }
             }
         };
     }
@@ -1366,6 +1377,12 @@ public class GUIPlayerImpl implements GUIPlayer{
                             reloadPossibleMovesGUI();
                             break;
                     }
+                }else if(currentState == GUIState.MONOPOLY){
+                    currentState = GUIState.NONE;
+                    main.playMonopoly(player,resource);
+
+                    disableButtons(resourceButtonMap.keySet());
+                    reloadPossibleMovesGUI();
                 }
 
                 focusFrame();
@@ -1387,7 +1404,7 @@ enum GUIState{
     ROAD_BUILDING_SECOND(false),
     YEAR_OF_PLENTY_FIRST(true),
     YEAR_OF_PLENTY_SECOND(false),
-    MONOPOLY(false);
+    MONOPOLY(true);
 
     GUIState(boolean cancelable){
         this.cancelable = cancelable;

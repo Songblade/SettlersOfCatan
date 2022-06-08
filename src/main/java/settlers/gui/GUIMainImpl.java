@@ -129,7 +129,9 @@ public class GUIMainImpl implements GUIMain {
 
     @Override
     public boolean playMonopoly(Player player, Resource resource){
-        return main.playMonopoly(player,resource);
+        boolean toReturn = main.playMonopoly(player,resource);
+        updateResourceCounters();
+        return toReturn;
     }
 
     @Override
