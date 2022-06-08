@@ -54,6 +54,15 @@ public class MainTradeTest {
         assertTrue(main.canTrade(player, Resource.ORE));
     }
 
+    // add test that works when more than the max number of resources
+    @Test
+    public void canTradeTrue4Has5() {
+        givePlayerResources(Resource.WOOD, 5);
+        main.setTurn(player, true);
+
+        assertTrue(main.canTrade(player, Resource.WOOD));
+    }
+
     // tests that returns false if 4 resources but only has 3
     @Test
     public void canTradeFalse4Has3() {
@@ -121,7 +130,6 @@ public class MainTradeTest {
 
         assertFalse(main.canTrade(player, Resource.WOOD));
     }
-    // add test that works when more than the max number of resources
 
     // tests for trade
     // tests that in a 4 for 1 trade, loses the 4 resources and gains the 1
