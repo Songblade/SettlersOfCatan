@@ -1014,7 +1014,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             //Asks if the player can cancel a move
-            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable()) {
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
                 moves.add(Move.CANCEL);
             }
         }
@@ -1075,7 +1075,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass){
+                if(canPass && currentState.isCancelable()){
                     disableAllButtons();
                     currentState = GUIState.NONE;
                     thisPlayerHasTurn = false;
@@ -1320,6 +1320,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     disableButtons(edgeButtonMap.keySet());
 
                     main.playRoadBuilding(player,roadBuildingRequest[0],roadBuildingRequest[1]);
+                    currentState = GUIState.NONE;
                 }
                 focusFrame();
                 reloadPossibleMovesGUI();
@@ -1375,7 +1376,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
 
 enum GUIState{
-    NONE(false),
+    NONE(true),
     ROAD(true),
     SETTLEMENT(true),
     CITY(true),
