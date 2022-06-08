@@ -895,6 +895,14 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    private void enableSpecifiedButtons(Set<JButton> buttons,HashMap mappedButtons, Set toEnable){
+        for(JButton button : buttons){
+            if(toEnable.contains(mappedButtons.get(button))){
+                enableButton(button);
+            }
+        }
+    }
+
     /**
      * Disables all buttons within @buttons
      * @param buttons the set of buttons
@@ -929,12 +937,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     private void startThiefMove(){
         Set<Hex> availableThiefSpots = main.getAvailableThiefSpots();
-
-        for(JButton button : hexButtonMap.keySet()){
-            if(availableThiefSpots.contains(hexButtonMap.get(button))){
-                enableButton(button);
-            }
-        }
+        enableSpecifiedButtons(hexButtonMap.keySet(),hexButtonMap,availableThiefSpots);
     }
 
     /**
@@ -1219,7 +1222,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                if(main.canPlayDevelopmentCard(player,DevelopmentCard.ROAD_BUILDING)){
+                    currentState = GUIState.ROAD_BUILDING_FIRST;
+                    reloadPossibleMovesGUI();
+                    enableButtons(edgeButtonMap.keySet());
+                }
             }
         };
     }
@@ -1306,8 +1313,10 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.buildRoad(player,edge);
                     lastRoadSpot = edge;
                     currentState = GUIState.NONE;
+                    disableButtons(edgeButtonMap.keySet());
+                }else if(currentState == GUIState.ROAD_BUILDING_FIRST){
+
                 }
-                disableButtons(edgeButtonMap.keySet());
                 focusFrame();
                 reloadPossibleMovesGUI();
             }
@@ -1369,7 +1378,8 @@ enum GUIState{
     KNIGHT(true),
     THIEF(false),
     DISCARD(false),
-    ROAD_BUILDING(false),
+    ROAD_BUILDING_FIRST(true),
+    ROAD_BUILDING_SECOND(false),
     YEAR_OF_PLENTY_FIRST(true),
     YEAR_OF_PLENTY_SECOND(false),
     MONOPOLY(false);
