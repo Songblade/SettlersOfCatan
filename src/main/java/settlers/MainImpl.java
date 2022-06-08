@@ -475,9 +475,7 @@ public class MainImpl implements Main {
         }
         Random resourceChooser = new Random();
         Resource robbedResource = victimResources.get(resourceChooser.nextInt(victimResources.size())); // chooses the random to be removed
-        Map<Resource, Integer> removedMap = new HashMap<>(); // this is to use the syntax to remove from the victim
-        removedMap.put(robbedResource, 1);
-        victim.removeResources(removedMap); // removes one random resource
+        removeMultipleOfOneResource(victim, robbedResource, 1);
         stealer.addResource(robbedResource); // gives that resource to the thief
     }
 
@@ -681,9 +679,7 @@ public class MainImpl implements Main {
                 int playerResourceNum = otherPlayer.getResources().get(resource);
                 // the number of this resource that that player has
                 numberOfCards += playerResourceNum;
-                Map<Resource, Integer> takenResources = emptyResourceMap();
-                takenResources.put(resource, playerResourceNum);
-                otherPlayer.removeResources(takenResources);
+                removeMultipleOfOneResource(otherPlayer, resource, playerResourceNum);
                 // that should remove all of that player's resources of that kind
             }
         }
@@ -775,6 +771,7 @@ public class MainImpl implements Main {
 
     /**
      * This simulates a trade with the bank, updating the Player appropriately
+     * Precondition: canTrade returns true
      *
      * @param player         doing the trade
      * @param resourceGiven  resource type being given
@@ -782,7 +779,28 @@ public class MainImpl implements Main {
      */
     @Override
     public void trade(Player player, Resource resourceGiven, Resource resourceGotten) {
+        if (player == null || resourceGiven == null || resourceGotten == null) {
+            throw new IllegalArgumentException("null values not permitted");
+        }
+        if (resourceGiven == Resource.MISC || resourceGotten == Resource.MISC) {
+            throw new IllegalArgumentException("Players can't have MISC resources");
+        }
+        int resourceNumber = getPlayerTradeNumber(player, resourceGiven);
+        // now we remove the old resources and add the new ones
+        removeMultipleOfOneResource(player, resourceGiven, resourceNumber);
+        player.addResource(resourceGotten);
+    }
 
+    /**
+     * Removes multiple of the same resource from a player in one line
+     * @param player losing resources
+     * @param resource being removed
+     * @param number of the resource being removed
+     */
+    private void removeMultipleOfOneResource(Player player, Resource resource, int number) {
+        Map<Resource, Integer> resourcesRemoved = new HashMap<>();
+        resourcesRemoved.put(resource, number);
+        player.removeResources(resourcesRemoved);
     }
 
     /**

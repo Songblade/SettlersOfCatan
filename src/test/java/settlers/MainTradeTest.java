@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import settlers.card.Resource;
 import settlers.gui.GUIMainDummyImpl;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MainTradeTest {
@@ -119,4 +121,89 @@ public class MainTradeTest {
 
         assertFalse(main.canTrade(player, Resource.WOOD));
     }
+    // add test that works when more than the max number of resources
+
+    // tests for trade
+    // tests that in a 4 for 1 trade, loses the 4 resources and gains the 1
+    @Test
+    public void tradeWorks4() {
+        givePlayerResources(Resource.WOOD, 4);
+        main.setTurn(player, true);
+
+        main.trade(player, Resource.WOOD, Resource.ORE);
+
+        Map<Resource, Integer> newResources = player.getResources();
+        assertEquals(0, newResources.get(Resource.WOOD));
+        assertEquals(1, newResources.get(Resource.ORE));
+    }
+
+    // same but for 3-1
+    @Test
+    public void tradeWorks3() {
+        givePlayerResources(Resource.WOOD, 3);
+        player.addPort(Resource.MISC);
+        main.setTurn(player, true);
+
+        main.trade(player, Resource.WOOD, Resource.ORE);
+
+        Map<Resource, Integer> newResources = player.getResources();
+        assertEquals(0, newResources.get(Resource.WOOD));
+        assertEquals(1, newResources.get(Resource.ORE));
+    }
+
+    // same but for 2-1
+    @Test
+    public void tradeWorks2() {
+        givePlayerResources(Resource.WOOD, 2);
+        player.addPort(Resource.WOOD);
+        main.setTurn(player, true);
+
+        main.trade(player, Resource.WOOD, Resource.ORE);
+
+        Map<Resource, Integer> newResources = player.getResources();
+        assertEquals(0, newResources.get(Resource.WOOD));
+        assertEquals(1, newResources.get(Resource.ORE));
+    }
+
+    // same but for another resource
+    @Test
+    public void tradeWorksOtherResource() {
+        givePlayerResources(Resource.SHEEP, 4);
+        main.setTurn(player, true);
+
+        main.trade(player, Resource.SHEEP, Resource.BRICK);
+
+        Map<Resource, Integer> newResources = player.getResources();
+        assertEquals(0, newResources.get(Resource.SHEEP));
+        assertEquals(1, newResources.get(Resource.BRICK));
+    }
+
+    // check that still has 1 left if started with 5 for giving
+    @Test
+    public void tradeWorks4When5Give() {
+        givePlayerResources(Resource.WOOD, 5);
+        main.setTurn(player, true);
+
+        main.trade(player, Resource.WOOD, Resource.ORE);
+
+        Map<Resource, Integer> newResources = player.getResources();
+        assertEquals(1, newResources.get(Resource.WOOD));
+        assertEquals(1, newResources.get(Resource.ORE));
+    }
+
+    // check that now has 2 if started with 1 for getting
+    @Test
+    public void tradeWorks4When1HasOfGiven() {
+        givePlayerResources(Resource.WOOD, 4);
+        player.addResource(Resource.ORE);
+        main.setTurn(player, true);
+
+        main.trade(player, Resource.WOOD, Resource.ORE);
+
+        Map<Resource, Integer> newResources = player.getResources();
+        assertEquals(0, newResources.get(Resource.WOOD));
+        assertEquals(2, newResources.get(Resource.ORE));
+    }
+
+    // I feel like I am missing something
 }
