@@ -40,7 +40,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
     private HashMap<Resource,JTextField> resourceTextMap = new HashMap<>();
-    private HashMap<Player,JTextField> playerTextMap = new HashMap<>();
+    private HashMap<Player,HashMap<String,JTextField>> playerTextMap = new HashMap<>();
     private HashMap<Move,JTextField> moveTextMap = new HashMap<>();
 
     //Other maps
@@ -496,6 +496,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         int textXOffsetIncrement = 100;
         for(Player plr : players){
             if(plr.getID() != player.getID()) {
+                HashMap<String,JTextField> playerTextBoxes = new HashMap<>();
+
                 //Places the player labels for other players
                 JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
                 playerLabel.setIcon(new ImageIcon(getConstructionImage(plr.getID(),2).getScaledInstance(128, 128, 0)));
@@ -508,7 +510,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 playerResourceBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGResource.png").getScaledInstance(56,56,0)));
 
                 JTextField playerResourceText = createText("0",currentXOffset + textXOffsetIncrement,currentYOffset,1);
-                playerTextMap.put(plr,playerResourceText);
+                playerTextBoxes.put("Resource",playerResourceText);
 
                 //Places the development card label for other players
                 JLabel playerDevelopmentLabel = createLabel("",currentXOffset + xOffsetIncrement,currentYOffset,1);
@@ -518,11 +520,14 @@ public class GUIPlayerImpl implements GUIPlayer{
                 playerDevelopmentBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGDevelopment.png").getScaledInstance(56,56,0)));
 
                 JTextField playerDevelopmentText = createText("0",currentXOffset + xOffsetIncrement + textXOffsetIncrement,currentYOffset,1);
+                playerTextBoxes.put("Development",playerDevelopmentText);
 
                 //Places a button for the player
                 JButton playerButton = createButton(35,currentYOffset);
                 playerButtonMap.put(playerButton,plr);
 
+                //Stores the textboxes for future use
+                playerTextMap.put(plr,playerTextBoxes);
                 currentYOffset += yOffsetIncrement;
             }
         }
@@ -663,7 +668,21 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         for(Player plr : players){
             if(plr != player){
-                playerTextMap.get(plr).setText("" + plr.getCardNumber());
+                playerTextMap.get(plr).get("Resource").setText("" + plr.getCardNumber());
+            }
+        }
+    }
+
+    @Override
+    public void updateDevelopmentCounters(boolean yours){
+
+        if(yours){
+
+        }else{
+            for(Player plr : players){
+                if(plr != player){
+                    playerTextMap.get(plr).get("Development").setText("" + plr.getCardNumber());
+                }
             }
         }
     }

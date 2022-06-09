@@ -50,6 +50,11 @@ public interface GUIPlayer {
     void updateResourceCounters();
 
     /**
+     * Updates the GUIPlayer's development resource counters
+     */
+    void updateDevelopmentCounters(boolean yours);
+
+    /**
      * Moves the thief image
      * @param hex the new location of the thief image
      */
