@@ -468,17 +468,21 @@ public class GUIPlayerImpl implements GUIPlayer{
         int xOffsetIncrement = 80;
         for(Resource resource : Resource.values()){
             if(resource != Resource.MISC){
-                JLabel thisPlayerResourceLabel = createLabel("",currentXOffset,550,2);
-                thisPlayerResourceLabel.setIcon(new ImageIcon(getResourceImage(resource).getScaledInstance(64,64,0)));
-                currentXOffset += xOffsetIncrement;
+                JLabel resourceLabel = createLabel("",currentXOffset,550,2);
+                resourceLabel.setIcon(new ImageIcon(getResourceImage(resource).getScaledInstance(64,64,0)));
 
-                JTextField thisPlayerResourceCountLabel = createText("0",currentXOffset - 24,500,1);
-                resourceTextMap.put(resource,thisPlayerResourceCountLabel);
+                JLabel resourceBackgroundLabel = createLabel("",currentXOffset,550,3);
+                resourceBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGResource.png").getScaledInstance(64,64,0)));
+
+                JTextField resourceCountLabel = createText("0",currentXOffset + xOffsetIncrement - 24,500,1);
+                resourceTextMap.put(resource,resourceCountLabel);
 
                 //Creates a button for the resource
-                JButton thisPlayerResourceButton = createButton(currentXOffset - xOffsetIncrement,550);
-                thisPlayerResourceButton.addActionListener(resourceButtonClickedAction(resource));
-                resourceButtonMap.put(thisPlayerResourceButton,resource);
+                JButton resourceButton = createButton(currentXOffset - xOffsetIncrement,550);
+                resourceButton.addActionListener(resourceButtonClickedAction(resource));
+                resourceButtonMap.put(resourceButton,resource);
+
+                currentXOffset += xOffsetIncrement;
             }
         }
     }
@@ -486,24 +490,40 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void putOtherPlayerLabels(){
         //Places the labels for other players
         int currentYOffset = 240;
+        int currentXOffset = 90;
         int yOffsetIncrement = 60;
+        int xOffsetIncrement = 90;
+        int textXOffsetIncrement = 100;
         for(Player plr : players){
             if(plr.getID() != player.getID()) {
                 //Places the player labels for other players
-                JLabel playerLabel = createLabel("", 35, currentYOffset + 60, 1);
+                JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
                 playerLabel.setIcon(new ImageIcon(getConstructionImage(plr.getID(),2).getScaledInstance(128, 128, 0)));
-                currentYOffset += yOffsetIncrement;
 
                 //Places the resource labels for other players
-                JLabel playerResourceLabel = createLabel("",80,currentYOffset,1);
+                JLabel playerResourceLabel = createLabel("",currentXOffset,currentYOffset,1);
                 playerResourceLabel.setIcon(new ImageIcon(getResourceImage(Resource.MISC).getScaledInstance(56,56,0)));
 
-                JTextField playerResourceText = createText("0",175,currentYOffset,1);
+                JLabel playerResourceBackgroundLabel = createLabel("",currentXOffset,currentYOffset,3);
+                playerResourceBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGResource.png").getScaledInstance(56,56,0)));
+
+                JTextField playerResourceText = createText("0",currentXOffset + textXOffsetIncrement,currentYOffset,1);
                 playerTextMap.put(plr,playerResourceText);
+
+                //Places the development card label for other players
+                JLabel playerDevelopmentLabel = createLabel("",currentXOffset + xOffsetIncrement,currentYOffset,1);
+                playerDevelopmentLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/DMisc.png").getScaledInstance(56,56,0)));
+
+                JLabel playerDevelopmentBackgroundLabel = createLabel("",currentXOffset + xOffsetIncrement,currentYOffset,3);
+                playerDevelopmentBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGDevelopment.png").getScaledInstance(56,56,0)));
+
+                JTextField playerDevelopmentText = createText("0",currentXOffset + xOffsetIncrement + textXOffsetIncrement,currentYOffset,1);
 
                 //Places a button for the player
                 JButton playerButton = createButton(35,currentYOffset);
                 playerButtonMap.put(playerButton,plr);
+
+                currentYOffset += yOffsetIncrement;
             }
         }
     }
@@ -548,6 +568,25 @@ public class GUIPlayerImpl implements GUIPlayer{
                 return getImage(basePath + "Ore.Png");
             default:
                 return getImage(basePath + "Misc.Png");
+        }
+    }
+
+    private Image getDevelopmentCardImage(DevelopmentCard developmentCard){
+        String basePath = "src/main/java/settlers/gui/textures/resources/";
+
+        switch (developmentCard){
+            case KNIGHT:
+                return getImage(basePath + "Knight.png");
+            case YEAR_OF_PLENTY:
+                return getImage(basePath + "YearOfPlenty.png");
+            case ROAD_BUILDING:
+                return getImage(basePath + "RoadBuilding.png");
+            case MONOPOLY:
+                return getImage(basePath + "Monopoly.png");
+            case VICTORY_POINT:
+                return getImage(basePath + "VictoryPoint.png");
+            default:
+                return getImage(basePath + "DMisc.png");
         }
     }
 
