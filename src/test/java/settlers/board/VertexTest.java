@@ -342,6 +342,14 @@ public class VertexTest {
         }
 
         /**
+         * @return the number of development cards the player has
+         */
+        @Override
+        public int getDevelopmentCardCount() {
+            return 0;
+        }
+
+        /**
          * @return number of times the player has used a knight
          */
         @Override

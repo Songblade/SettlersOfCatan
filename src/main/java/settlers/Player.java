@@ -56,6 +56,11 @@ public interface Player {
     boolean removeDevelopmentCard(DevelopmentCard development);
 
     /**
+     * @return the number of development cards the player has
+     */
+    int getDevelopmentCardCount();
+
+    /**
      * @return number of times the player has used a knight
      */
     int getKnightNumber();
