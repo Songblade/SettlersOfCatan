@@ -3,6 +3,7 @@ package settlers;
 import org.junit.jupiter.api.Test;
 import settlers.board.HexImpl;
 import settlers.board.VertexImpl;
+import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 import settlers.gui.GUIMainDummyImpl;
 
@@ -70,7 +71,8 @@ public class Main2PointCardTest {
         for (int i = 0; i < 14; i++) {
             main.buildDevelopmentCard(player);
         }
-        assertEquals(0, player.getVictoryPoints());
+        assertEquals(player.getDevelopmentCards().get(DevelopmentCard.VICTORY_POINT), player.getVictoryPoints());
+        // makes sure that there are only points from the Victory Point cards, not from largest army
     }
 
     // test that you can get the army even if another player played 2 knights
