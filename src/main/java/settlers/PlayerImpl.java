@@ -11,11 +11,11 @@ public class PlayerImpl implements Player {
 
     private Map<Resource, Integer> resources;
     private int resourceCount; // defaults to 0, number of total resources
-    private Map<DevelopmentCard, Integer> vellies;
-    private Set<Resource> ports;
-    private Set<Vertex> settlements;
-    private Set<Vertex> cities;
-    private Set<Edge> roads;
+    private final Map<DevelopmentCard, Integer> vellies;
+    private final Set<Resource> ports;
+    private final Set<Vertex> settlements;
+    private final Set<Vertex> cities;
+    private final Set<Edge> roads;
     private int victoryPoints; // starts at 0
     private final int id; // ignore this, it is for testing
 
@@ -131,7 +131,7 @@ public class PlayerImpl implements Player {
      *      If the player loses longest road or largest army, it should be -2
      * @return true if the player now has >= 10 points, false otherwise
      */
-    private boolean increaseVictoryPoints(int num) {
+    public boolean increaseVictoryPoints(int num) {
         victoryPoints += num;
         return victoryPoints >= 10;
     }

@@ -99,6 +99,15 @@ public interface Player {
     boolean upgradeSettlement(Vertex city);
 
     /**
+     * Increases the player's victory points
+     * Outside of Player, should only be used by Main for Longest Road and Largest Army
+     * @param num should be 1, but should be 2 if this is Longest Road or Largest Army
+     *      If the player loses longest road or largest army, it should be -2
+     * @return true if the player now has >= 10 points, false otherwise
+     */
+    boolean increaseVictoryPoints(int num);
+
+    /**
      * @return the player's current number of victory points
      */
     int getVictoryPoints();
