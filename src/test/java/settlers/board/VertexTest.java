@@ -218,213 +218,232 @@ public class VertexTest {
         assertThrows(IllegalStateException.class, vertex::makeCity);
     }
 
+    // this class is so I can distinguish between the different edges on each side
+    private static class TestEdge implements Edge {
 
+        private final int id;
 
-}
+        TestEdge(int id) {
+            this.id = id;
+        }
 
-// this class is so I can distinguish between the different edges on each side
-class TestEdge implements Edge {
+        /**
+         * @return a length 3 array containing the adjacent vertices, where 0 is up, increasing clockwise
+         */
+        @Override
+        public List<Edge> getAdjacentEdges() {
+            return null;
+        }
 
-    private final int id;
+        /**
+         * @param edge     being set adjacent to this Edge
+         * @param position from 0 to 3, where the edge is set, where 0 is the upper left, increasing clockwise
+         * @throws IllegalStateException if this position's vertex is already set
+         */
+        @Override
+        public void setEdge(Edge edge, int position) {
 
-    TestEdge(int id) {
-        this.id = id;
+        }
+
+        /**
+         * @return the player who owns the road, or null if there is no road
+         */
+        @Override
+        public Player getPlayer() {
+            return null;
+        }
+
+        /**
+         * @param player that owns this Road
+         * @throws IllegalArgumentException if a different player already has this road
+         */
+        @Override
+        public void setPlayer(Player player) {
+
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TestEdge edge = (TestEdge) o;
+            return this.id == edge.id;
+        }
     }
 
-    /**
-     * @return a length 3 array containing the adjacent vertices, where 0 is up, increasing clockwise
-     */
-    @Override
-    public List<Edge> getAdjacentEdges() {
-        return null;
-    }
+    private static class TestPlayer implements Player {
 
-    /**
-     * @param edge     being set adjacent to this Edge
-     * @param position from 0 to 3, where the edge is set, where 0 is the upper left, increasing clockwise
-     * @throws IllegalStateException if this position's vertex is already set
-     */
-    @Override
-    public void setEdge(Edge edge, int position) {
+        /**
+         * @return an unmodifiable Map containing the player's resource cards and quantity of each
+         */
+        @Override
+        public Map<Resource, Integer> getResources() {
+            return null;
+        }
 
-    }
+        /**
+         * @param resource to give to the player
+         */
+        @Override
+        public void addResource(Resource resource) {
 
-    /**
-     * @return the player who owns the road, or null if there is no road
-     */
-    @Override
-    public Player getPlayer() {
-        return null;
-    }
+        }
 
-    /**
-     * @param player that owns this Road
-     * @throws IllegalArgumentException if a different player already has this road
-     */
-    @Override
-    public void setPlayer(Player player) {
+        /**
+         * @param resources to be removed from the player's hand
+         * @return true if the removal was successful, false if it was not
+         * If the removal is not successful for one resource, the player's hand will not be changed
+         */
+        @Override
+        public boolean removeResources(Map<Resource, Integer> resources) {
+            return false;
+        }
 
-    }
+        /**
+         * @return true if the player has more than 7 resource cards, false otherwise
+         */
+        @Override
+        public boolean hasMoreThan7Cards() {
+            return false;
+        }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TestEdge edge = (TestEdge) o;
-        return this.id == edge.id;
-    }
-}
+        /**
+         * @return the number of resource cards this player has
+         */
+        @Override
+        public int getCardNumber() {
+            return 0;
+        }
 
-class TestPlayer implements Player {
+        /**
+         * @return an unmodifiable Map containing the player's development cards and quantity of each
+         */
+        @Override
+        public Map<DevelopmentCard, Integer> getDevelopmentCards() {
+            return null;
+        }
 
-    /**
-     * @return an unmodifiable Map containing the player's resource cards and quantity of each
-     */
-    @Override
-    public Map<Resource, Integer> getResources() {
-        return null;
-    }
+        /**
+         * @param development card being added to the player's hand
+         */
+        @Override
+        public boolean addDevelopmentCard(DevelopmentCard development) {
+            return false;
+        }
 
-    /**
-     * @param resource to give to the player
-     */
-    @Override
-    public void addResource(Resource resource) {
+        /**
+         * @param development card being removed from the player's hand
+         * @return true if the removal was successful, false if he never had the card
+         * @throws IllegalArgumentException if the card is a VICTORY_POINT
+         */
+        @Override
+        public boolean removeDevelopmentCard(DevelopmentCard development) {
+            return false;
+        }
 
-    }
+        /**
+         * @return number of times the player has used a knight
+         */
+        @Override
+        public int getKnightNumber() {
+            return 0;
+        }
 
-    /**
-     * @param resources to be removed from the player's hand
-     * @return true if the removal was successful, false if it was not
-     * If the removal is not successful for one resource, the player's hand will not be changed
-     */
-    @Override
-    public boolean removeResources(Map<Resource, Integer> resources) {
-        return false;
-    }
+        /**
+         * @return an unmodifiable list of resources the player has 2:1 ports for
+         * MISC means the player has a 3:1 port
+         */
+        @Override
+        public Set<Resource> getPorts() {
+            return null;
+        }
 
-    /**
-     * @return true if the player has more than 7 resource cards, false otherwise
-     */
-    @Override
-    public boolean hasMoreThan7Cards() {
-        return false;
-    }
+        /**
+         * @param resource of the 2:1 port being added, or MISC if it is a 3:1 port
+         * @return true if the port was added, false if the player already had it
+         */
+        @Override
+        public boolean addPort(Resource resource) {
+            return false;
+        }
 
-    /**
-     * @return the number of resource cards this player has
-     */
-    @Override
-    public int getCardNumber() {
-        return 0;
-    }
+        /**
+         * @return all the player's settlements
+         */
+        @Override
+        public Set<Vertex> getSettlements() {
+            return null;
+        }
 
-    /**
-     * @return an unmodifiable Map containing the player's development cards and quantity of each
-     */
-    @Override
-    public Map<DevelopmentCard, Integer> getDevelopmentCards() {
-        return null;
-    }
+        /**
+         * @return all the player's cities
+         */
+        @Override
+        public Set<Vertex> getCities() {
+            return null;
+        }
 
-    /**
-     * @param development card being added to the player's hand
-     */
-    @Override
-    public boolean addDevelopmentCard(DevelopmentCard development) {
-        return false;
-    }
+        /**
+         * @return all the player's roads
+         */
+        @Override
+        public Set<Edge> getRoads() {
+            return null;
+        }
 
-    /**
-     * @param development card being removed from the player's hand
-     * @return true if the removal was successful, false if he never had the card
-     * @throws IllegalArgumentException if the card is a VICTORY_POINT
-     */
-    @Override
-    public boolean removeDevelopmentCard(DevelopmentCard development) {
-        return false;
-    }
+        /**
+         * @param road to be added to the player's collection
+         */
+        @Override
+        public void addRoad(Edge road) {
 
-    /**
-     * @return an unmodifiable list of resources the player has 2:1 ports for
-     * MISC means the player has a 3:1 port
-     */
-    @Override
-    public Set<Resource> getPorts() {
-        return null;
-    }
+        }
 
-    /**
-     * @param resource of the 2:1 port being added, or MISC if it is a 3:1 port
-     * @return true if the port was added, false if the player already had it
-     */
-    @Override
-    public boolean addPort(Resource resource) {
-        return false;
-    }
+        /**
+         * @param settlement to be added to the player's collection
+         */
+        @Override
+        public boolean addSettlement(Vertex settlement) {
+            return false;
+        }
 
-    /**
-     * @return all the player's settlements
-     */
-    @Override
-    public Set<Vertex> getSettlements() {
-        return null;
-    }
+        /**
+         * @param city to be removed from the player's settlement collection and added to its city collection
+         */
+        @Override
+        public boolean upgradeSettlement(Vertex city) {
+            return false;
+        }
 
-    /**
-     * @return all the player's cities
-     */
-    @Override
-    public Set<Vertex> getCities() {
-        return null;
-    }
+        /**
+         * Increases the player's victory points
+         * Outside of Player, should only be used by Main for Longest Road and Largest Army
+         *
+         * @param num should be 1, but should be 2 if this is Longest Road or Largest Army
+         *            If the player loses longest road or largest army, it should be -2
+         * @return true if the player now has >= 10 points, false otherwise
+         */
+        @Override
+        public boolean increaseVictoryPoints(int num) {
+            return false;
+        }
 
-    /**
-     * @return all the player's roads
-     */
-    @Override
-    public Set<Edge> getRoads() {
-        return null;
-    }
+        /**
+         * @return the player's current number of victory points
+         */
+        @Override
+        public int getVictoryPoints() {
+            return 0;
+        }
 
-    /**
-     * @param road to be added to the player's collection
-     */
-    @Override
-    public void addRoad(Edge road) {
+        /**
+         * @return the player's ID, which if set up properly will be from 0 to 3
+         */
+        @Override
+        public int getID() {
+            return 0;
+        }
 
-    }
-
-    /**
-     * @param settlement to be added to the player's collection
-     */
-    @Override
-    public boolean addSettlement(Vertex settlement) {
-        return false;
-    }
-
-    /**
-     * @param city to be removed from the player's settlement collection and added to its city collection
-     */
-    @Override
-    public boolean upgradeSettlement(Vertex city) {
-        return false;
-    }
-
-    /**
-     * @return the player's current number of victory points
-     */
-    @Override
-    public int getVictoryPoints() {
-        return 0;
-    }
-
-    /**
-     * @return the player's ID, which if set up properly will be from 0 to 3
-     */
-    @Override
-    public int getID() {
-        return 0;
     }
 
 }

@@ -16,6 +16,7 @@ public class PlayerImpl implements Player {
     private final Set<Vertex> settlements;
     private final Set<Vertex> cities;
     private final Set<Edge> roads;
+    private int knightNumber;
     private int victoryPoints; // starts at 0
     private final int id; // ignore this, it is for testing
 
@@ -137,6 +138,7 @@ public class PlayerImpl implements Player {
     }
 
     /**
+     * Removes the development card, and increases the knight number if it is a knight
      * @param development card being removed from the player's hand
      * @return true if the removal was successful, false if he never had the card or a point card
      */
@@ -147,7 +149,18 @@ public class PlayerImpl implements Player {
             return false;
         }
         vellies.put(development, vellies.get(development) - 1);
+        if (development == DevelopmentCard.KNIGHT) {
+            knightNumber += 1;
+        }
         return true;
+    }
+
+    /**
+     * @return number of times the player has used a knight
+     */
+    @Override
+    public int getKnightNumber() {
+        return knightNumber;
     }
 
     /**

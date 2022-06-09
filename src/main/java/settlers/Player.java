@@ -49,10 +49,16 @@ public interface Player {
     boolean addDevelopmentCard(DevelopmentCard development);
 
     /**
+     * Removes the development card, and increases the knight number if it is a knight
      * @param development card being removed from the player's hand
      * @return true if the removal was successful, false if he never had the card or a point card
      */
     boolean removeDevelopmentCard(DevelopmentCard development);
+
+    /**
+     * @return number of times the player has used a knight
+     */
+    int getKnightNumber();
 
     /**
      * @return an unmodifiable set of resources the player has 2:1 ports for
