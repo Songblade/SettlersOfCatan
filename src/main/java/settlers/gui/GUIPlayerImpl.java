@@ -61,6 +61,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     private JFrame frame;
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
+    //Played knights text field (this one operates alone)
+    JTextField playedKnightsCountLabel;
+
     //Thief and die
     private JLabel thiefImage;
     private JLabel dieCounter;
@@ -490,7 +493,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     private void putPlayerDevelopmentLabels(){
-        int currentXOffset = 940;
+        int currentXOffset = 840;
         int xOffsetIncrement = 80;
         int yOffset = 550;
         for(DevelopmentCard development : DevelopmentCard.values()){
@@ -505,6 +508,19 @@ public class GUIPlayerImpl implements GUIPlayer{
 
             currentXOffset += xOffsetIncrement;
         }
+    }
+
+    private void putPlayedKnightLabel(){
+        int xOffset = 650;
+        int yOffset = 575;
+
+        JLabel knightLabel = createLabel("",xOffset,yOffset,2);
+        knightLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/PlayedKnight.png").getScaledInstance(64,64,0)));
+
+        JLabel knightBackgroundLabel = createLabel("",xOffset,yOffset,3);
+        knightBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGDevelopment.png").getScaledInstance(64,64,0)));
+
+        playedKnightsCountLabel = createText("0",xOffset + 56, yOffset + 50, 1);
     }
 
     private void putOtherPlayerLabels(){
@@ -580,6 +596,7 @@ public class GUIPlayerImpl implements GUIPlayer{
          putPlayerLabel();
          putPlayerResourceLabels();
          putPlayerDevelopmentLabels();
+         putPlayedKnightLabel();
          putOtherPlayerLabels();
          putDieCounterAssets();
     }
