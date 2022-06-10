@@ -51,8 +51,15 @@ public interface GUIPlayer {
 
     /**
      * Updates the GUIPlayer's development resource counters
+     * @param plr the player whose development card count changed
      */
-    void updateDevelopmentCounters(boolean yours);
+    void updateDevelopmentCounters(Player plr);
+
+    /**
+     * Updates the GUIPlayer's knight counters
+     * @param plr the player who played the development card
+     */
+    void updateKnightCounters(Player plr);
 
     /**
      * Moves the thief image
