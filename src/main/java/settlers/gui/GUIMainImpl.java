@@ -269,6 +269,20 @@ public class GUIMainImpl implements GUIMain {
         playerGUIs.get(player).startTurn(dieRoll);
     }
 
+    /**
+     * Called by Main. Has the player built a settlement and road during setup
+     * @param player whose turn it is
+     * @param validSpots where a settlement can be built during setup
+     * @return the Vertex where the player built a Settlement
+     */
+    @Override
+    public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
+        //Update the resources for all players
+        updateResourceCounters();
+
+        return playerGUIs.get(player).startSettlementTurn(validSpots);
+    }
+
     public Set<Hex> getAvailableThiefSpots(){
         return main.getAvailableThiefSpots();
     }
@@ -296,26 +310,24 @@ public class GUIMainImpl implements GUIMain {
         updateGUISAfterThiefMove(position);
     }
 
-    /**
-     * Called by Main. Has the player built a settlement and road during setup
-     * @param player whose turn it is
-     * @param validSpots where a settlement can be built during setup
-     * @return the Vertex where the player built a Settlement
-     */
-    @Override
-    public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
-        //Update the resources for all players
-        updateResourceCounters();
-
-        return playerGUIs.get(player).startSettlementTurn(validSpots);
-    }
-
     @Override
     public void playerHasTargetResources(Player player) {
         if(playersWhoHaveNotDiscarded.contains(player)) {
             playersWhoHaveNotDiscarded.remove(player);
         }else{
-            throw new IllegalStateException("Tried to remove unlisted player from playersWhoHaveNotDiscarded");
+            throw new IllegalStateException("Player tried to discard resources when they couldn't");
         }
+    }
+
+    @Override
+    public boolean canTrade(Player player, Resource resourceGiven) {
+        return main.canTrade(player, resourceGiven);
+    }
+
+    @Override
+    public void trade(Player player, Resource resourceGiven, Resource resourceGotten) {
+        main.trade(player,resourceGiven,resourceGotten);
+
+        updateResourceCounters();
     }
 }

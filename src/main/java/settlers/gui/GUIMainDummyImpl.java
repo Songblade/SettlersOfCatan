@@ -131,4 +131,14 @@ public class GUIMainDummyImpl implements GUIMain {
     public void playerHasTargetResources(Player player) {
 
     }
+
+    @Override
+    public boolean canTrade(Player player, Resource resourceGiven) {
+        return false;
+    }
+
+    @Override
+    public void trade(Player player, Resource resourceGiven, Resource resourceGotten) {
+
+    }
 }

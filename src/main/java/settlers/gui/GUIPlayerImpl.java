@@ -56,6 +56,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     //Request tables
     private Resource[] yearOfPlentyRequest = new Resource[2];
     private Edge[] roadBuildingRequest = new Edge[2];
+    private Resource[] bankTradeRequest = new Resource[2];
 
     //Frame and image
     private JFrame frame;
@@ -108,9 +109,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Adds the ports
         putPorts();
-
-        //Adds the possible move text fields
-        putPossibleMoveFields();
 
         //Adds other elements
         putOtherElements();
@@ -442,22 +440,6 @@ public class GUIPlayerImpl implements GUIPlayer{
             JLabel portImage = createLabel("", offsetX, offsetY, 1);
             portImage.setIcon(new ImageIcon(getResourceImage(board.getVertices()[portImageLocations[i][0]].getPort()).getScaledInstance(64,64,0)));
         }
-    }
-
-    /**
-     * Puts all possible move text fields onto the GUI
-     */
-    private void putPossibleMoveFields(){
-        createMoveText(Move.PASS,"Space","Pass the turn");
-        createMoveText(Move.ROAD,"1","Build a road");
-        createMoveText(Move.SETTLEMENT,"2","Build a settlement");
-        createMoveText(Move.CITY,"3","Build a city");
-        createMoveText(Move.DEVELOPMENT_CARD,"4","Buy a development card");
-        createMoveText(Move.KNIGHT,"Q","Play kinght");
-        createMoveText(Move.YEAR_OF_PLENTY,"W","Play year of planty");
-        createMoveText(Move.ROAD_BUILDING,"E","Play road building");
-        createMoveText(Move.MONOPOLY,"R","Play monopoly");
-        createMoveText(Move.CANCEL,"Backspace","Cancel move");
     }
 
     private void putPlayerLabel(){
@@ -844,24 +826,26 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param keyId the ASCII identifier of the key
      * @param action the action to be performed whenever the key is pressed
      */
-    private void mapAction(int keyId, ActionListener action){
+    private void mapAction(Move move, int keyId, ActionListener action, String key, String description){
         frame.getRootPane().registerKeyboardAction(action,KeyStroke.getKeyStroke((char) keyId),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        createMoveText(move,key,description);
     }
 
     /**
      * Maps all of the frame's actions
      */
     private void mapActions(){
-        mapAction(8,cancelMove());
-        mapAction(32,passTurn());
-        mapAction(49,requestRoadPlacement());
-        mapAction(50,requestSettlementPlacement());
-        mapAction(51,requestCityPlacement());
-        mapAction(52,buildDevelopmentCard());
-        mapAction(113,requestKnight());
-        mapAction(119,requestYearOfPlenty());
-        mapAction(101,requestRoadBuilding());
-        mapAction(114,requestMonopoly());
+        mapAction(Move.CANCEL,8,cancelMove(),"Backspace","Cancel move");
+        mapAction(Move.PASS,32,passTurn(),"Space","Pass the turn");
+        mapAction(Move.ROAD,49,requestRoadPlacement(),"1","Build a road");
+        mapAction(Move.SETTLEMENT,50,requestSettlementPlacement(),"2","Build a settlement");
+        mapAction(Move.CITY,51,requestCityPlacement(),"3","Build a city");
+        mapAction(Move.DEVELOPMENT_CARD,52,buildDevelopmentCard(),"4","Buy a development card");
+        mapAction(Move.KNIGHT,113,requestKnight(),"Q","Play knight");
+        mapAction(Move.YEAR_OF_PLENTY,119,requestYearOfPlenty(),"W","Play year of planty");
+        mapAction(Move.ROAD_BUILDING,101,requestRoadBuilding(),"E","Play road building");
+        mapAction(Move.MONOPOLY,114,requestMonopoly(),"R","Play monopoly");
+        mapAction(Move.TRADE,97,requestBankTrade(),"A","Trade with the bank");
     }
 
     /**
@@ -1067,42 +1051,42 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             //Asks if the player can build a road
-            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canPerformActions()) {
                 moves.add(Move.ROAD);
             }
 
             //Asks if the player can build a settlement
-            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && canPerformActions()) {
                 moves.add(Move.SETTLEMENT);
             }
 
             //Asks if the player can build a city
-            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && canPerformActions()) {
                 moves.add(Move.CITY);
             }
 
             //Asks if the player can build a development card
-            if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canPerformActions()) {
                 moves.add(Move.DEVELOPMENT_CARD);
             }
 
             //Asks if the player can play knight
-            if (checkMoveListForMove(toCheck, Move.KNIGHT) && main.canPlayDevelopmentCard(player, DevelopmentCard.KNIGHT) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.KNIGHT) && main.canPlayDevelopmentCard(player, DevelopmentCard.KNIGHT) && canPerformActions()) {
                 moves.add(Move.KNIGHT);
             }
 
             //Asks if the player can play year of plenty
-            if (checkMoveListForMove(toCheck, Move.YEAR_OF_PLENTY) && main.canPlayDevelopmentCard(player, DevelopmentCard.YEAR_OF_PLENTY) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.YEAR_OF_PLENTY) && main.canPlayDevelopmentCard(player, DevelopmentCard.YEAR_OF_PLENTY) && canPerformActions()) {
                 moves.add(Move.YEAR_OF_PLENTY);
             }
 
             //Asks if the player can play road building
-            if (checkMoveListForMove(toCheck, Move.ROAD_BUILDING) && main.canPlayDevelopmentCard(player, DevelopmentCard.ROAD_BUILDING) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.ROAD_BUILDING) && main.canPlayDevelopmentCard(player, DevelopmentCard.ROAD_BUILDING) && canPerformActions()) {
                 moves.add(Move.ROAD_BUILDING);
             }
 
             //Asks if the player can play monopoly
-            if (checkMoveListForMove(toCheck, Move.MONOPOLY) && main.canPlayDevelopmentCard(player, DevelopmentCard.MONOPOLY) && canMakePurchases()) {
+            if (checkMoveListForMove(toCheck, Move.MONOPOLY) && main.canPlayDevelopmentCard(player, DevelopmentCard.MONOPOLY) && canPerformActions()) {
                 moves.add(Move.MONOPOLY);
             }
 
@@ -1153,7 +1137,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
-    private boolean canMakePurchases(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
+    private boolean canPerformActions(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
 
     private void reloadPossibleMovesGUI(){
         reloadPossibleMovesGUI(null);
@@ -1206,7 +1190,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 //System.out.println("City placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildCity(player));
                 //Checks if player can preform action
-                if(canMakePurchases() && main.canBuildCity(player)){
+                if(canPerformActions() && main.canBuildCity(player)){
                     currentState = GUIState.CITY;
                     Set<Vertex> availableSpots = main.getAvailableCitySpots(player);
                     enableSpecifiedButtons(vertexButtonMap.keySet(),vertexButtonMap,availableSpots);
@@ -1228,7 +1212,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 //System.out.println("Settlement placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildSettlement(player));
                 //Checks if player can preform action
-                if(canMakePurchases() && main.canBuildSettlement(player)){
+                if(canPerformActions() && main.canBuildSettlement(player)){
                     currentState = GUIState.SETTLEMENT;
                     Set<Vertex> availableSpots = main.getAvailableSettlementSpots(player);
                     enableSpecifiedButtons(vertexButtonMap.keySet(),vertexButtonMap,availableSpots);
@@ -1250,7 +1234,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 //System.out.println("Road placement requested by: " + player.getID() + ", GUIState is: " + currentState + ", turn: " + thisPlayerHasTurn + ", main phase: " + mainPhase + ", can build: " + main.canBuildRoad(player));
                 //Checks if player can preform action
-                if(canMakePurchases() && main.canBuildRoad(player)){
+                if(canPerformActions() && main.canBuildRoad(player)){
                     currentState = GUIState.ROAD;
                     Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
                     enableSpecifiedButtons(edgeButtonMap.keySet(),edgeButtonMap,availableSpots);
@@ -1266,7 +1250,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canMakePurchases() && main.canBuyDevelopmentCard(player)){
+                if(canPerformActions() && main.canBuyDevelopmentCard(player)){
                     main.buildDevelopmentCard(player);
 
                     //Reloads the possible moves
@@ -1280,7 +1264,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
+                if(canPerformActions() && main.canPlayDevelopmentCard(player,DevelopmentCard.KNIGHT)){
                     currentState = GUIState.KNIGHT;
                     startThiefMove();
 
@@ -1295,7 +1279,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.YEAR_OF_PLENTY)){
+                if(canPerformActions() && main.canPlayDevelopmentCard(player,DevelopmentCard.YEAR_OF_PLENTY)){
                     currentState = GUIState.YEAR_OF_PLENTY_FIRST;
                     enableButtons(resourceButtonMap.keySet());
 
@@ -1310,7 +1294,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.ROAD_BUILDING)){
+                if(canPerformActions() && main.canPlayDevelopmentCard(player,DevelopmentCard.ROAD_BUILDING)){
                     currentState = GUIState.ROAD_BUILDING_FIRST;
                     Set<Edge> availableSpots = main.getAvailableRoadSpots(player);
                     enableSpecifiedButtons(edgeButtonMap.keySet(),edgeButtonMap,availableSpots);
@@ -1326,12 +1310,35 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canMakePurchases() && main.canPlayDevelopmentCard(player,DevelopmentCard.MONOPOLY)){
+                if(canPerformActions() && main.canPlayDevelopmentCard(player,DevelopmentCard.MONOPOLY)){
                     currentState = GUIState.MONOPOLY;
                     enableButtons(resourceButtonMap.keySet());
 
                     //Reloads the possible moves
                     reloadPossibleMovesGUI();
+                }
+            }
+        };
+    }
+
+    private ActionListener requestBankTrade(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(canPerformActions()){
+                    boolean canMakeTrade = false;
+
+                    for(JButton button : resourceButtonMap.keySet()){
+                        if(main.canTrade(player,resourceButtonMap.get(button))){
+                            canMakeTrade = true;
+                            enableButton(button);
+                        }
+                    }
+
+                    if(canMakeTrade){
+                        currentState = GUIState.BANK_TRADE_PUT;
+                        reloadPossibleMovesGUI();
+                    }
                 }
             }
         };
@@ -1452,24 +1459,18 @@ public class GUIPlayerImpl implements GUIPlayer{
                         currentState = GUIState.NONE;
                         disableButtons(resourceButtonMap.keySet());
                     }
-                }else if(currentState == GUIState.YEAR_OF_PLENTY_FIRST || currentState == GUIState.YEAR_OF_PLENTY_SECOND){
+                }else if(currentState == GUIState.YEAR_OF_PLENTY_FIRST) {
+                    currentState = GUIState.YEAR_OF_PLENTY_SECOND;
+                    yearOfPlentyRequest[0] = resource;
 
-                    switch(currentState){
-                        case YEAR_OF_PLENTY_FIRST:
-                            currentState = GUIState.YEAR_OF_PLENTY_SECOND;
-                            yearOfPlentyRequest[0] = resource;
+                    reloadPossibleMovesGUI();
+                }else if(currentState == GUIState.YEAR_OF_PLENTY_SECOND){
+                    currentState = GUIState.NONE;
+                    yearOfPlentyRequest[1] = resource;
+                    main.playYearOfPlenty(player, yearOfPlentyRequest[0], yearOfPlentyRequest[1]);
 
-                            reloadPossibleMovesGUI();
-                            break;
-                        case YEAR_OF_PLENTY_SECOND:
-                            currentState = GUIState.NONE;
-                            yearOfPlentyRequest[1] = resource;
-                            main.playYearOfPlenty(player,yearOfPlentyRequest[0],yearOfPlentyRequest[1]);
-
-                            disableButtons(resourceButtonMap.keySet());
-                            reloadPossibleMovesGUI();
-                            break;
-                    }
+                    disableButtons(resourceButtonMap.keySet());
+                    reloadPossibleMovesGUI();
                 }else if(currentState == GUIState.MONOPOLY){
                     currentState = GUIState.NONE;
                     main.playMonopoly(player,resource);
@@ -1477,7 +1478,6 @@ public class GUIPlayerImpl implements GUIPlayer{
                     disableButtons(resourceButtonMap.keySet());
                     reloadPossibleMovesGUI();
                 }
-
                 focusFrame();
             }
         };
@@ -1497,7 +1497,9 @@ enum GUIState{
     ROAD_BUILDING_SECOND(false),
     YEAR_OF_PLENTY_FIRST(true),
     YEAR_OF_PLENTY_SECOND(false),
-    MONOPOLY(true);
+    MONOPOLY(true),
+    BANK_TRADE_PUT(true),
+    BANK_TRADE_TAKE(true);
 
     GUIState(boolean cancelable){
         this.cancelable = cancelable;
@@ -1510,5 +1512,5 @@ enum GUIState{
 }
 
 enum Move{
-    PASS,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,CANCEL
+    PASS,CANCEL,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE
 }
