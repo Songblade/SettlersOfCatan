@@ -119,6 +119,7 @@ public class GUIMainImpl implements GUIMain {
         boolean toReturn = main.playKnight(stealer,settlement,location);
         updateGUISAfterThiefMove(location);
         updateDevelopmentCounters(stealer);
+        updateKnightCounters(stealer);
         return toReturn;
     }
 
@@ -220,8 +221,13 @@ public class GUIMainImpl implements GUIMain {
      */
     private void updateDevelopmentCounters(Player initiater){
         for(Player player : playerGUIs.keySet()){
-            GUIPlayer gui = playerGUIs.get(player);
-            gui.updateDevelopmentCounters(player.equals(initiater));
+            playerGUIs.get(player).updateDevelopmentCounters(initiater);
+        }
+    }
+
+    private void updateKnightCounters(Player initiater){
+        for(Player player : playerGUIs.keySet()){
+            playerGUIs.get(player).updateKnightCounters(initiater);
         }
     }
 

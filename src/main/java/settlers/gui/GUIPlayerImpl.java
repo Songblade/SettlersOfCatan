@@ -532,7 +532,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 JTextField playerResourceText = createText("0",currentXOffset + textXOffsetIncrement,currentYOffset,1);
                 playerTextBoxes.put("Resource",playerResourceText);
 
-                //Places the development card label for other players
+                //Places the development card labels for other players
                 JLabel playerDevelopmentLabel = createLabel("",currentXOffset + xOffsetIncrement,currentYOffset,1);
                 playerDevelopmentLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/DMisc.png").getScaledInstance(56,56,0)));
 
@@ -541,6 +541,16 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 JTextField playerDevelopmentText = createText("0",currentXOffset + xOffsetIncrement + textXOffsetIncrement,currentYOffset,1);
                 playerTextBoxes.put("Development",playerDevelopmentText);
+
+                //Places the played knight labels for other players
+                JLabel playerKnightLabel = createLabel("",currentXOffset + (2 * xOffsetIncrement),currentYOffset,1);
+                playerKnightLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/PlayedKnight.png").getScaledInstance(56,56,0)));
+
+                JLabel playerKnightBackgroundLabel = createLabel("",currentXOffset + (2 * xOffsetIncrement),currentYOffset,3);
+                playerKnightBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGDevelopment.png").getScaledInstance(56,56,0)));
+
+                JTextField playerKnightText = createText("0",currentXOffset + (2 * xOffsetIncrement) + textXOffsetIncrement,currentYOffset,1);
+                playerTextBoxes.put("Knight",playerKnightText);
 
                 //Places a button for the player
                 JButton playerButton = createButton(35,currentYOffset);
@@ -695,18 +705,22 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     @Override
-    public void updateDevelopmentCounters(boolean yours){
-        if(yours){
+    public void updateDevelopmentCounters(Player plr){
+        if(plr.equals(player)){
             for(DevelopmentCard development : DevelopmentCard.values()){
                 int quantityOfDevelopmentCard = player.getDevelopmentCards().get(development) == null ? 0 : player.getDevelopmentCards().get(development);
                 developmentTextMap.get(development).setText("" + quantityOfDevelopmentCard);
             }
         }else{
-            for(Player plr : players){
-                if(plr != player){
-                    playerTextMap.get(plr).get("Development").setText("" + plr.getDevelopmentCardCount());
-                }
-            }
+            playerTextMap.get(plr).get("Development").setText("" + plr.getDevelopmentCardCount());
+        }
+    }
+
+    public void updateKnightCounters(Player plr){
+        if(plr.equals(player)){
+
+        }else{
+            playerTextMap.get(plr).get("Knight").setText("" + plr.getKnightNumber());
         }
     }
 
