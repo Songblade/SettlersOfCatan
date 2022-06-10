@@ -111,12 +111,14 @@ public class GUIMainImpl implements GUIMain {
     public void buildDevelopmentCard(Player player){
         main.buildDevelopmentCard(player);
         updateResourceCounters();
+        updateDevelopmentCounters(player);
     }
 
     @Override
     public boolean playKnight(Player stealer, Vertex settlement, Hex location){
         boolean toReturn = main.playKnight(stealer,settlement,location);
         updateGUISAfterThiefMove(location);
+        updateDevelopmentCounters(stealer);
         return toReturn;
     }
 
@@ -124,6 +126,7 @@ public class GUIMainImpl implements GUIMain {
     public boolean playYearOfPlenty(Player player, Resource firstResource, Resource secondResource){
         boolean toReturn = main.playYearOfPlenty(player,firstResource,secondResource);
         updateResourceCounters();
+        updateDevelopmentCounters(player);
         return toReturn;
     }
 
@@ -131,6 +134,7 @@ public class GUIMainImpl implements GUIMain {
     public boolean playMonopoly(Player player, Resource resource){
         boolean toReturn = main.playMonopoly(player,resource);
         updateResourceCounters();
+        updateDevelopmentCounters(player);
         return toReturn;
     }
 
@@ -142,6 +146,8 @@ public class GUIMainImpl implements GUIMain {
             gui.setRoad(player,firstLocation);
             gui.setRoad(player,secondLocation);
         }
+
+        updateDevelopmentCounters(player);
 
         return toReturn;
     }
@@ -205,6 +211,17 @@ public class GUIMainImpl implements GUIMain {
         for(GUIPlayer gui : playerGUIs.values()){
             gui.updateDieCounter(dieRoll);
             gui.updateResourceCounters();
+        }
+    }
+
+    /**
+     * Updates all player's development card counters
+     * @param initiater the player who triggered this method
+     */
+    private void updateDevelopmentCounters(Player initiater){
+        for(Player player : playerGUIs.keySet()){
+            GUIPlayer gui = playerGUIs.get(player);
+            gui.updateDevelopmentCounters(player.equals(initiater));
         }
     }
 

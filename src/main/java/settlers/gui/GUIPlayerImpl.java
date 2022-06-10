@@ -40,6 +40,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
     private HashMap<Resource,JTextField> resourceTextMap = new HashMap<>();
+    private HashMap<DevelopmentCard,JTextField> developmentTextMap = new HashMap<>();
     private HashMap<Player,HashMap<String,JTextField>> playerTextMap = new HashMap<>();
     private HashMap<Move,JTextField> moveTextMap = new HashMap<>();
 
@@ -466,24 +467,43 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Places the resources to the side of the player label
         int currentXOffset = 140;
         int xOffsetIncrement = 80;
+        int yOffset = 550;
         for(Resource resource : Resource.values()){
             if(resource != Resource.MISC){
-                JLabel resourceLabel = createLabel("",currentXOffset,550,2);
+                JLabel resourceLabel = createLabel("",currentXOffset,yOffset,2);
                 resourceLabel.setIcon(new ImageIcon(getResourceImage(resource).getScaledInstance(64,64,0)));
 
-                JLabel resourceBackgroundLabel = createLabel("",currentXOffset,550,3);
+                JLabel resourceBackgroundLabel = createLabel("",currentXOffset,yOffset,3);
                 resourceBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGResource.png").getScaledInstance(64,64,0)));
 
-                JTextField resourceCountLabel = createText("0",currentXOffset + xOffsetIncrement - 24,500,1);
+                JTextField resourceCountLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset + 50,1);
                 resourceTextMap.put(resource,resourceCountLabel);
 
                 //Creates a button for the resource
-                JButton resourceButton = createButton(currentXOffset - xOffsetIncrement,550);
+                JButton resourceButton = createButton(currentXOffset,yOffset);
                 resourceButton.addActionListener(resourceButtonClickedAction(resource));
                 resourceButtonMap.put(resourceButton,resource);
 
                 currentXOffset += xOffsetIncrement;
             }
+        }
+    }
+
+    private void putPlayerDevelopmentLabels(){
+        int currentXOffset = 940;
+        int xOffsetIncrement = 80;
+        int yOffset = 550;
+        for(DevelopmentCard development : DevelopmentCard.values()){
+            JLabel developmentLabel = createLabel("",currentXOffset,yOffset,2);
+            developmentLabel.setIcon(new ImageIcon(getDevelopmentCardImage(development).getScaledInstance(64,64,0)));
+
+            JLabel developmentBackgroundLabel = createLabel("",currentXOffset,yOffset,3);
+            developmentBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGDevelopment.png").getScaledInstance(64,64,0)));
+
+            JTextField developmentCountLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset + 50,1);
+            developmentTextMap.put(development,developmentCountLabel);
+
+            currentXOffset += xOffsetIncrement;
         }
     }
 
@@ -549,6 +569,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void putOtherElements(){
          putPlayerLabel();
          putPlayerResourceLabels();
+         putPlayerDevelopmentLabels();
          putOtherPlayerLabels();
          putDieCounterAssets();
     }
@@ -675,13 +696,15 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     @Override
     public void updateDevelopmentCounters(boolean yours){
-
         if(yours){
-
+            for(DevelopmentCard development : DevelopmentCard.values()){
+                int quantityOfDevelopmentCard = player.getDevelopmentCards().get(development) == null ? 0 : player.getDevelopmentCards().get(development);
+                developmentTextMap.get(development).setText("" + quantityOfDevelopmentCard);
+            }
         }else{
             for(Player plr : players){
                 if(plr != player){
-                    playerTextMap.get(plr).get("Development").setText("" + plr.getCardNumber());
+                    playerTextMap.get(plr).get("Development").setText("" + plr.getDevelopmentCardCount());
                 }
             }
         }
@@ -735,6 +758,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    /**
+     * Starts a turn in the settlement phase
+     * @param availableSpots all available spots
+     * @return the spot where the player placed his settlement
+     */
     public Vertex startSettlementTurn(Set<Vertex> availableSpots){
         lastSettlementSpot = null;
         lastRoadSpot = null;
@@ -818,30 +846,6 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
         }
         return -1;
-    }
-
-    /**
-     * Repaints all verticies
-     */
-    private void repaintVertices(){
-        for(Vertex vertex: vertexLabelMap.keySet()){
-            JLabel label = vertexLabelMap.get(vertex);
-
-            int ownerid = -1;
-            int constructionid = 0;
-
-            Player owner = vertex.getPlayer();
-
-            if(owner != null){
-                ownerid = owner.getID();
-                constructionid = vertex.isCity() ? 2 : 1;
-                label.setIcon(new ImageIcon(getConstructionImage(ownerid,constructionid).getScaledInstance(standardObjectSize,standardObjectSize,0)));
-            }else if(getOwnerlessVertexColorId(vertex) != -1){
-                label.setIcon(new ImageIcon(getConstructionImage(getOwnerlessVertexColorId(vertex),constructionid).getScaledInstance(standardObjectSize,standardObjectSize,0)));
-            }
-        }
-
-        frame.repaint();
     }
 
     /**
