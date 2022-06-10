@@ -11,11 +11,13 @@ public class PlayerImpl implements Player {
 
     private Map<Resource, Integer> resources;
     private int resourceCount; // defaults to 0, number of total resources
-    private Map<DevelopmentCard, Integer> vellies;
-    private Set<Resource> ports;
-    private Set<Vertex> settlements;
-    private Set<Vertex> cities;
-    private Set<Edge> roads;
+    private final Map<DevelopmentCard, Integer> vellies;
+    private final Set<Resource> ports;
+    private final Set<Vertex> settlements;
+    private final Set<Vertex> cities;
+    private final Set<Edge> roads;
+    private int vellyCount;
+    private int knightNumber;
     private int victoryPoints; // starts at 0
     private final int id; // ignore this, it is for testing
 
@@ -119,6 +121,7 @@ public class PlayerImpl implements Player {
     @Override
     public boolean addDevelopmentCard(DevelopmentCard development) {
         vellies.put(development, vellies.getOrDefault(development, 0) + 1);
+        vellyCount++;
         if (development == DevelopmentCard.VICTORY_POINT) {
             return(increaseVictoryPoints(1));
         }
@@ -131,12 +134,13 @@ public class PlayerImpl implements Player {
      *      If the player loses longest road or largest army, it should be -2
      * @return true if the player now has >= 10 points, false otherwise
      */
-    private boolean increaseVictoryPoints(int num) {
+    public boolean increaseVictoryPoints(int num) {
         victoryPoints += num;
         return victoryPoints >= 10;
     }
 
     /**
+     * Removes the development card, and increases the knight number if it is a knight
      * @param development card being removed from the player's hand
      * @return true if the removal was successful, false if he never had the card or a point card
      */
@@ -146,8 +150,28 @@ public class PlayerImpl implements Player {
             // if the player does not have or never did have the card, or if this is a point card
             return false;
         }
+        vellyCount--;
         vellies.put(development, vellies.get(development) - 1);
+        if (development == DevelopmentCard.KNIGHT) {
+            knightNumber += 1;
+        }
         return true;
+    }
+
+    /**
+     * @return the number of development cards the player has
+     */
+    @Override
+    public int getDevelopmentCardCount() {
+        return vellyCount;
+    }
+
+    /**
+     * @return number of times the player has used a knight
+     */
+    @Override
+    public int getKnightNumber() {
+        return knightNumber;
     }
 
     /**

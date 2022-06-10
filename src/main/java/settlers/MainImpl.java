@@ -19,6 +19,8 @@ public class MainImpl implements Main {
     private Hex thiefIsHere; // so we don't have to look for it
     private final List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
     private Player currentTurn; // a link to the player whose turn it currently is
+    private Player largestArmyHolder; // a link to the player who has largest army
+    // private Player longestRoadHolder; // a link to the player who has longest road
     private final Queue<DevelopmentCard> vellyDeck; // where all the vellies are kept
     // I made it a queue, because we only ever take from the top
 
@@ -620,15 +622,42 @@ public class MainImpl implements Main {
      */
     @Override
     public boolean playKnight(Player stealer, Vertex settlement, Hex location) {
-        if (isMainPhase) { // for testing, in setup phase, you don't need the card
-            if (!stealer.removeDevelopmentCard(DevelopmentCard.KNIGHT)) {
-                // that removes the development card if there is one
-                // if it returns false, it means that the player never had one
-                return false;
-            }
+        if (!isMainPhase) { // that way, I can call removeDevelopmentCard and increase the Knight number
+            stealer.addDevelopmentCard(DevelopmentCard.KNIGHT);
+        }
+        if (!stealer.removeDevelopmentCard(DevelopmentCard.KNIGHT)) {
+            // that removes the development card if there is one
+            // also increases the Knight counter
+            // if it returns false, it means that the player never had one
+            return false;
         }
         moveThief(stealer, settlement, location);
+        if (hasLargestArmy(stealer)) {
+            if (largestArmyHolder != null) { // if someone is losing Largest Army
+                largestArmyHolder.increaseVictoryPoints(-2); // they lose the 2 points
+            }
+            boolean isWinner = stealer.increaseVictoryPoints(2); // give the 2 points
+            largestArmyHolder = stealer; // make Main know you have it
+            if (isWinner) { // if the new points make you win
+                endGame(stealer); // you won!
+            }
+        }
         return true; // because the stealing was successful
+    }
+
+    /**
+     * @param player being examined
+     * @return true if the player now has the largest army, false otherwise
+     */
+    private boolean hasLargestArmy(Player player) {
+        if (player.getKnightNumber() < 3) {
+            return false;
+        } // from here on, the player is eligible for largest army
+        if (largestArmyHolder == null) {
+            return true; // no one else has largest army, so this player should
+        }
+        return player.getKnightNumber() > largestArmyHolder.getKnightNumber(); // does this player have a
+            // bigger army?
     }
 
     /**
@@ -688,19 +717,6 @@ public class MainImpl implements Main {
             player.addResource(resource);
         }
         return true;
-    }
-
-    /**
-     * @return a map containing 0 of each resource
-     */
-    private HashMap<Resource, Integer> emptyResourceMap() {
-        HashMap<Resource, Integer> emptyMap = new HashMap<>();
-        for (Resource resource : Resource.values()) {
-            if (resource != Resource.MISC) {
-                emptyMap.put(resource, 0);
-            }
-        }
-        return emptyMap;
     }
 
     /**

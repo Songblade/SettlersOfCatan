@@ -49,10 +49,21 @@ public interface Player {
     boolean addDevelopmentCard(DevelopmentCard development);
 
     /**
+     * Removes the development card, and increases the knight number if it is a knight
      * @param development card being removed from the player's hand
      * @return true if the removal was successful, false if he never had the card or a point card
      */
     boolean removeDevelopmentCard(DevelopmentCard development);
+
+    /**
+     * @return the number of development cards the player has
+     */
+    int getDevelopmentCardCount();
+
+    /**
+     * @return number of times the player has used a knight
+     */
+    int getKnightNumber();
 
     /**
      * @return an unmodifiable set of resources the player has 2:1 ports for
@@ -97,6 +108,15 @@ public interface Player {
      * @return true if the player now has 10 victory points, false otherwise
      */
     boolean upgradeSettlement(Vertex city);
+
+    /**
+     * Increases the player's victory points
+     * Outside of Player, should only be used by Main for Longest Road and Largest Army
+     * @param num should be 1, but should be 2 if this is Longest Road or Largest Army
+     *      If the player loses longest road or largest army, it should be -2
+     * @return true if the player now has >= 10 points, false otherwise
+     */
+    boolean increaseVictoryPoints(int num);
 
     /**
      * @return the player's current number of victory points
