@@ -735,7 +735,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     public void updateKnightCounters(Player plr){
         if(plr.equals(player)){
-
+            playedKnightsCountLabel.setText("" + plr.getKnightNumber());
         }else{
             playerTextMap.get(plr).get("Knight").setText("" + plr.getKnightNumber());
         }
