@@ -765,7 +765,7 @@ public class MainImpl implements Main {
             throw new IllegalArgumentException("null values not permitted");
         }
         if (resourceGiven == Resource.MISC) {
-            throw new IllegalArgumentException("Players can't have MISC to trade in");
+            return false;
         }
         if (currentTurn != player) {
             return false; // you can only trade with the bank on your turn
