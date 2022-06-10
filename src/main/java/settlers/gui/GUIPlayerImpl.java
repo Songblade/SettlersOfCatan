@@ -849,21 +849,6 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * @param vertex
-     * @return the id of the player who owns two roads next to this vertex. Defaults to -1
-     */
-    private int getOwnerlessVertexColorId(Vertex vertex){
-        HashSet<Integer> knownIds = new HashSet<>();
-        for(Edge edge : vertex.getEdges()){
-            if(edge.getPlayer() != null) {
-                if(knownIds.contains(edge.getPlayer().getID())) return edge.getPlayer().getID();
-                knownIds.add(edge.getPlayer().getID());
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Tells GUIPlayers to make a city
      * @param vertex location of the city
      * @param player controller of the city
@@ -1050,6 +1035,11 @@ public class GUIPlayerImpl implements GUIPlayer{
                 moves.add(Move.PASS);
             }
 
+            //Asks if the player can cancel a move
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
+                moves.add(Move.CANCEL);
+            }
+
             //Asks if the player can build a road
             if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canPerformActions()) {
                 moves.add(Move.ROAD);
@@ -1090,13 +1080,26 @@ public class GUIPlayerImpl implements GUIPlayer{
                 moves.add(Move.MONOPOLY);
             }
 
-            //Asks if the player can cancel a move
-            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
-                moves.add(Move.CANCEL);
+            if(checkMoveListForMove(toCheck, Move.TRADE) && getPossibleTradingResources().size() != 0){
+                moves.add(Move.TRADE);
             }
         }
 
         return moves;
+    }
+
+    /**
+     * Gets all the resources the player can use to trade
+     * @return a list of all the resources the player can use to trade
+     */
+    private Set<Resource> getPossibleTradingResources(){
+        Set<Resource> possibleTradingResources = new HashSet<>();
+
+        for(Resource resource : Resource.values()){
+            if(main.canTrade(player,resource))possibleTradingResources.add(resource);
+        }
+
+        return possibleTradingResources;
     }
 
     /**
@@ -1326,18 +1329,16 @@ public class GUIPlayerImpl implements GUIPlayer{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(canPerformActions()){
-                    boolean canMakeTrade = false;
+                    Set<Resource> possibleTradingResources = getPossibleTradingResources();
 
-                    for(JButton button : resourceButtonMap.keySet()){
-                        if(main.canTrade(player,resourceButtonMap.get(button))){
-                            canMakeTrade = true;
-                            enableButton(button);
+                    if(possibleTradingResources.size() > 0){
+                        for(JButton button : resourceButtonMap.keySet()){
+                            Resource resource = resourceButtonMap.get(button);
+
+                            if(possibleTradingResources.contains(resource)){
+                                enableButton(button);
+                            }
                         }
-                    }
-
-                    if(canMakeTrade){
-                        currentState = GUIState.BANK_TRADE_PUT;
-                        reloadPossibleMovesGUI();
                     }
                 }
             }
