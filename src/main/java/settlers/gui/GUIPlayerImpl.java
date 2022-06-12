@@ -1080,7 +1080,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 moves.add(Move.MONOPOLY);
             }
 
-            if(checkMoveListForMove(toCheck, Move.TRADE) && getPossibleTradingResources().size() != 0){
+            if(checkMoveListForMove(toCheck, Move.TRADE) && getPossibleTradingResources().size() != 0 && canPerformActions()){
                 moves.add(Move.TRADE);
             }
         }
@@ -1339,6 +1339,8 @@ public class GUIPlayerImpl implements GUIPlayer{
                                 enableButton(button);
                             }
                         }
+
+                        currentState = GUIState.BANK_TRADE_PUT;
                     }
                 }
             }
@@ -1476,6 +1478,26 @@ public class GUIPlayerImpl implements GUIPlayer{
                     currentState = GUIState.NONE;
                     main.playMonopoly(player,resource);
 
+                    disableButtons(resourceButtonMap.keySet());
+                    reloadPossibleMovesGUI();
+                }else if(currentState == GUIState.BANK_TRADE_PUT){
+                    currentState = GUIState.BANK_TRADE_TAKE;
+                    bankTradeRequest[0] = resource;
+
+                    disableButtons(resourceButtonMap.keySet());
+                    //Enables every resource button except the resource button corresponding to the button clicked
+                    for(JButton button : resourceButtonMap.keySet()){
+                        if(resourceButtonMap.get(button) != resource){
+                            enableButton(button);
+                        }
+                    }
+
+                    reloadPossibleMovesGUI();
+                }else if(currentState == GUIState.BANK_TRADE_TAKE){
+                    currentState = GUIState.NONE;
+                    bankTradeRequest[1] = resource;
+
+                    main.trade(player,bankTradeRequest[0],bankTradeRequest[1]);
                     disableButtons(resourceButtonMap.keySet());
                     reloadPossibleMovesGUI();
                 }
