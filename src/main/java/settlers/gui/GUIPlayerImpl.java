@@ -33,8 +33,11 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<JButton,Hex> hexButtonMap = new HashMap<>();
     private HashMap<JButton,Vertex> vertexButtonMap = new HashMap<>();
     private HashMap<JButton,Edge> edgeButtonMap = new HashMap<>();
-    private HashMap<JButton, Resource> resourceButtonMap = new HashMap<>();
-    private HashMap<JButton, Player> playerButtonMap = new HashMap<>();
+    private HashMap<JButton,Resource> resourceButtonMap = new HashMap<>();
+    private HashMap<JButton,Player> playerButtonMap = new HashMap<>();
+
+    //Inv Button maps
+    private HashMap<Resource,JButton> invResourceButtonMap = new HashMap<>();
 
     //Label maps
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
@@ -468,6 +471,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 JButton resourceButton = createButton(currentXOffset,yOffset);
                 resourceButton.addActionListener(resourceButtonClickedAction(resource));
                 resourceButtonMap.put(resourceButton,resource);
+                invResourceButtonMap.put(resource,resourceButton);
 
                 currentXOffset += xOffsetIncrement;
             }
@@ -818,7 +822,13 @@ public class GUIPlayerImpl implements GUIPlayer{
         canPass = false;
         targetResourceAmount = target;
         currentState = GUIState.DISCARD;
-        enableButtons(resourceButtonMap.keySet());
+
+        //Enables specific resource buttons
+        for(Resource resource : Resource.values()){
+            if(resource != Resource.MISC && player.getResources().get(resource) > 0){
+                enableButton(invResourceButtonMap.get(resource));
+            }
+        }
     }
 
     /**
@@ -1332,11 +1342,10 @@ public class GUIPlayerImpl implements GUIPlayer{
                     Set<Resource> possibleTradingResources = getPossibleTradingResources();
 
                     if(possibleTradingResources.size() > 0){
-                        for(JButton button : resourceButtonMap.keySet()){
-                            Resource resource = resourceButtonMap.get(button);
+                        for(Resource resource : Resource.values()){
 
                             if(possibleTradingResources.contains(resource)){
-                                enableButton(button);
+                                enableButton(invResourceButtonMap.get(resource));
                             }
                         }
 
@@ -1461,6 +1470,8 @@ public class GUIPlayerImpl implements GUIPlayer{
                         main.playerHasTargetResources(player);
                         currentState = GUIState.NONE;
                         disableButtons(resourceButtonMap.keySet());
+                    }else if(player.getResources().get(resource) == 0){
+                        disableButton(invResourceButtonMap.get(resource));
                     }
                 }else if(currentState == GUIState.YEAR_OF_PLENTY_FIRST) {
                     currentState = GUIState.YEAR_OF_PLENTY_SECOND;
