@@ -22,6 +22,10 @@ public class MainImpl implements Main {
     private Player largestArmyHolder; // a link to the player who has largest army
     // private Player longestRoadHolder; // a link to the player who has longest road
     private final Queue<DevelopmentCard> vellyDeck; // where all the vellies are kept
+    private Map<DevelopmentCard, Integer> newCards; // this stores all the cards that the player just bought
+        // this turn
+    // the player cannot play any cards in this map
+    // at the end of the turn, this is emptied
     // I made it a queue, because we only ever take from the top
 
     public MainImpl(int numberOfPlayers) {
@@ -52,6 +56,7 @@ public class MainImpl implements Main {
         gui = testGUI;
         // now we set up the vellyDeck
         vellyDeck = shuffleVellyDeck();
+        newCards = new HashMap<>();
     }
 
     /**
@@ -241,6 +246,8 @@ public class MainImpl implements Main {
         gui.startTurn(currentTurn, dieValue); // tells GUI to get input and call the methods, when they end,
             // this method will end, and it will be the next player's turn
             // updates number and resources and also does 7 stuff, so I don't worry about it
+        newCards.clear(); // so that future turns will not have to deal with being unable to use the new development
+            // cards that were purchased
     }
 
     /**
@@ -602,10 +609,10 @@ public class MainImpl implements Main {
         if (player == null || card == null) {
             throw new IllegalArgumentException("One or more inputs are null");
         }
-        if (currentTurn != player) { // if it is not this player's turn
-            return false;
-        }
-        if (card == DevelopmentCard.VICTORY_POINT) { // can't play this type of card, ever
+        if (currentTurn != player // if it is not this player's turn
+                || card == DevelopmentCard.VICTORY_POINT // or is a point card, which you can never play
+                || player.getDevelopmentCards().getOrDefault(card, 0) <= newCards.getOrDefault(card, 0)) {
+                // or this is a new card, which the player can't play yet
             return false;
         }
         return player.getDevelopmentCards().getOrDefault(card, 0) > 0;

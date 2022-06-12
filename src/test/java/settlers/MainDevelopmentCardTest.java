@@ -711,4 +711,23 @@ public class MainDevelopmentCardTest {
         assertNull(edge1.getPlayer());
         assertNull(edge2.getPlayer());
     }
+
+    // the following tests will be for the mechanic that prevents you from buying a development card on that turn
+    // since this will interact with the main loop, I can't test it with unit tests
+    // instead, I will write down all the tests I need to do with the GUI
+    // all these tests must be in finite resource mode, since this should be opperating with the canPlay method
+
+    // I need to test that you can't play a development card on the turn you get it
+
+    // I need to test that you can play the development card on the next turn
+
+    // I need to test that if one player has one card and then another player gets the same card, the first player
+        // can play it immediately but the second one must wait
+
+    // I need to test that if a player buys 2 of the same card, he can't play either until the next turn
+
+    // I need to test that if a player buys a card when he already has one of the same card, the player can
+        // play the card once, but not twice
+
+    // make sure that victory point cards can win you the game on the turn you buy them
 }
