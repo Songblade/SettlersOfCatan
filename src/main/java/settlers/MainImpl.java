@@ -22,7 +22,7 @@ public class MainImpl implements Main {
     private Player largestArmyHolder; // a link to the player who has largest army
     // private Player longestRoadHolder; // a link to the player who has longest road
     private final Queue<DevelopmentCard> vellyDeck; // where all the vellies are kept
-    private Map<DevelopmentCard, Integer> newCards; // this stores all the cards that the player just bought
+    private final Map<DevelopmentCard, Integer> newCards; // this stores all the cards that the player just bought
         // this turn
     // the player cannot play any cards in this map
     // at the end of the turn, this is emptied
@@ -586,10 +586,12 @@ public class MainImpl implements Main {
     public void buildDevelopmentCard(Player player) {
         // removes a card from the deck and gives it to the player
         // isWinner is true if this point card made the player win the game
-        boolean isWinner = player.addDevelopmentCard(vellyDeck.remove());
+        DevelopmentCard card = vellyDeck.remove();
+        boolean isWinner = player.addDevelopmentCard(card);
         // remove expended resources, only in main phase to help testing
         if (isMainPhase) {
             player.removeResources(Building.DEVELOPMENT_CARD.getResources());
+            newCards.put(card, newCards.getOrDefault(card, 0) + 1);
         }
         // no need to report to GUI, it will know from the method ending
         if (isWinner) { // if the player has won, end the game
