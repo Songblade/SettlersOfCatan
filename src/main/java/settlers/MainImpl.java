@@ -783,6 +783,21 @@ public class MainImpl implements Main {
         return player.getResources().get(resourceGiven) >= resourceNumber;
     }
 
+    /**
+     * Checks if this player can trade these resources to another player
+     * Does not check if it is this player's turn, because this is also used to check if this player
+     * can be traded with.
+     *
+     * @param player         trading or being traded with
+     * @param resourcesGiven that this player would have to give as part of the trade
+     * @return true if the player can make this trade, false if the player lacks the resources
+     * Also returns false if the resources are empty, because you cannot donate resources
+     */
+    @Override
+    public boolean canTrade(Player player, Map<Resource, Integer> resourcesGiven) {
+        return false;
+    }
+
     private int getPlayerTradeNumber(Player player, Resource resource) {
         int tradeNumber = 4;
         if (player.getPorts().contains(Resource.MISC)) {
@@ -814,6 +829,19 @@ public class MainImpl implements Main {
         // now we remove the old resources and add the new ones
         removeMultipleOfOneResource(player, resourceGiven, resourceNumber);
         player.addResource(resourceGotten);
+    }
+
+    /**
+     * This simulates a trade between 2 players, updating each accordingly
+     *
+     * @param player1           who is initiating the trade, whose turn it is
+     * @param resourcesGiven    by player1, receieved by player2
+     * @param player2           who is on the other end of the trade
+     * @param resourcesReceived by player2, given by player 1
+     */
+    @Override
+    public void trade(Player player1, Map<Resource, Integer> resourcesGiven, Player player2, Map<Resource, Integer> resourcesReceived) {
+
     }
 
     /**

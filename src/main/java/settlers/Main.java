@@ -147,12 +147,32 @@ public interface Main {
     boolean canTrade(Player player, Resource resourceGiven);
 
     /**
+     * Checks if this player can trade these resources to another player
+     * Does not check if it is this player's turn, because this is also used to check if this player
+     * can be traded with.
+     * @param player trading or being traded with
+     * @param resourcesGiven that this player would have to give as part of the trade
+     * @return true if the player can make this trade, false if the player lacks the resources
+     * Also returns false if the resources are empty, because you cannot donate resources
+     */
+    boolean canTrade(Player player, Map<Resource, Integer> resourcesGiven);
+
+    /**
      * This simulates a trade with the bank, updating the Player appropriately
      * @param player doing the trade
      * @param resourceGiven resource type being given
      * @param resourceGotten resource type being received
      */
     void trade(Player player, Resource resourceGiven, Resource resourceGotten);
+
+    /**
+     * This simulates a trade between 2 players, updating each accordingly
+     * @param player1 who is initiating the trade, whose turn it is
+     * @param resourcesGiven by player1, receieved by player2
+     * @param player2 who is on the other end of the trade
+     * @param resourcesReceived by player2, given by player 1
+     */
+    void trade(Player player1, Map<Resource, Integer> resourcesGiven, Player player2, Map<Resource, Integer> resourcesReceived);
 
     List<Player> getPlayers();
 
