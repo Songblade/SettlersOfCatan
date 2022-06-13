@@ -380,7 +380,7 @@ public class MainTradeTest {
         result2.put(Resource.WOOD, 1);
 
         assertEquals(result0, player.getResources());
-        assertEquals(result2, player.getResources());
+        assertEquals(result2, player2.getResources());
     }
 
     // tests that whatever is given is in addition to what they have before
@@ -410,7 +410,7 @@ public class MainTradeTest {
         result2.put(Resource.WOOD, 2);
 
         assertEquals(result0, player.getResources());
-        assertEquals(result2, player.getResources());
+        assertEquals(result2, player2.getResources());
     }
 
     // tests that can trade 2 for 1
@@ -434,7 +434,7 @@ public class MainTradeTest {
         result2.put(Resource.WOOD, 2);
 
         assertEquals(result0, player.getResources());
-        assertEquals(result2, player.getResources());
+        assertEquals(result2, player2.getResources());
     }
 
     // tests that can trade 2 for 2
@@ -458,7 +458,7 @@ public class MainTradeTest {
         result2.put(Resource.WOOD, 2);
 
         assertEquals(result0, player.getResources());
-        assertEquals(result2, player.getResources());
+        assertEquals(result2, player2.getResources());
     }
 
     // tests that can trade 1 and 1 for 1
@@ -485,7 +485,7 @@ public class MainTradeTest {
         result2.put(Resource.BRICK, 1);
 
         assertEquals(result0, player.getResources());
-        assertEquals(result2, player.getResources());
+        assertEquals(result2, player2.getResources());
     }
 
     // tests that can trade 2 and 1 for 1 and 1
@@ -515,7 +515,7 @@ public class MainTradeTest {
         result2.put(Resource.BRICK, 1);
 
         assertEquals(result0, player.getResources());
-        assertEquals(result2, player.getResources());
+        assertEquals(result2, player2.getResources());
     }
 
 }
