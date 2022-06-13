@@ -22,8 +22,12 @@ public class MainTradeTest {
     }
 
     private void givePlayerResources(Resource resource, int resourceNumber) {
+        giveResources(player, resource, resourceNumber);
+    }
+
+    private void giveResources(Player playerGiven, Resource resource, int resourceNumber) {
         for (int i = 0; i < resourceNumber; i++) {
-            player.addResource(resource);
+            playerGiven.addResource(resource);
         }
     }
 
@@ -339,6 +343,179 @@ public class MainTradeTest {
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 1);
         assertTrue(main.canTrade(player, givings));
+    }
+
+    // tests for trade p2p
+    /**
+     * @return a map containing 0 of each resource
+     */
+    private HashMap<Resource, Integer> emptyResourceMap() {
+        HashMap<Resource, Integer> emptyMap = new HashMap<>();
+        for (Resource resource : Resource.values()) {
+            if (resource != Resource.MISC) {
+                emptyMap.put(resource, 0);
+            }
+        }
+        return emptyMap;
+    }
+
+    // tests that if each give 1, they now each have each other's stuff
+    @Test
+    public void tradeP2PWorks1For1() {
+        player.addResource(Resource.WOOD);
+        player2.addResource(Resource.ORE);
+
+        Map<Resource, Integer> firstGiven = new HashMap<>();
+        firstGiven.put(Resource.WOOD, 1);
+
+        Map<Resource, Integer> firstGotten = new HashMap<>();
+        firstGotten.put(Resource.ORE, 1);
+
+        main.trade(player, firstGiven, player2, firstGotten);
+
+        Map<Resource, Integer> result0 = emptyResourceMap();
+        result0.put(Resource.ORE, 1);
+
+        Map<Resource, Integer> result2 = emptyResourceMap();
+        result2.put(Resource.WOOD, 1);
+
+        assertEquals(result0, player.getResources());
+        assertEquals(result2, player.getResources());
+    }
+
+    // tests that whatever is given is in addition to what they have before
+    @Test
+    public void tradeP2PIsInAdditionalToPreviousResources() {
+        givePlayerResources(Resource.WOOD, 2);
+        givePlayerResources(Resource.ORE, 2);
+        givePlayerResources(Resource.WHEAT, 2);
+
+        giveResources(player2, Resource.WOOD, 1);
+        giveResources(player2, Resource.ORE, 1);
+
+        Map<Resource, Integer> firstGiven = new HashMap<>();
+        firstGiven.put(Resource.WOOD, 1);
+
+        Map<Resource, Integer> firstGotten = new HashMap<>();
+        firstGotten.put(Resource.ORE, 1);
+
+        main.trade(player, firstGiven, player2, firstGotten);
+
+        Map<Resource, Integer> result0 = emptyResourceMap();
+        result0.put(Resource.WOOD, 1);
+        result0.put(Resource.ORE, 3);
+        result0.put(Resource.WHEAT, 2);
+
+        Map<Resource, Integer> result2 = emptyResourceMap();
+        result2.put(Resource.WOOD, 2);
+
+        assertEquals(result0, player.getResources());
+        assertEquals(result2, player.getResources());
+    }
+
+    // tests that can trade 2 for 1
+    @Test
+    public void tradeP2PWorks2For1() {
+        givePlayerResources(Resource.WOOD, 2);
+        player2.addResource(Resource.ORE);
+
+        Map<Resource, Integer> firstGiven = new HashMap<>();
+        firstGiven.put(Resource.WOOD, 2);
+
+        Map<Resource, Integer> firstGotten = new HashMap<>();
+        firstGotten.put(Resource.ORE, 1);
+
+        main.trade(player, firstGiven, player2, firstGotten);
+
+        Map<Resource, Integer> result0 = emptyResourceMap();
+        result0.put(Resource.ORE, 1);
+
+        Map<Resource, Integer> result2 = emptyResourceMap();
+        result2.put(Resource.WOOD, 2);
+
+        assertEquals(result0, player.getResources());
+        assertEquals(result2, player.getResources());
+    }
+
+    // tests that can trade 2 for 2
+    @Test
+    public void tradeP2PWorks2For2() {
+        givePlayerResources(Resource.WOOD, 2);
+        giveResources(player2, Resource.ORE, 2);
+
+        Map<Resource, Integer> firstGiven = new HashMap<>();
+        firstGiven.put(Resource.WOOD, 2);
+
+        Map<Resource, Integer> firstGotten = new HashMap<>();
+        firstGotten.put(Resource.ORE, 2);
+
+        main.trade(player, firstGiven, player2, firstGotten);
+
+        Map<Resource, Integer> result0 = emptyResourceMap();
+        result0.put(Resource.ORE, 2);
+
+        Map<Resource, Integer> result2 = emptyResourceMap();
+        result2.put(Resource.WOOD, 2);
+
+        assertEquals(result0, player.getResources());
+        assertEquals(result2, player.getResources());
+    }
+
+    // tests that can trade 1 and 1 for 1
+    @Test
+    public void tradeP2PWorks1And1For1() {
+        givePlayerResources(Resource.WOOD, 1);
+        player.addResource(Resource.BRICK);
+        player2.addResource(Resource.ORE);
+
+        Map<Resource, Integer> firstGiven = new HashMap<>();
+        firstGiven.put(Resource.WOOD, 1);
+        firstGiven.put(Resource.BRICK, 1);
+
+        Map<Resource, Integer> firstGotten = new HashMap<>();
+        firstGotten.put(Resource.ORE, 1);
+
+        main.trade(player, firstGiven, player2, firstGotten);
+
+        Map<Resource, Integer> result0 = emptyResourceMap();
+        result0.put(Resource.ORE, 1);
+
+        Map<Resource, Integer> result2 = emptyResourceMap();
+        result2.put(Resource.WOOD, 1);
+        result2.put(Resource.BRICK, 1);
+
+        assertEquals(result0, player.getResources());
+        assertEquals(result2, player.getResources());
+    }
+
+    // tests that can trade 2 and 1 for 1 and 1
+    @Test
+    public void tradeP2PWorks2And1For1And1() {
+        givePlayerResources(Resource.WOOD, 2);
+        player.addResource(Resource.BRICK);
+        player2.addResource(Resource.ORE);
+        player2.addResource(Resource.WHEAT);
+
+        Map<Resource, Integer> firstGiven = new HashMap<>();
+        firstGiven.put(Resource.WOOD, 2);
+        firstGiven.put(Resource.BRICK, 1);
+
+        Map<Resource, Integer> firstGotten = new HashMap<>();
+        firstGotten.put(Resource.ORE, 1);
+        firstGotten.put(Resource.WHEAT, 1);
+
+        main.trade(player, firstGiven, player2, firstGotten);
+
+        Map<Resource, Integer> result0 = emptyResourceMap();
+        result0.put(Resource.ORE, 1);
+        result0.put(Resource.WHEAT, 1);
+
+        Map<Resource, Integer> result2 = emptyResourceMap();
+        result2.put(Resource.WOOD, 2);
+        result2.put(Resource.BRICK, 1);
+
+        assertEquals(result0, player.getResources());
+        assertEquals(result2, player.getResources());
     }
 
 }
