@@ -795,7 +795,20 @@ public class MainImpl implements Main {
      */
     @Override
     public boolean canTrade(Player player, Map<Resource, Integer> resourcesGiven) {
-        return false;
+        if (player == null || resourcesGiven == null) {
+            throw new IllegalArgumentException("null values not permitted");
+        }
+        if (resourcesGiven.containsKey(Resource.MISC)) {
+            return false;
+        }
+        Map<Resource, Integer> playerResources = player.getResources();
+        for (Resource resource : resourcesGiven.keySet()) { // make sure that has enough for each
+                // resource
+            if (playerResources.get(resource) < resourcesGiven.get(resource)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private int getPlayerTradeNumber(Player player, Resource resource) {
