@@ -798,7 +798,9 @@ public class MainImpl implements Main {
         if (player == null || resourcesGiven == null) {
             throw new IllegalArgumentException("null values not permitted");
         }
-        if (resourcesGiven.containsKey(Resource.MISC)) {
+        if (resourcesGiven.isEmpty() || resourcesGiven.containsKey(Resource.MISC)) {
+            // since we can't trade MISC
+            // and you have to give something
             return false;
         }
         Map<Resource, Integer> playerResources = player.getResources();
