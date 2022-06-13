@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import settlers.card.Resource;
 import settlers.gui.GUIMainDummyImpl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,10 +13,12 @@ public class MainTradeTest {
 
     private final MainImpl main;
     private final Player player;
+    private final Player player2;
 
     public MainTradeTest() {
         main = new MainImpl(4, new GUIMainDummyImpl());
         player = main.getPlayers().get(0);
+        player2 = main.getPlayers().get(2);
     }
 
     private void givePlayerResources(Resource resource, int resourceNumber) {
@@ -213,5 +216,129 @@ public class MainTradeTest {
         assertEquals(2, newResources.get(Resource.ORE));
     }
 
-    // I feel like I am missing something
+    // tests for canTrade for 2-player trade
+    // tests that canTrade is true if this player has the 1 resource demanded
+    @Test
+    public void canTradeP2PTrue1Has1() {
+        player.addResource(Resource.ORE);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 1);
+        assertTrue(main.canTrade(player, givings));
+    }
+
+    // tests true if more than 1 resource
+    @Test
+    public void canTradeP2PTrue1HasMore() {
+        givePlayerResources(Resource.ORE, 2);
+        player.addResource(Resource.WOOD);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 1);
+        assertTrue(main.canTrade(player, givings));
+    }
+
+    // tests false if needs 1 and has 0 or wrong
+    @Test
+    public void canTradeP2PFalse1Has0OrWrong() {
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 1);
+        assertFalse(main.canTrade(player, givings));
+
+        player.addResource(Resource.WOOD);
+
+        assertFalse(main.canTrade(player, givings));
+    }
+
+    // tests true if demands 2 and has 2
+    @Test
+    public void canTradeP2PTrue2Has2() {
+        givePlayerResources(Resource.ORE, 2);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 2);
+        assertTrue(main.canTrade(player, givings));
+    }
+
+    // tests false if demands 2 and has 1
+    @Test
+    public void canTradeP2PFalse2Has1() {
+        givePlayerResources(Resource.ORE, 1);
+        player.addResource(Resource.WOOD);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 2);
+        assertFalse(main.canTrade(player, givings));
+    }
+
+    // tests true if demands 1 and 1 and has both
+    @Test
+    public void canTradeP2PTrue1And1HasBoth() {
+        givePlayerResources(Resource.ORE, 1);
+        player.addResource(Resource.WOOD);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 1);
+        givings.put(Resource.WOOD, 1);
+        assertTrue(main.canTrade(player, givings));
+    }
+
+    // tests true if demands 2 and 1 and has more
+    @Test
+    public void canTradeP2PTrue2And1HasMore() {
+        givePlayerResources(Resource.ORE, 2);
+        givePlayerResources(Resource.WOOD, 2);
+        player.addResource(Resource.BRICK);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 2);
+        givings.put(Resource.WOOD, 1);
+        assertTrue(main.canTrade(player, givings));
+    }
+
+    // tests false if only has 1 of the resources
+    @Test
+    public void canTradeP2PFalse1And1Has1() {
+        givePlayerResources(Resource.ORE, 1);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 1);
+        givings.put(Resource.WOOD, 1);
+        assertFalse(main.canTrade(player, givings));
+    }
+
+    // tests false if has both, but 1 resource not enough
+    @Test
+    public void canTradeP2PTrue2And1Has1And1() {
+        givePlayerResources(Resource.ORE, 1);
+        givePlayerResources(Resource.WOOD, 2);
+        player.addResource(Resource.BRICK);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 2);
+        givings.put(Resource.WOOD, 1);
+        assertFalse(main.canTrade(player, givings));
+    }
+
+    // tests true if has resources but not their turn
+    @Test
+    public void canTradeP2PTrueWrongTurn() {
+        player.addResource(Resource.ORE);
+        main.setTurn(player2, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, 1);
+        assertTrue(main.canTrade(player, givings));
+    }
+
 }
