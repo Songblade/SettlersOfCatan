@@ -856,7 +856,26 @@ public class MainImpl implements Main {
      */
     @Override
     public void trade(Player player1, Map<Resource, Integer> resourcesGiven, Player player2, Map<Resource, Integer> resourcesReceived) {
+        // Remove resource lets me remove large chunks at once, so I will
+        player1.removeResources(resourcesGiven);
+        addResourceMap(player2, resourcesGiven);
 
+        player2.removeResources(resourcesReceived);
+        addResourceMap(player1, resourcesReceived);
+    }
+
+    /**
+     * Adds a bunch of resources to a player
+     * @param playerGetting the resources
+     * @param resources being given to the player
+     */
+    private void addResourceMap(Player playerGetting, Map<Resource, Integer> resources) {
+        // add everything to the player
+        for (Resource resource : resources.keySet()) {
+            for (int i = 0; i < resources.get(resource); i++) {
+                playerGetting.addResource(resource);
+            }
+        }
     }
 
     /**
