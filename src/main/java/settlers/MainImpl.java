@@ -587,25 +587,6 @@ public class MainImpl implements Main {
         }
     }
 
-    /*
-    Now I need to figure out how my recursive method must work
-    At the first road, we need to search all 4 connections, in 2 pairs
-    In the pair at one end, we call the method on each road, and accept the larger of the 2 numbers
-    In the pair at the other end, we call the method on each edge, and accept the larger of the 2 numbers
-    We then add the two numbers together, and that's the longest road
-
-    In the recursive method, we are giving the player, the vertex, and the edge we already went to
-    If this vertex belongs to another player, we return 0
-    Otherwise, we look at each edge
-    If the edge does not belong to this player, it gets a 0
-    If it does, we recursively call the method on that edge and the vertex beyond it, keeping its return value
-        + 1, because we want everything beyond this road plus this road
-    We then return the greater value of the two, since that is the value of the road beyond the given one
-
-    I think I would start by calling the recursive method twice, with the same edge but the different vertices
-    I would then return whichever was greater, + 1 to include the middle road
-     */
-
     /**
      * The base method for calculating road length. Returns the length of this player's road, starting from
      * this edge
@@ -618,7 +599,8 @@ public class MainImpl implements Main {
         List<Vertex> adjVertices = getVerticesAdjacentToRoad(road);
         int firstLength = calculateRoadLength(player, adjVertices.get(0), road);
         int secondLength = calculateRoadLength(player, adjVertices.get(1), road);
-        return firstLength + 1 + secondLength; // the longest path on each side, plus this road
+        return firstLength + secondLength - 1; // the longest path on each side
+        // both paths count this road, so we have to remove the second copy
     }
 
     /**
@@ -634,20 +616,17 @@ public class MainImpl implements Main {
             // if there is a settlement here, and it doesn't belong to this player
             return 0;
         }
-        // if the edge is not this player's road, we also return 0
-        if (road.getPlayer() != player) {
-            return 0;
-        }
         // Otherwise, we look at each edge
         int laterRoadLength = 0;
         for (int i = 0; i < 3; i++) {
             Edge edge = vertex.getEdges()[i];
             // If the edge does not belong to this player, it is ignored
-            // that is mostly done in the top of the recursion, but if there is no edge, it is ignored here
-            if (edge != road && edge != null) {
+            // Or if it is the road we are looking at now
+            if (edge != road && edge != null && edge.getPlayer() == player) {
                 // If it does, we recursively call the method on that edge and the vertex beyond it,
                 // keeping its return value, because we want everything beyond this road plus this road
                 int lengthFromThisEdge = calculateRoadLength(player, vertex.getAdjacentVertices()[i], edge);
+                // the +1 accounts for this road, which we can't lose
                 if (lengthFromThisEdge > laterRoadLength) {
                     // We then return the greater value of the two,
                     // since that is the value of the road beyond the given one
@@ -655,7 +634,7 @@ public class MainImpl implements Main {
                 }
             }
         }
-        return laterRoadLength + 1; // so we can also include this road, not just the later ones
+        return laterRoadLength + 1; // to account for this road
     }
 
     /**

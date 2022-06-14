@@ -153,9 +153,9 @@ public class Main2PointCardTest {
     // I can test this in unlimited resources mode, because nothing here should require finite resources
     // so let's list scenarios I care about
 
-    // make sure that having a chain of 4 roads is not enough to get the 2 points and win the game
+    // make sure that having a chain of 4 roads is not enough to get the 2 points and win the game (!)
 
-    // a chain of 5 roads is enough to win the game
+    // a chain of 5 roads is enough to win the game (!)
 
     // if one player has 5 roads, another getting 5 doesn't change anything, the first player can still win
 
@@ -191,15 +191,4 @@ public class Main2PointCardTest {
 
     // tests that if after the interrupt, 2 players have 5 and 1 has 6, the one with 6 gets longest road
 
-    /* here, I will figure out just how to implement
-       I will record the player and number of longest road
-       Each time a player places down a new road, I need to completely recalculate their road length, because
-           the computer has no idea whether or not this expands the longest road
-       Because of this, there is no reason to store the number in player
-       Instead, I will just store the number of the current longest directly in main
-       I will calculate a player's road length using a complicated recursive method, called in both
-           buildRoad and playRoadBuilding
-       If a player has longest road, the previous holder loses 2 points, this one gains 2 points, and main
-           updates who holds longest road
-    */
 }
