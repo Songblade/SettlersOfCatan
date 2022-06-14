@@ -73,6 +73,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     private JLabel dieCounter;
     private JLabel dieCounterOutline;
 
+    //Trade related buttons
+    private JButton tradeDirectionButton;
+
     //Functional
     private boolean thisPlayerHasTurn = false;
     private boolean canPass = false;
@@ -451,6 +454,14 @@ public class GUIPlayerImpl implements GUIPlayer{
         thisPlayerLabel.setIcon(new ImageIcon(getConstructionImage(player.getID(),2).getScaledInstance(256,256,0)));
     }
 
+    private void putTradeDirectionButton(){
+        tradeDirectionButton = createButton(50,480);
+        tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Give.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
+        tradeDirectionButton.setRolloverEnabled(false);
+
+        enableButton(tradeDirectionButton);
+    }
+
     private void putPlayerResourceLabels(){
         //Places the resources to the side of the player label
         int currentXOffset = 140;
@@ -580,6 +591,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void putOtherElements(){
          putPlayerLabel();
+         putTradeDirectionButton();
          putPlayerResourceLabels();
          putPlayerDevelopmentLabels();
          putPlayedKnightLabel();
@@ -855,8 +867,92 @@ public class GUIPlayerImpl implements GUIPlayer{
         mapAction(Move.YEAR_OF_PLENTY,119,requestYearOfPlenty(),"W","Play year of planty");
         mapAction(Move.ROAD_BUILDING,101,requestRoadBuilding(),"E","Play road building");
         mapAction(Move.MONOPOLY,114,requestMonopoly(),"R","Play monopoly");
-        mapAction(Move.TRADE,97,requestBankTrade(),"A","Trade with the bank");
+        mapAction(Move.TRADE_BANK,97,requestBankTrade(),"A","Trade with the bank");
+        mapAction(Move.TRADE_PLAYER,115,requestPlayerTrade(),"S","Trade with players");
     }
+
+    /**
+     * @param toCheck checks this list for @move
+     * @param move the move being checked for
+     * @return true if toCheck is null or if it contains @move, false if neither condition is met
+     */
+    private boolean checkMoveListForMove(Set<Move> toCheck, Move move){
+        if(toCheck == null || toCheck.contains(move))return true;
+        return false;
+    }
+
+    /**
+     * Gets all possible moves assuming they are on toCheck list. A null toCheck list would count as a complete toCheck list
+     * @param toCheck
+     * @return all possible moves which are in the toCheck list
+     */
+    private Set<Move> getPossibleMoves(Set<Move> toCheck){
+        Set<Move> moves = new HashSet<>();
+
+        //Moves can only be preformed when it's your turn
+        if(thisPlayerHasTurn) {
+            //Asks if the player can pass
+            if (checkMoveListForMove(toCheck, Move.PASS) && canPass) {
+                moves.add(Move.PASS);
+            }
+
+            //Asks if the player can cancel a move
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
+                moves.add(Move.CANCEL);
+            }
+
+            //Asks if the player can build a road
+            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canPerformActions()) {
+                moves.add(Move.ROAD);
+            }
+
+            //Asks if the player can build a settlement
+            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && canPerformActions()) {
+                moves.add(Move.SETTLEMENT);
+            }
+
+            //Asks if the player can build a city
+            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && canPerformActions()) {
+                moves.add(Move.CITY);
+            }
+
+            //Asks if the player can build a development card
+            if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canPerformActions()) {
+                moves.add(Move.DEVELOPMENT_CARD);
+            }
+
+            //Asks if the player can play knight
+            if (checkMoveListForMove(toCheck, Move.KNIGHT) && main.canPlayDevelopmentCard(player, DevelopmentCard.KNIGHT) && canPerformActions()) {
+                moves.add(Move.KNIGHT);
+            }
+
+            //Asks if the player can play year of plenty
+            if (checkMoveListForMove(toCheck, Move.YEAR_OF_PLENTY) && main.canPlayDevelopmentCard(player, DevelopmentCard.YEAR_OF_PLENTY) && canPerformActions()) {
+                moves.add(Move.YEAR_OF_PLENTY);
+            }
+
+            //Asks if the player can play road building
+            if (checkMoveListForMove(toCheck, Move.ROAD_BUILDING) && main.canPlayDevelopmentCard(player, DevelopmentCard.ROAD_BUILDING) && canPerformActions()) {
+                moves.add(Move.ROAD_BUILDING);
+            }
+
+            //Asks if the player can play monopoly
+            if (checkMoveListForMove(toCheck, Move.MONOPOLY) && main.canPlayDevelopmentCard(player, DevelopmentCard.MONOPOLY) && canPerformActions()) {
+                moves.add(Move.MONOPOLY);
+            }
+
+            if(checkMoveListForMove(toCheck, Move.TRADE_BANK) && getPossibleTradingResources().size() != 0 && canPerformActions()){
+                moves.add(Move.TRADE_BANK);
+            }
+
+            if(checkMoveListForMove(toCheck, Move.TRADE_PLAYER) && player.getCardNumber() > 0 &&canPerformActions()){
+                moves.add(Move.TRADE_PLAYER);
+            }
+        }
+
+        return moves;
+    }
+
 
     /**
      * Tells GUIPlayers to make a city
@@ -1018,84 +1114,6 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void startThiefMove(){
         Set<Hex> availableThiefSpots = main.getAvailableThiefSpots();
         enableSpecifiedButtons(hexButtonMap.keySet(),hexButtonMap,availableThiefSpots);
-    }
-
-    /**
-     * @param toCheck checks this list for @move
-     * @param move the move being checked for
-     * @return true if toCheck is null or if it contains @move, false if neither condition is met
-     */
-    private boolean checkMoveListForMove(Set<Move> toCheck, Move move){
-        if(toCheck == null || toCheck.contains(move))return true;
-        return false;
-    }
-
-    /**
-     * Gets all possible moves assuming they are on toCheck list. A null toCheck list would count as a complete toCheck list
-     * @param toCheck
-     * @return all possible moves which are in the toCheck list
-     */
-    private Set<Move> getPossibleMoves(Set<Move> toCheck){
-        Set<Move> moves = new HashSet<>();
-
-        //Moves can only be preformed when it's your turn
-        if(thisPlayerHasTurn) {
-            //Asks if the player can pass
-            if (checkMoveListForMove(toCheck, Move.PASS) && canPass) {
-                moves.add(Move.PASS);
-            }
-
-            //Asks if the player can cancel a move
-            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
-                moves.add(Move.CANCEL);
-            }
-
-            //Asks if the player can build a road
-            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canPerformActions()) {
-                moves.add(Move.ROAD);
-            }
-
-            //Asks if the player can build a settlement
-            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && canPerformActions()) {
-                moves.add(Move.SETTLEMENT);
-            }
-
-            //Asks if the player can build a city
-            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && canPerformActions()) {
-                moves.add(Move.CITY);
-            }
-
-            //Asks if the player can build a development card
-            if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canPerformActions()) {
-                moves.add(Move.DEVELOPMENT_CARD);
-            }
-
-            //Asks if the player can play knight
-            if (checkMoveListForMove(toCheck, Move.KNIGHT) && main.canPlayDevelopmentCard(player, DevelopmentCard.KNIGHT) && canPerformActions()) {
-                moves.add(Move.KNIGHT);
-            }
-
-            //Asks if the player can play year of plenty
-            if (checkMoveListForMove(toCheck, Move.YEAR_OF_PLENTY) && main.canPlayDevelopmentCard(player, DevelopmentCard.YEAR_OF_PLENTY) && canPerformActions()) {
-                moves.add(Move.YEAR_OF_PLENTY);
-            }
-
-            //Asks if the player can play road building
-            if (checkMoveListForMove(toCheck, Move.ROAD_BUILDING) && main.canPlayDevelopmentCard(player, DevelopmentCard.ROAD_BUILDING) && canPerformActions()) {
-                moves.add(Move.ROAD_BUILDING);
-            }
-
-            //Asks if the player can play monopoly
-            if (checkMoveListForMove(toCheck, Move.MONOPOLY) && main.canPlayDevelopmentCard(player, DevelopmentCard.MONOPOLY) && canPerformActions()) {
-                moves.add(Move.MONOPOLY);
-            }
-
-            if(checkMoveListForMove(toCheck, Move.TRADE) && getPossibleTradingResources().size() != 0 && canPerformActions()){
-                moves.add(Move.TRADE);
-            }
-        }
-
-        return moves;
     }
 
     /**
@@ -1350,7 +1368,21 @@ public class GUIPlayerImpl implements GUIPlayer{
                         }
 
                         currentState = GUIState.BANK_TRADE_PUT;
+                        reloadPossibleMovesGUI();
                     }
+                }
+            }
+        };
+    }
+
+    private ActionListener requestPlayerTrade(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(canPerformActions()){
+                    currentState = GUIState.PLAYER_TRADE;
+                    enableButtons(resourceButtonMap.keySet());
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1528,12 +1560,14 @@ enum GUIState{
     THIEF(false),
     DISCARD(false),
     ROAD_BUILDING_FIRST(true),
-    ROAD_BUILDING_SECOND(false),
+    ROAD_BUILDING_SECOND(true),
     YEAR_OF_PLENTY_FIRST(true),
-    YEAR_OF_PLENTY_SECOND(false),
+    YEAR_OF_PLENTY_SECOND(true),
     MONOPOLY(true),
     BANK_TRADE_PUT(true),
-    BANK_TRADE_TAKE(true);
+    BANK_TRADE_TAKE(true),
+    PLAYER_TRADE(true),
+    PLAYER_TRADE_REQUEST(false);
 
     GUIState(boolean cancelable){
         this.cancelable = cancelable;
@@ -1546,5 +1580,5 @@ enum GUIState{
 }
 
 enum Move{
-    PASS,CANCEL,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE
+    PASS,CANCEL,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE_BANK,TRADE_PLAYER
 }
