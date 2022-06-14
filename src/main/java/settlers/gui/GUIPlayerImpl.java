@@ -73,8 +73,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     private JLabel dieCounter;
     private JLabel dieCounterOutline;
 
-    //Trade related buttons
+    //Player to player trade related variables
     private JButton tradeDirectionButton;
+    private boolean tradeDirectionGiving = false;
 
     //Functional
     private boolean thisPlayerHasTurn = false;
@@ -458,6 +459,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         tradeDirectionButton = createButton(50,480);
         tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Give.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
         tradeDirectionButton.setRolloverEnabled(false);
+        tradeDirectionButton.addActionListener(tradeDirectionButtonClickedAction());
 
         enableButton(tradeDirectionButton);
     }
@@ -1032,16 +1034,17 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * Gets the total resource count of a player
-     * @param plr the player
-     * @return the total resource count of plr
+     * Sets weather when we click a button in a player to player trade we are giving or taking a resource
+     * @param giving are we giving a resource?
      */
-    private int getPlayerResourceCount(Player plr){
-        int total = 0;
-        for(Resource resource : plr.getResources().keySet()){
-            total += plr.getResources().get(resource);
+    private void setTradeDirection(boolean giving){
+        if(giving){
+            tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Give.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
+            tradeDirectionGiving = true;
+        }else{
+            tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Take.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
+            tradeDirectionGiving = false;
         }
-        return total;
     }
 
     private void enableButton(JButton button){
@@ -1382,6 +1385,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 if(canPerformActions()){
                     currentState = GUIState.PLAYER_TRADE;
                     enableButtons(resourceButtonMap.keySet());
+                    setTradeDirection(false);
                     reloadPossibleMovesGUI();
                 }
             }
@@ -1498,7 +1502,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                     player.removeResources(toRemove);
 
-                    if(getPlayerResourceCount(player) <= targetResourceAmount){
+                    if(player.getCardNumber() <= targetResourceAmount){
                         main.playerHasTargetResources(player);
                         currentState = GUIState.NONE;
                         disableButtons(resourceButtonMap.keySet());
@@ -1543,6 +1547,20 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.trade(player,bankTradeRequest[0],bankTradeRequest[1]);
                     disableButtons(resourceButtonMap.keySet());
                     reloadPossibleMovesGUI();
+                }
+                focusFrame();
+            }
+        };
+    }
+
+    private ActionListener tradeDirectionButtonClickedAction(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(tradeDirectionGiving){
+                    setTradeDirection(false);
+                }else{
+                    setTradeDirection(true);
                 }
                 focusFrame();
             }
