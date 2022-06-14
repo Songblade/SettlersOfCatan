@@ -43,6 +43,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
     private HashMap<Resource,JTextField> resourceTextMap = new HashMap<>();
+    private HashMap<Resource,JTextField> tradeTextMap = new HashMap<>();
     private HashMap<DevelopmentCard,JTextField> developmentTextMap = new HashMap<>();
     private HashMap<Player,HashMap<String,JTextField>> playerTextMap = new HashMap<>();
     private HashMap<Move,JTextField> moveTextMap = new HashMap<>();
@@ -60,6 +61,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Resource[] yearOfPlentyRequest = new Resource[2];
     private Edge[] roadBuildingRequest = new Edge[2];
     private Resource[] bankTradeRequest = new Resource[2];
+    private HashMap<Resource, Integer> playerTradeRequest = new HashMap<>();
 
     //Frame and image
     private JFrame frame;
@@ -477,8 +479,14 @@ public class GUIPlayerImpl implements GUIPlayer{
                 JLabel resourceBackgroundLabel = createLabel("",currentXOffset,yOffset,3);
                 resourceBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGResource.png").getScaledInstance(64,64,0)));
 
+                //Puts the resource count label for the resource
                 JTextField resourceCountLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset + 50,1);
                 resourceTextMap.put(resource,resourceCountLabel);
+
+                //Puts the resource trade label for the resource
+                JTextField resourceTradeLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset - 50,1);
+                resourceTradeLabel.setVisible(false);
+                tradeTextMap.put(resource,resourceTradeLabel);
 
                 //Creates a button for the resource
                 JButton resourceButton = createButton(currentXOffset,yOffset);
@@ -1386,6 +1394,16 @@ public class GUIPlayerImpl implements GUIPlayer{
                     currentState = GUIState.PLAYER_TRADE;
                     enableButtons(resourceButtonMap.keySet());
                     setTradeDirection(false);
+
+                    playerTradeRequest = new HashMap<>();
+                    for(Resource resource : Resource.values()){
+                        if(resource != Resource.MISC) {
+                            playerTradeRequest.put(resource, 0);
+                            tradeTextMap.get(resource).setText("0");
+                            tradeTextMap.get(resource).setVisible(true);
+                        }
+                    }
+
                     reloadPossibleMovesGUI();
                 }
             }
