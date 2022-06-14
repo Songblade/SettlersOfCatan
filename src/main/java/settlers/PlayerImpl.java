@@ -193,7 +193,7 @@ public class PlayerImpl implements Player {
      */
     @Override
     public void setRoadLength(int length) {
-        if (length < 2) {
+        if (length < 1) {
             throw new IllegalArgumentException("The length " + length + " does not make sense");
         }
         roadLength = length;
