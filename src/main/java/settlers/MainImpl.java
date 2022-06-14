@@ -597,8 +597,9 @@ public class MainImpl implements Main {
     private int calculateRoadLength(Player player, Edge road) {
         // we calculate the road on each side, and then add together the 2 parts
         List<Vertex> adjVertices = getVerticesAdjacentToRoad(road);
-        int firstLength = calculateRoadLength(player, adjVertices.get(0), road);
-        int secondLength = calculateRoadLength(player, adjVertices.get(1), road);
+        Set<Edge> duplicateSet = new HashSet<>(player.getRoads());
+        int firstLength = calculateRoadLength(player, adjVertices.get(0), road, duplicateSet);
+        int secondLength = calculateRoadLength(player, adjVertices.get(1), road, duplicateSet);
         return firstLength + secondLength - 1; // the longest path on each side
         // both paths count this road, so we have to remove the second copy
     }
@@ -608,24 +609,30 @@ public class MainImpl implements Main {
      * @param player whose roads we are following
      * @param vertex we are currently looking at
      * @param road that we last visited
+     * @param dupSet the set of Roads that the player has, removed from whenever a road is looked at
+     *               Used to prevent loops from causing a StackOverflowError
      * @return the length of the road from the other end until here
      */
-    private int calculateRoadLength(Player player, Vertex vertex, Edge road) {
+    private int calculateRoadLength(Player player, Vertex vertex, Edge road, Set<Edge> dupSet) {
         // If this vertex belongs to another player, we return 0
         if (vertex.getPlayer() != null && vertex.getPlayer() != player) {
             // if there is a settlement here, and it doesn't belong to this player
             return 0;
         }
         // Otherwise, we look at each edge
+        dupSet.remove(road); // we already looked at it, we shouldn't look at it again if there
+            // is a loop
         int laterRoadLength = 0;
         for (int i = 0; i < 3; i++) {
             Edge edge = vertex.getEdges()[i];
             // If the edge does not belong to this player, it is ignored
             // Or if it is the road we are looking at now
-            if (edge != road && edge != null && edge.getPlayer() == player) {
+            if (edge != null && dupSet.contains(edge)) {
+                // the contains makes sure that (a) we haven't looked at it yet, and (b) this player
+                    // owns it
                 // If it does, we recursively call the method on that edge and the vertex beyond it,
                 // keeping its return value, because we want everything beyond this road plus this road
-                int lengthFromThisEdge = calculateRoadLength(player, vertex.getAdjacentVertices()[i], edge);
+                int lengthFromThisEdge = calculateRoadLength(player, vertex.getAdjacentVertices()[i], edge, dupSet);
                 // the +1 accounts for this road, which we can't lose
                 if (lengthFromThisEdge > laterRoadLength) {
                     // We then return the greater value of the two,

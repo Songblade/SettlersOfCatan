@@ -157,26 +157,31 @@ public class Main2PointCardTest {
 
     // a chain of 5 roads is enough to win the game (!)
 
-    // if one player has 5 roads, another getting 5 doesn't change anything, the first player can still win
+    // if one player has 5 roads, another getting 5 doesn't change anything, the first player can still win (!)
 
-    // if one player has 5 roads, another getting 6 allows that player to win
-    // and also preventing the previous player from winning
+    // if one player has 5 roads, another getting 6 allows that player to win (!)
+    // and also preventing the previous player from winning (!)
 
-    // you can get longest road by connecting
+    // you can get longest road by connecting (!)
 
-    // test at really long road: a player with 10 beats a player with 9
+    // test at really long road: a player with 10 beats a player with 9 (!)
 
-    // test that road building also can get longest road, if both are needed for the road
+    // test that road building also can get longest road, if both are needed for the road (!)
 
     // test that road building can get longest road, if the roads are to different segments, and the first gets
-        // longest road
+        // longest road (!)
 
-    // same as previous, but when second road is what matters
+    // same as previous, but when second road is what matters (!)
 
-    // test that you can't get longest road through a settlement
-    // but can by going around
+    // test that you can't get longest road through a settlement (!)
+    // but can by going around (!)
 
-    // tests that ignores branching paths
+    // tests that ignores branching paths (!)
+
+    // make sure no massive errors if you make a looping path. Ideally, it should also work (!)
+
+    // make it so that when you have a loop on a stick, the entire loop is counted, no matter when
+        // you put down the stick
 
     // the following tests are if someone interrupts the road in a different turn
     // tests that if someone blocks a longest road with a settlement, the longest road immediately goes to
