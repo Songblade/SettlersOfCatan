@@ -358,6 +358,24 @@ public class VertexTest {
         }
 
         /**
+         * @return the length of this player's longest road
+         */
+        @Override
+        public int getRoadLength() {
+            return 0;
+        }
+
+        /**
+         * Sets the length of this player's longest road, even if it is not THE longest road
+         *
+         * @param length of the player's longest chain
+         */
+        @Override
+        public void setRoadLength(int length) {
+
+        }
+
+        /**
          * @return an unmodifiable list of resources the player has 2:1 ports for
          * MISC means the player has a 3:1 port
          */

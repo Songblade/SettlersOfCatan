@@ -12,13 +12,17 @@ public class PlayerImpl implements Player {
     private Map<Resource, Integer> resources;
     private int resourceCount; // defaults to 0, number of total resources
     private final Map<DevelopmentCard, Integer> vellies;
+    private int vellyCount;
+
     private final Set<Resource> ports;
     private final Set<Vertex> settlements;
     private final Set<Vertex> cities;
     private final Set<Edge> roads;
-    private int vellyCount;
+
     private int knightNumber;
+    private int roadLength;
     private int victoryPoints; // starts at 0
+
     private final int id; // ignore this, it is for testing
 
     // I am leaving the old constructor, which uses a random ID, so that I don't have to change all my old tests
@@ -172,6 +176,27 @@ public class PlayerImpl implements Player {
     @Override
     public int getKnightNumber() {
         return knightNumber;
+    }
+
+    /**
+     * @return the length of this player's longest road
+     */
+    @Override
+    public int getRoadLength() {
+        return roadLength;
+    }
+
+    /**
+     * Sets the length of this player's longest road, even if it is not THE longest road
+     *
+     * @param length of the player's longest chain
+     */
+    @Override
+    public void setRoadLength(int length) {
+        if (length < 2) {
+            throw new IllegalArgumentException("The length " + length + " does not make sense");
+        }
+        roadLength = length;
     }
 
     /**

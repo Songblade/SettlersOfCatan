@@ -66,6 +66,17 @@ public interface Player {
     int getKnightNumber();
 
     /**
+     * @return the length of this player's longest road
+     */
+    int getRoadLength();
+
+    /**
+     * Sets the length of this player's longest road, even if it is not THE longest road
+     * @param length of the player's longest chain
+     */
+    void setRoadLength(int length);
+
+    /**
      * @return an unmodifiable set of resources the player has 2:1 ports for
      * MISC means the player has a 3:1 port
      */
