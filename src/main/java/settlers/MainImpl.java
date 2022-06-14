@@ -15,12 +15,16 @@ public class MainImpl implements Main {
     private final Board board;
     private final Player[] players;
     private GUIMain gui;
+
     private boolean isMainPhase; // starts automatically as false
     private Hex thiefIsHere; // so we don't have to look for it
+
     private final List<Integer> turnOrder; // where the players are ordered by their array number in the turn order
     private Player currentTurn; // a link to the player whose turn it currently is
+
     private Player largestArmyHolder; // a link to the player who has largest army
-    // private Player longestRoadHolder; // a link to the player who has longest road
+    private Player longestRoadHolder; // a link to the player who has longest road
+
     private final Queue<DevelopmentCard> vellyDeck; // where all the vellies are kept
     private final Map<DevelopmentCard, Integer> newCards; // this stores all the cards that the player just bought
         // this turn
@@ -550,7 +554,126 @@ public class MainImpl implements Main {
         if (isMainPhase) {
             player.removeResources(Building.ROAD.getResources());
         }
+        // recalculate the longest road, see if this player has it now
+        determineLongestRoad(player, location);
         // no need to report to GUI that the action is done, it already knows
+    }
+
+    /**
+     * This method, called when a road is placed, determines whether this road gives this player longest road
+     * If it does, it removes longest road from the previous player and gives it to this one
+     * @param player who just put down a road
+     * @param road that was just put down
+     */
+    private void determineLongestRoad(Player player, Edge road) {
+        int roadLength = calculateRoadLength(player, road);
+        if (roadLength > player.getRoadLength()) { // if this is the player's new record, change their length
+            player.setRoadLength(roadLength);
+        }
+        if ((longestRoadHolder == null || roadLength > longestRoadHolder.getRoadLength())
+                // so that if there is no holder, we don't need to check if this road is bigger
+                && roadLength >= 5) { // the player's road is bigger than the holder's
+            // remove longest road from previous player, if there is one
+            if (longestRoadHolder != null) {
+                longestRoadHolder.increaseVictoryPoints(-2);
+            }
+            // give this player longest road
+            player.increaseVictoryPoints(2);
+            // update in Main
+            longestRoadHolder = player;
+            if (player.getVictoryPoints() >= 10) {
+                endGame(player);
+            }
+        }
+    }
+
+    /*
+    Now I need to figure out how my recursive method must work
+    At the first road, we need to search all 4 connections, in 2 pairs
+    In the pair at one end, we call the method on each road, and accept the larger of the 2 numbers
+    In the pair at the other end, we call the method on each edge, and accept the larger of the 2 numbers
+    We then add the two numbers together, and that's the longest road
+
+    In the recursive method, we are giving the player, the vertex, and the edge we already went to
+    If this vertex belongs to another player, we return 0
+    Otherwise, we look at each edge
+    If the edge does not belong to this player, it gets a 0
+    If it does, we recursively call the method on that edge and the vertex beyond it, keeping its return value
+        + 1, because we want everything beyond this road plus this road
+    We then return the greater value of the two, since that is the value of the road beyond the given one
+
+    I think I would start by calling the recursive method twice, with the same edge but the different vertices
+    I would then return whichever was greater, + 1 to include the middle road
+     */
+
+    /**
+     * The base method for calculating road length. Returns the length of this player's road, starting from
+     * this edge
+     * @param player who built a road
+     * @param road that was just built
+     * @return the length of the player's road
+     */
+    private int calculateRoadLength(Player player, Edge road) {
+        // we calculate the road on each side, and then add together the 2 parts
+        List<Vertex> adjVertices = getVerticesAdjacentToRoad(road);
+        int firstLength = calculateRoadLength(player, adjVertices.get(0), road);
+        int secondLength = calculateRoadLength(player, adjVertices.get(1), road);
+        return firstLength + 1 + secondLength; // the longest path on each side, plus this road
+    }
+
+    /**
+     * The recursive method for calculating road length
+     * @param player whose roads we are following
+     * @param vertex we are currently looking at
+     * @param road that we last visited
+     * @return the length of the road from the other end until here
+     */
+    private int calculateRoadLength(Player player, Vertex vertex, Edge road) {
+        // If this vertex belongs to another player, we return 0
+        if (vertex.getPlayer() != null && vertex.getPlayer() != player) {
+            // if there is a settlement here, and it doesn't belong to this player
+            return 0;
+        }
+        // if the edge is not this player's road, we also return 0
+        if (road.getPlayer() != player) {
+            return 0;
+        }
+        // Otherwise, we look at each edge
+        int laterRoadLength = 0;
+        for (int i = 0; i < 3; i++) {
+            Edge edge = vertex.getEdges()[i];
+            // If the edge does not belong to this player, it is ignored
+            // that is mostly done in the top of the recursion, but if there is no edge, it is ignored here
+            if (edge != road && edge != null) {
+                // If it does, we recursively call the method on that edge and the vertex beyond it,
+                // keeping its return value, because we want everything beyond this road plus this road
+                int lengthFromThisEdge = calculateRoadLength(player, vertex.getAdjacentVertices()[i], edge);
+                if (lengthFromThisEdge > laterRoadLength) {
+                    // We then return the greater value of the two,
+                    // since that is the value of the road beyond the given one
+                    laterRoadLength = lengthFromThisEdge;
+                }
+            }
+        }
+        return laterRoadLength + 1; // so we can also include this road, not just the later ones
+    }
+
+    /**
+     * This is inefficient, but right now, Edges have no idea where Vertices or other edges are
+     * @param road we are looking for its vertices
+     * @return the vertices next to the road
+     */
+    private List<Vertex> getVerticesAdjacentToRoad(Edge road) {
+        List<Vertex> adjVertices = new ArrayList<>();
+        for (Vertex vertex : board.getVertices()) {
+            for (Edge edge : vertex.getEdges()) {
+                if (edge == road) {
+                    adjVertices.add(vertex);
+                }
+            }
+        }
+        assert adjVertices.size() == 2;
+        return adjVertices;
     }
 
     /**

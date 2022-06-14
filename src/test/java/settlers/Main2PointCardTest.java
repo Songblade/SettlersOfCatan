@@ -147,4 +147,59 @@ public class Main2PointCardTest {
         playXKnights(player, 3);
         fail("The method should have ended. 9 + largest army should end the game");
     }
+
+    // like with my tests for being unable to spend a development card on the turn you bought it,
+    // testing longest road will require actual playtesting
+    // I can test this in unlimited resources mode, because nothing here should require finite resources
+    // so let's list scenarios I care about
+
+    // make sure that having a chain of 4 roads is not enough to get the 2 points and win the game
+
+    // a chain of 5 roads is enough to win the game
+
+    // if one player has 5 roads, another getting 5 doesn't change anything, the first player can still win
+
+    // if one player has 5 roads, another getting 6 allows that player to win
+    // and also preventing the previous player from winning
+
+    // you can get longest road by connecting
+
+    // test at really long road: a player with 10 beats a player with 9
+
+    // test that road building also can get longest road, if both are needed for the road
+
+    // test that road building can get longest road, if the roads are to different segments, and the first gets
+        // longest road
+
+    // same as previous, but when second road is what matters
+
+    // test that you can't get longest road through a settlement
+    // but can by going around
+
+    // tests that ignores branching paths
+
+    // the following tests are if someone interrupts the road in a different turn
+    // tests that if someone blocks a longest road with a settlement, the longest road immediately goes to
+        // whoever has the second longest
+
+    // tests that if even after the interrupt, the original player still has second longest, that player
+        // still has longest road
+
+    // tests that if after the interrupt, there are now 2 players tied for longest road, neither get it
+
+    // tests that if after the interrupt, 2 players have 6 and 1 has 5, none of longest road
+
+    // tests that if after the interrupt, 2 players have 5 and 1 has 6, the one with 6 gets longest road
+
+    /* here, I will figure out just how to implement
+       I will record the player and number of longest road
+       Each time a player places down a new road, I need to completely recalculate their road length, because
+           the computer has no idea whether or not this expands the longest road
+       Because of this, there is no reason to store the number in player
+       Instead, I will just store the number of the current longest directly in main
+       I will calculate a player's road length using a complicated recursive method, called in both
+           buildRoad and playRoadBuilding
+       If a player has longest road, the previous holder loses 2 points, this one gains 2 points, and main
+           updates who holds longest road
+    */
 }
