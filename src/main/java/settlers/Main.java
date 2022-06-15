@@ -168,11 +168,11 @@ public interface Main {
     /**
      * This simulates a trade between 2 players, updating each accordingly
      * @param player1 who is initiating the trade, whose turn it is
-     * @param resourcesGiven by player1, receieved by player2
+     * @param resourcesExchanged where negative values are given by player1 and received by player2
+     *                           While positive values are given by player2 and received by player1
      * @param player2 who is on the other end of the trade
-     * @param resourcesReceived by player2, given by player 1
      */
-    void trade(Player player1, Map<Resource, Integer> resourcesGiven, Player player2, Map<Resource, Integer> resourcesReceived);
+    void trade(Player player1, Map<Resource, Integer> resourcesExchanged, Player player2);
 
     List<Player> getPlayers();
 

@@ -365,13 +365,11 @@ public class MainTradeTest {
         player.addResource(Resource.WOOD);
         player2.addResource(Resource.ORE);
 
-        Map<Resource, Integer> firstGiven = new HashMap<>();
-        firstGiven.put(Resource.WOOD, 1);
+        Map<Resource, Integer> exchange = new HashMap<>();
+        exchange.put(Resource.WOOD, -1);
+        exchange.put(Resource.ORE, 1);
 
-        Map<Resource, Integer> firstGotten = new HashMap<>();
-        firstGotten.put(Resource.ORE, 1);
-
-        main.trade(player, firstGiven, player2, firstGotten);
+        main.trade(player, exchange, player2);
 
         Map<Resource, Integer> result0 = emptyResourceMap();
         result0.put(Resource.ORE, 1);
@@ -393,13 +391,11 @@ public class MainTradeTest {
         giveResources(player2, Resource.WOOD, 1);
         giveResources(player2, Resource.ORE, 1);
 
-        Map<Resource, Integer> firstGiven = new HashMap<>();
-        firstGiven.put(Resource.WOOD, 1);
+        Map<Resource, Integer> exchange = new HashMap<>();
+        exchange.put(Resource.WOOD, -1);
+        exchange.put(Resource.ORE, 1);
 
-        Map<Resource, Integer> firstGotten = new HashMap<>();
-        firstGotten.put(Resource.ORE, 1);
-
-        main.trade(player, firstGiven, player2, firstGotten);
+        main.trade(player, exchange, player2);
 
         Map<Resource, Integer> result0 = emptyResourceMap();
         result0.put(Resource.WOOD, 1);
@@ -419,13 +415,11 @@ public class MainTradeTest {
         givePlayerResources(Resource.WOOD, 2);
         player2.addResource(Resource.ORE);
 
-        Map<Resource, Integer> firstGiven = new HashMap<>();
-        firstGiven.put(Resource.WOOD, 2);
+        Map<Resource, Integer> exchange = new HashMap<>();
+        exchange.put(Resource.WOOD, -2);
+        exchange.put(Resource.ORE, 1);
 
-        Map<Resource, Integer> firstGotten = new HashMap<>();
-        firstGotten.put(Resource.ORE, 1);
-
-        main.trade(player, firstGiven, player2, firstGotten);
+        main.trade(player, exchange, player2);
 
         Map<Resource, Integer> result0 = emptyResourceMap();
         result0.put(Resource.ORE, 1);
@@ -443,13 +437,11 @@ public class MainTradeTest {
         givePlayerResources(Resource.WOOD, 2);
         giveResources(player2, Resource.ORE, 2);
 
-        Map<Resource, Integer> firstGiven = new HashMap<>();
-        firstGiven.put(Resource.WOOD, 2);
+        Map<Resource, Integer> exchange = new HashMap<>();
+        exchange.put(Resource.WOOD, -2);
+        exchange.put(Resource.ORE, 2);
 
-        Map<Resource, Integer> firstGotten = new HashMap<>();
-        firstGotten.put(Resource.ORE, 2);
-
-        main.trade(player, firstGiven, player2, firstGotten);
+        main.trade(player, exchange, player2);
 
         Map<Resource, Integer> result0 = emptyResourceMap();
         result0.put(Resource.ORE, 2);
@@ -468,14 +460,12 @@ public class MainTradeTest {
         player.addResource(Resource.BRICK);
         player2.addResource(Resource.ORE);
 
-        Map<Resource, Integer> firstGiven = new HashMap<>();
-        firstGiven.put(Resource.WOOD, 1);
-        firstGiven.put(Resource.BRICK, 1);
+        Map<Resource, Integer> exchange = new HashMap<>();
+        exchange.put(Resource.WOOD, -1);
+        exchange.put(Resource.BRICK, -1);
+        exchange.put(Resource.ORE, 1);
 
-        Map<Resource, Integer> firstGotten = new HashMap<>();
-        firstGotten.put(Resource.ORE, 1);
-
-        main.trade(player, firstGiven, player2, firstGotten);
+        main.trade(player, exchange, player2);
 
         Map<Resource, Integer> result0 = emptyResourceMap();
         result0.put(Resource.ORE, 1);
@@ -496,15 +486,13 @@ public class MainTradeTest {
         player2.addResource(Resource.ORE);
         player2.addResource(Resource.WHEAT);
 
-        Map<Resource, Integer> firstGiven = new HashMap<>();
-        firstGiven.put(Resource.WOOD, 2);
-        firstGiven.put(Resource.BRICK, 1);
+        Map<Resource, Integer> exchange = new HashMap<>();
+        exchange.put(Resource.WOOD, -2);
+        exchange.put(Resource.BRICK, -1);
+        exchange.put(Resource.ORE, 1);
+        exchange.put(Resource.WHEAT, 1);
 
-        Map<Resource, Integer> firstGotten = new HashMap<>();
-        firstGotten.put(Resource.ORE, 1);
-        firstGotten.put(Resource.WHEAT, 1);
-
-        main.trade(player, firstGiven, player2, firstGotten);
+        main.trade(player, exchange, player2);
 
         Map<Resource, Integer> result0 = emptyResourceMap();
         result0.put(Resource.ORE, 1);
