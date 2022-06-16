@@ -958,33 +958,34 @@ public class MainImpl implements Main {
     /**
      * This simulates a trade between 2 players, updating each accordingly
      *
-     * @param player1           who is initiating the trade, whose turn it is
-     * @param resourcesGiven    by player1, receieved by player2
-     * @param player2           who is on the other end of the trade
-     * @param resourcesReceived by player2, given by player 1
+     * @param player1            who is initiating the trade, whose turn it is
+     * @param resourcesExchanged where negative values are given by player1 and received by player2
+     *                           While positive values are given by player2 and received by player1
+     * @param player2            who is on the other end of the trade
      */
     @Override
-    public void trade(Player player1, Map<Resource, Integer> resourcesGiven, Player player2, Map<Resource, Integer> resourcesReceived) {
-        // Remove resource lets me remove large chunks at once, so I will
-        player1.removeResources(resourcesGiven);
-        addResourceMap(player2, resourcesGiven);
-
-        player2.removeResources(resourcesReceived);
-        addResourceMap(player1, resourcesReceived);
-    }
-
-    /**
-     * Adds a bunch of resources to a player
-     * @param playerGetting the resources
-     * @param resources being given to the player
-     */
-    private void addResourceMap(Player playerGetting, Map<Resource, Integer> resources) {
-        // add everything to the player
-        for (Resource resource : resources.keySet()) {
-            for (int i = 0; i < resources.get(resource); i++) {
-                playerGetting.addResource(resource);
+    public void trade(Player player1, Map<Resource, Integer> resourcesExchanged, Player player2) {
+        // the new way of doing the resources is significantly more annoying for me, but that is what
+        // Aryeh wanted
+        Map<Resource, Integer> resourcesGiven = new HashMap<>();
+        Map<Resource, Integer> resourcesReceived = new HashMap<>();
+        for (Resource resource : resourcesExchanged.keySet()) {
+            int resourceNumber = resourcesExchanged.get(resource);
+            if (resourceNumber < 0) { // if this is being moved from player1 to player2
+                resourcesGiven.put(resource, -1 * resourceNumber);
+                for (int i = 0; i > resourceNumber; i--) {
+                    player2.addResource(resource);
+                }
+            } else { // if this is being moved from player2 to player1
+                resourcesReceived.put(resource, resourceNumber);
+                for (int i = 0; i < resourceNumber; i++) {
+                    player1.addResource(resource);
+                }
             }
         }
+        // now we remove the resources that have been given
+        player1.removeResources(resourcesGiven);
+        player2.removeResources(resourcesReceived);
     }
 
     /**
