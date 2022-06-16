@@ -11,6 +11,7 @@ import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.plaf.basic.BasicMenuUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.TextAttribute;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
@@ -90,6 +91,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Hex thiefRequestSpot = null;
     private GUIState currentState = GUIState.NONE;
 
+    //Fonts
+    Font defaultFont;
+
 
     public GUIPlayerImpl(GUIMain main,Board board, Player player, List<Player> players){
         this.main = main;
@@ -106,6 +110,9 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Maps the frame's actions
         mapActions();
+
+        //Sets up fonts
+        setupFonts();
 
         //Adds the thief
         thiefImage = createLabel("src/main/java/settlers/gui/textures/hexes/Thief.png",0,0,1);
@@ -140,6 +147,21 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }
             }
         }
+    }
+
+    /**
+     * Sets up the fonts
+     */
+    private void setupFonts(){
+        Font baseFont = new Font(Font.DIALOG,Font.BOLD,24);
+
+        Map<TextAttribute,Object> defaultFontAttributes = new HashMap<>();
+        defaultFontAttributes.put(TextAttribute.FAMILY,Font.DIALOG);
+        defaultFontAttributes.put(TextAttribute.WEIGHT,TextAttribute.WEIGHT_BOLD);
+        defaultFontAttributes.put(TextAttribute.SIZE,24);
+        defaultFontAttributes.put(TextAttribute.FOREGROUND,Color.BLACK);
+
+        defaultFont = new Font(defaultFontAttributes);
     }
 
     /**
@@ -246,7 +268,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         field.setFocusable(false);
         field.setOpaque(false);
         field.setBorder(BorderFactory.createEmptyBorder());
-        field.setFont(new Font(Font.DIALOG,Font.BOLD,24));
+        field.setFont(defaultFont);
 
         //Sets the frame's Z order
         paintLayerMap.put(field,zOrder);
@@ -1399,8 +1421,13 @@ public class GUIPlayerImpl implements GUIPlayer{
                     for(Resource resource : Resource.values()){
                         if(resource != Resource.MISC) {
                             playerTradeRequest.put(resource, 0);
-                            tradeTextMap.get(resource).setText("0");
-                            tradeTextMap.get(resource).setVisible(true);
+                            JTextField resourceTradeTextField = tradeTextMap.get(resource);
+
+                            resourceTradeTextField.setCaretColor(Color.BLUE);
+                            resourceTradeTextField.setText("0");
+                            resourceTradeTextField.setVisible(true);
+                            resourceTradeTextField.repaint();
+                            frame.repaint();
                         }
                     }
 
