@@ -1328,7 +1328,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                         disableAllButtons();
                         disablePlayerTradingGUIElements();
 
-                        System.out.println("Trade was not made successfully because someone has a job to do...");
+                        main.trade(player,playerTradeRequest);
                     }
 
                     currentState = GUIState.NONE;

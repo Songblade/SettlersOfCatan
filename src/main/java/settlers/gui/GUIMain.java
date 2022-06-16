@@ -5,6 +5,7 @@ import settlers.board.*;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface GUIMain {
@@ -176,6 +177,7 @@ public interface GUIMain {
      */
     boolean canTrade(Player player, Resource resourceGiven);
 
+
     /**
      * This simulates a trade with the bank, updating the Player appropriately
      * @param player doing the trade
@@ -183,4 +185,15 @@ public interface GUIMain {
      * @param resourceGotten resource type being received
      */
     void trade(Player player, Resource resourceGiven, Resource resourceGotten);
+
+
+    /**
+     * Asks main if this trade is valid, sends trading requests if it is, then waits for one of them to be accepted.
+     * Once a trading request is accepted, the trade will be made between the player who initiated the trade and the player
+     * who accepted the request.
+     * If all requests were declined, this method stops waiting for a request to be accepted and continues the player's turn
+     * @param player the player who sent the request
+     * @param resourcesExchanged a map of resources that would be exchanged during this trade
+     */
+    void trade(Player player, Map<Resource, Integer> resourcesExchanged);
 }

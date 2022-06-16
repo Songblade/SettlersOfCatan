@@ -5,10 +5,7 @@ import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 import settlers.board.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class GUIMainImpl implements GUIMain {
 
@@ -329,5 +326,10 @@ public class GUIMainImpl implements GUIMain {
         main.trade(player,resourceGiven,resourceGotten);
 
         updateResourceCounters();
+    }
+
+    @Override
+    public void trade(Player player, Map<Resource, Integer> resourcesExchanged) {
+
     }
 }
