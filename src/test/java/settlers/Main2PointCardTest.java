@@ -196,4 +196,6 @@ public class Main2PointCardTest {
 
     // tests that if after the interrupt, 2 players have 5 and 1 has 6, the one with 6 gets longest road
 
+    // make sure that the really weird tie case works, however it is supposed to be
+
 }
