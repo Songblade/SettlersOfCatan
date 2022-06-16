@@ -1221,6 +1221,38 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    /**
+     * Enables all trading GUI elements
+     * @param initiatingTrade is a trade being initiated?
+     */
+    private void enablePlayerTradingGUIElements(boolean initiatingTrade){
+        if(initiatingTrade){
+            playerTradeRequest = new HashMap<>();
+
+            for(Resource resource : Resource.values()) {
+                if (resource != Resource.MISC) {
+                    playerTradeRequest.put(resource, 0);
+                }
+            }
+
+            enableButton(tradeDirectionButton);
+        }
+
+
+        for(Resource resource : Resource.values()){
+            if(resource != Resource.MISC) {
+                JTextField resourceTradeTextField = tradeTextMap.get(resource);
+
+                resourceTradeTextField.setText("0");
+                resourceTradeTextField.setVisible(true);
+                resourceTradeTextField.setFont(defaultFontBlue);
+            }
+        }
+    }
+
+    /**
+     * Disables all trading GUI elements
+     */
     private void disablePlayerTradingGUIElements(){
         for(Resource resource : Resource.values()){
             if(resource != Resource.MISC) {
@@ -1451,19 +1483,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     enableButtons(resourceButtonMap.keySet());
                     setTradeDirection(false);
 
-                    playerTradeRequest = new HashMap<>();
-                    for(Resource resource : Resource.values()){
-                        if(resource != Resource.MISC) {
-                            playerTradeRequest.put(resource, 0);
-                            JTextField resourceTradeTextField = tradeTextMap.get(resource);
-
-                            resourceTradeTextField.setText("0");
-                            resourceTradeTextField.setVisible(true);
-                            resourceTradeTextField.setFont(defaultFontBlue);
-                        }
-                    }
-
-                    enableButton(tradeDirectionButton);
+                    enablePlayerTradingGUIElements(true);
 
                     reloadPossibleMovesGUI();
                 }
@@ -1626,6 +1646,25 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.trade(player,bankTradeRequest[0],bankTradeRequest[1]);
                     disableButtons(resourceButtonMap.keySet());
                     reloadPossibleMovesGUI();
+                }else if(currentState == GUIState.PLAYER_TRADE){
+                    if(tradeDirectionGiving && -playerTradeRequest.get(resource) < player.getResources().get(resource)) {
+                        playerTradeRequest.put(resource,playerTradeRequest.get(resource) - 1);
+                    }else if(!tradeDirectionGiving){
+                        playerTradeRequest.put(resource,playerTradeRequest.get(resource) + 1);
+                    }
+
+                    JTextField resourceText = tradeTextMap.get(resource);
+                    int resourceQuantity = playerTradeRequest.get(resource);
+
+                    resourceText.setText("" + Math.abs(resourceQuantity));
+
+                    if(resourceQuantity < 0){
+                        resourceText.setFont(defaultFontRed);
+                    }else if(resourceQuantity > 0){
+                        resourceText.setFont(defaultFontGreen);
+                    }else{
+                        resourceText.setFont(defaultFontBlue);
+                    }
                 }
                 focusFrame();
             }
