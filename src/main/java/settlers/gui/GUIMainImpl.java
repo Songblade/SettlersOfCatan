@@ -16,6 +16,7 @@ public class GUIMainImpl implements GUIMain {
 
     //Functional
     HashSet<Player> playersWhoHaveNotDiscarded = new HashSet<>();
+    private Player tradeAcceptingPlayer = null;
 
     public GUIMainImpl(Main main) {
         this.main = main;
@@ -330,6 +331,8 @@ public class GUIMainImpl implements GUIMain {
 
     @Override
     public void trade(Player player, Map<Resource, Integer> resourcesExchanged) {
+        if(main.canTrade(player,resourcesExchanged)){
 
+        }
     }
 }

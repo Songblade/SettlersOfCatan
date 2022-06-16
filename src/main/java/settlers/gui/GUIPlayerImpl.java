@@ -1268,6 +1268,27 @@ public class GUIPlayerImpl implements GUIPlayer{
         disableButton(tradeDirectionButton);
     }
 
+    public void receiveTradeRequest(Player sender, Map<Resource,Integer> resourcesExchanged){
+        enablePlayerTradingGUIElements(false);
+
+        for(Resource resource : Resource.values()) {
+            if(resource != Resource.MISC) {
+                JTextField resourceText = tradeTextMap.get(resource);
+
+                int resourceQuantity = resourcesExchanged.get(resource);
+                resourceText.setText("" + Math.abs(resourceQuantity));
+
+                if(resourceQuantity < 0){
+                    resourceText.setFont(defaultFontGreen);
+                }else if(resourceQuantity > 0){
+                    resourceText.setFont(defaultFontRed);
+                }else{
+                    resourceText.setFont(defaultFontBlue);
+                }
+            }
+        }
+    }
+
     private boolean canPerformActions(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
 
     private void reloadPossibleMovesGUI(){
