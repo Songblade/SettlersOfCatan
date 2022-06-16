@@ -911,6 +911,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void mapActions(){
         mapAction(Move.CANCEL,8,cancelMove(),"Backspace","Cancel move");
         mapAction(Move.PASS,32,passTurn(),"Space","Pass the turn");
+        mapAction(Move.CONFIRM,10,confirmAction(),"Enter","Confirm Action");
         mapAction(Move.ROAD,49,requestRoadPlacement(),"1","Build a road");
         mapAction(Move.SETTLEMENT,50,requestSettlementPlacement(),"2","Build a settlement");
         mapAction(Move.CITY,51,requestCityPlacement(),"3","Build a city");
@@ -951,6 +952,11 @@ public class GUIPlayerImpl implements GUIPlayer{
             //Asks if the player can cancel a move
             if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
                 moves.add(Move.CANCEL);
+            }
+
+            //Asks if the player can confirm a move. There is currently one move which a player can confirm.
+            if(checkMoveListForMove(toCheck, Move.CONFIRM) && currentState == GUIState.PLAYER_TRADE){
+                moves.add(Move.CONFIRM);
             }
 
             //Asks if the player can build a road
@@ -997,7 +1003,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 moves.add(Move.TRADE_BANK);
             }
 
-            if(checkMoveListForMove(toCheck, Move.TRADE_PLAYER) && player.getCardNumber() > 0 &&canPerformActions()){
+            if(checkMoveListForMove(toCheck, Move.TRADE_PLAYER) && player.getCardNumber() > 0 && canPerformActions()){
                 moves.add(Move.TRADE_PLAYER);
             }
         }
@@ -1268,7 +1274,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         reloadPossibleMovesGUI(null);
     }
 
-    //Actions
+    //Actions by keybinds
     /**
      * Passes the turn
      * @return
@@ -1309,7 +1315,29 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    //Keybinds
+    /**
+     * Confirms an action
+     * @return
+     */
+    private ActionListener confirmAction(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(canPass && currentState == GUIState.PLAYER_TRADE){
+                    if(currentState == GUIState.PLAYER_TRADE){
+                        disableAllButtons();
+                        disablePlayerTradingGUIElements();
+
+                        System.out.println("Trade was not made successfully because someone has a job to do...");
+                    }
+
+                    currentState = GUIState.NONE;
+                    reloadPossibleMovesGUI();
+                }
+            }
+        };
+    }
+
     /**
      * Proscesses settlement building requests
      * @return
@@ -1716,5 +1744,5 @@ enum GUIState{
 }
 
 enum Move{
-    PASS,CANCEL,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE_BANK,TRADE_PLAYER
+    PASS,CANCEL,CONFIRM,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE_BANK,TRADE_PLAYER
 }
