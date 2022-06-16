@@ -93,6 +93,9 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     //Fonts
     Font defaultFont;
+    Font defaultFontRed;
+    Font defaultFontBlue;
+    Font defaultFontGreen;
 
 
     public GUIPlayerImpl(GUIMain main,Board board, Player player, List<Player> players){
@@ -129,6 +132,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Adds other elements
         putOtherElements();
 
+        //Disables other GUI elements which should start disabled
+        disablePlayerTradingGUIElements();
+
         //Ensures everything paints at the right Z layer
         orderPainting();
 
@@ -149,19 +155,34 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    private Map<TextAttribute,Object> createDefaultTextAttributes(){
+        Map<TextAttribute,Object> defaultFontAttributes = new HashMap<>();
+        defaultFontAttributes.put(TextAttribute.FAMILY,Font.DIALOG);
+        defaultFontAttributes.put(TextAttribute.WEIGHT,TextAttribute.WEIGHT_BOLD);
+        defaultFontAttributes.put(TextAttribute.SIZE,24);
+        return defaultFontAttributes;
+    }
+
     /**
      * Sets up the fonts
      */
     private void setupFonts(){
         Font baseFont = new Font(Font.DIALOG,Font.BOLD,24);
 
-        Map<TextAttribute,Object> defaultFontAttributes = new HashMap<>();
-        defaultFontAttributes.put(TextAttribute.FAMILY,Font.DIALOG);
-        defaultFontAttributes.put(TextAttribute.WEIGHT,TextAttribute.WEIGHT_BOLD);
-        defaultFontAttributes.put(TextAttribute.SIZE,24);
-        defaultFontAttributes.put(TextAttribute.FOREGROUND,Color.BLACK);
-
+        Map<TextAttribute,Object> defaultFontAttributes = createDefaultTextAttributes();
         defaultFont = new Font(defaultFontAttributes);
+
+        Map<TextAttribute,Object> defaultFontAttributesRed = createDefaultTextAttributes();
+        defaultFontAttributesRed.put(TextAttribute.FOREGROUND,Color.RED);
+        defaultFontRed = new Font(defaultFontAttributesRed);
+        
+        Map<TextAttribute,Object> defaultFontAttributesBlue = createDefaultTextAttributes();
+        defaultFontAttributesBlue.put(TextAttribute.FOREGROUND,Color.BLUE);
+        defaultFontBlue = new Font(defaultFontAttributesBlue);
+
+        Map<TextAttribute,Object> defaultFontAttributesGreen = createDefaultTextAttributes();
+        defaultFontAttributesGreen.put(TextAttribute.FOREGROUND,Color.GREEN);
+        defaultFontGreen = new Font(defaultFontAttributesGreen);
     }
 
     /**
@@ -507,7 +528,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 //Puts the resource trade label for the resource
                 JTextField resourceTradeLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset - 50,1);
-                resourceTradeLabel.setVisible(false);
                 tradeTextMap.put(resource,resourceTradeLabel);
 
                 //Creates a button for the resource
@@ -1201,6 +1221,15 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    private void disablePlayerTradingGUIElements(){
+        for(Resource resource : Resource.values()){
+            if(resource != Resource.MISC) {
+                tradeTextMap.get(resource).setVisible(false);
+            }
+        }
+        disableButton(tradeDirectionButton);
+    }
+
     private boolean canPerformActions(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
 
     private void reloadPossibleMovesGUI(){
@@ -1236,6 +1265,11 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canPass && currentState.isCancelable()){
                     disableAllButtons();
+
+                    if(currentState == GUIState.PLAYER_TRADE){
+                        disablePlayerTradingGUIElements();
+                    }
+
                     currentState = GUIState.NONE;
                     reloadPossibleMovesGUI();
                 }
@@ -1423,13 +1457,13 @@ public class GUIPlayerImpl implements GUIPlayer{
                             playerTradeRequest.put(resource, 0);
                             JTextField resourceTradeTextField = tradeTextMap.get(resource);
 
-                            resourceTradeTextField.setCaretColor(Color.BLUE);
                             resourceTradeTextField.setText("0");
                             resourceTradeTextField.setVisible(true);
-                            resourceTradeTextField.repaint();
-                            frame.repaint();
+                            resourceTradeTextField.setFont(defaultFontBlue);
                         }
                     }
+
+                    enableButton(tradeDirectionButton);
 
                     reloadPossibleMovesGUI();
                 }
