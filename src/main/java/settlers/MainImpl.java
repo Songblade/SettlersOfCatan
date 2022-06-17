@@ -635,7 +635,7 @@ public class MainImpl implements Main {
      *      no one gets the points
      */
     private void redetermineLongestRoad() {
-        Player newLongestPlayer = longestRoadHolder.getRoadLength() > 5 ? longestRoadHolder : null;
+        Player newLongestPlayer = longestRoadHolder.getRoadLength() >= 5 ? longestRoadHolder : null;
         // we only start planning to give the longest road holder longest road if he is still eligible
         int longestRoadLength = longestRoadHolder.getRoadLength();
         for (Player player : players) {

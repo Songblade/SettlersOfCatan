@@ -185,10 +185,12 @@ public class Main2PointCardTest {
 
     // the following tests are if someone interrupts the road in a different turn
     // tests that if someone blocks a longest road with a settlement, the longest road immediately goes to
-        // whoever has the second longest
+        // whoever has the second longest (!)
 
-    // tests that if even after the interrupt, the original player still has second longest, that player
+    // tests that if even after the interrupt, the original player still has longest, that player
         // still has longest road
+
+    // same as above, but the original player is now tied, yet still has it
 
     // tests that if after the interrupt, there are now 2 players tied for longest road, neither get it
 
