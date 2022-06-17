@@ -58,6 +58,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     //Possible Moves Map
     private HashMap<Move,Boolean> possibleMoves = new HashMap();
+    private HashMap<Move,MoveDescription> moveDescriptionMap = new HashMap<>();
 
     //Request tables
     private Resource[] yearOfPlentyRequest = new Resource[2];
@@ -300,8 +301,8 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
 
-    private JTextField createMoveText(Move move, String keybind, String description){
-        JTextField field = createText(keybind + " - " + description, 1152, 0, 2);
+    private JTextField createMoveText(Move move){
+        JTextField field = createText("", 1152, 0, 2);
         field.setHorizontalAlignment(JTextField.LEFT);
         field.setSize(384,32);
         field.setVisible(false);
@@ -910,19 +911,25 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param action the action to be performed whenever the key is pressed
      */
     private void mapAction(Move move, int keyId, Action action, MoveDescription description){
-        //frame.getRootPane().registerKeyboardAction(action,KeyStroke.getKeyStroke((char) keyId),JComponent.WHEN_IN_FOCUSED_WINDOW);
         frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke((char) keyId),description);
         frame.getRootPane().getActionMap().put(description,action);
-        createMoveText(move,description.key,description.defaultDescription);
+        createMoveText(move);
+        moveDescriptionMap.put(move,description);
     }
 
     /**
      * Maps all of the frame's actions
      */
     private void mapActions(){
-        mapAction(Move.CANCEL,8,cancelMove(),new MoveDescription("Backspace","Cancel Move",null));
+        Map<GUIState,String> cancelDescriptionMap = new HashMap<>();
+        cancelDescriptionMap.put(GUIState.PLAYER_TRADE_REQUEST,"Decline Trade Request");
+
+        Map<GUIState,String> confirmDescriptionMap = new HashMap<>();
+        confirmDescriptionMap.put(GUIState.PLAYER_TRADE_REQUEST,"Accept Trade Request");
+
+        mapAction(Move.CANCEL,8,cancelMove(),new MoveDescription("Backspace","Cancel Move",cancelDescriptionMap));
         mapAction(Move.PASS,32,passTurn(),new MoveDescription("Space","Pass the turn",null));
-        mapAction(Move.CONFIRM,10,confirmAction(),new MoveDescription("Enter","Confirm Action",null));
+        mapAction(Move.CONFIRM,10,confirmAction(),new MoveDescription("Enter","Confirm Action",confirmDescriptionMap));
         mapAction(Move.ROAD,49,requestRoadPlacement(),new MoveDescription("1","Build a road",null));
         mapAction(Move.SETTLEMENT,50,requestSettlementPlacement(),new MoveDescription("2","Build a settlement",null));
         mapAction(Move.CITY,51,requestCityPlacement(),new MoveDescription("3","Build a city",null));
@@ -1228,6 +1235,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         for(Move move : moveTextMap.keySet()){
             if(possibleMoves.get(move)){
                 JTextField field = moveTextMap.get(move);
+                field.setText(moveDescriptionMap.get(move).key + " - " + moveDescriptionMap.get(move).getDescription(currentState));
                 field.setVisible(true);
                 field.setBounds(currentXOffset,currentYOffset,384,128);
                 currentYOffset += yIncrement;
