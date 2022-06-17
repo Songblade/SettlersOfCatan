@@ -627,6 +627,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 //Places a button for the player
                 JButton playerButton = createButton(35,currentYOffset);
+                playerButton.addActionListener(playerButtonClickedAction(plr));
                 playerButtonMap.put(playerButton,plr);
 
                 //Stores the textboxes for future use
@@ -1255,8 +1256,11 @@ public class GUIPlayerImpl implements GUIPlayer{
             for(Player plr : players){
                 if(plr != player){
                     playerTradeRequestReceivers.add(plr);
+                    playerSelectionLabelMap.get(plr).setVisible(true);
                 }
             }
+
+            enableButtons(playerButtonMap.keySet());
         }
 
 
@@ -1280,6 +1284,11 @@ public class GUIPlayerImpl implements GUIPlayer{
                 tradeTextMap.get(resource).setVisible(false);
             }
         }
+
+        for(Player plr : playerSelectionLabelMap.keySet()){
+            playerSelectionLabelMap.get(plr).setVisible(false);
+        }
+
         disableButton(tradeDirectionButton);
     }
 
@@ -1365,7 +1374,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                         disableAllButtons();
                         disablePlayerTradingGUIElements();
 
-                        main.trade(player,playerTradeRequest,new HashSet<>());
+                        main.trade(player,playerTradeRequest,playerTradeRequestReceivers);
                     }
 
                     currentState = GUIState.NONE;
@@ -1736,6 +1745,27 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
+    private ActionListener playerButtonClickedAction(Player plr){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentState == GUIState.PLAYER_TRADE){
+                    if(playerTradeRequestReceivers.contains(plr)){
+                        playerTradeRequestReceivers.remove(plr);
+                        playerSelectionLabelMap.get(plr).setVisible(false);
+                    }else{
+                        playerTradeRequestReceivers.add(plr);
+                        playerSelectionLabelMap.get(plr).setVisible(true);
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * Whenever the trade direction button is clicked
+     * @return
+     */
     private ActionListener tradeDirectionButtonClickedAction(){
         return new AbstractAction() {
             @Override
