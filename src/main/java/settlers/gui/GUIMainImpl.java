@@ -5,10 +5,7 @@ import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 import settlers.board.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class GUIMainImpl implements GUIMain {
 
@@ -19,6 +16,7 @@ public class GUIMainImpl implements GUIMain {
 
     //Functional
     HashSet<Player> playersWhoHaveNotDiscarded = new HashSet<>();
+    private Player tradeAcceptingPlayer = null;
 
     public GUIMainImpl(Main main) {
         this.main = main;
@@ -329,5 +327,14 @@ public class GUIMainImpl implements GUIMain {
         main.trade(player,resourceGiven,resourceGotten);
 
         updateResourceCounters();
+    }
+
+    @Override
+    public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
+        if(true){
+            for(Player plr : sendTo){
+                playerGUIs.get(plr).receiveTradeRequest(player,resourcesExchanged);
+            }
+        }
     }
 }

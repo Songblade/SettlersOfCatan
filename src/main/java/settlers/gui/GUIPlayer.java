@@ -2,7 +2,9 @@ package settlers.gui;
 
 import settlers.Player;
 import settlers.board.*;
+import settlers.card.Resource;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface GUIPlayer {
@@ -71,5 +73,12 @@ public interface GUIPlayer {
      * Forces player to discard half of his hand
      * @param target the amount the player must discard until
      */
-    public void discardUntil(int target);
+    void discardUntil(int target);
+
+    /**
+     * Sends the player a trading request
+     * @param sender the player who sent the trading request
+     * @param resourcesExchanged the resources which will be exchanged if the request is accepted
+     */
+    void receiveTradeRequest(Player sender, Map<Resource,Integer> resourcesExchanged);
 }

@@ -11,6 +11,7 @@ import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.plaf.basic.BasicMenuUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.TextAttribute;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
@@ -42,7 +43,9 @@ public class GUIPlayerImpl implements GUIPlayer{
     //Label maps
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
+    private HashMap<Player,JLabel> playerSelectionLabelMap = new HashMap<>();
     private HashMap<Resource,JTextField> resourceTextMap = new HashMap<>();
+    private HashMap<Resource,JTextField> tradeTextMap = new HashMap<>();
     private HashMap<DevelopmentCard,JTextField> developmentTextMap = new HashMap<>();
     private HashMap<Player,HashMap<String,JTextField>> playerTextMap = new HashMap<>();
     private HashMap<Move,JTextField> moveTextMap = new HashMap<>();
@@ -60,6 +63,8 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Resource[] yearOfPlentyRequest = new Resource[2];
     private Edge[] roadBuildingRequest = new Edge[2];
     private Resource[] bankTradeRequest = new Resource[2];
+    private HashMap<Resource, Integer> playerTradeRequest = new HashMap<>();
+    private HashSet<Player> playerTradeRequestReceivers = new HashSet<>();
 
     //Frame and image
     private JFrame frame;
@@ -73,6 +78,10 @@ public class GUIPlayerImpl implements GUIPlayer{
     private JLabel dieCounter;
     private JLabel dieCounterOutline;
 
+    //Player to player trade related variables
+    private JButton tradeDirectionButton;
+    private boolean tradeDirectionGiving = false;
+
     //Functional
     private boolean thisPlayerHasTurn = false;
     private boolean canPass = false;
@@ -83,6 +92,12 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Edge lastRoadSpot = null;
     private Hex thiefRequestSpot = null;
     private GUIState currentState = GUIState.NONE;
+
+    //Fonts
+    Font defaultFont;
+    Font defaultFontRed;
+    Font defaultFontBlue;
+    Font defaultFontGreen;
 
 
     public GUIPlayerImpl(GUIMain main,Board board, Player player, List<Player> players){
@@ -101,6 +116,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Maps the frame's actions
         mapActions();
 
+        //Sets up fonts
+        setupFonts();
+
         //Adds the thief
         thiefImage = createLabel("src/main/java/settlers/gui/textures/hexes/Thief.png",0,0,1);
 
@@ -115,6 +133,9 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Adds other elements
         putOtherElements();
+
+        //Disables other GUI elements which should start disabled
+        disablePlayerTradingGUIElements();
 
         //Ensures everything paints at the right Z layer
         orderPainting();
@@ -134,6 +155,36 @@ public class GUIPlayerImpl implements GUIPlayer{
                 }
             }
         }
+    }
+
+    private Map<TextAttribute,Object> createDefaultTextAttributes(){
+        Map<TextAttribute,Object> defaultFontAttributes = new HashMap<>();
+        defaultFontAttributes.put(TextAttribute.FAMILY,Font.DIALOG);
+        defaultFontAttributes.put(TextAttribute.WEIGHT,TextAttribute.WEIGHT_BOLD);
+        defaultFontAttributes.put(TextAttribute.SIZE,24);
+        return defaultFontAttributes;
+    }
+
+    /**
+     * Sets up the fonts
+     */
+    private void setupFonts(){
+        Font baseFont = new Font(Font.DIALOG,Font.BOLD,24);
+
+        Map<TextAttribute,Object> defaultFontAttributes = createDefaultTextAttributes();
+        defaultFont = new Font(defaultFontAttributes);
+
+        Map<TextAttribute,Object> defaultFontAttributesRed = createDefaultTextAttributes();
+        defaultFontAttributesRed.put(TextAttribute.FOREGROUND,Color.RED);
+        defaultFontRed = new Font(defaultFontAttributesRed);
+        
+        Map<TextAttribute,Object> defaultFontAttributesBlue = createDefaultTextAttributes();
+        defaultFontAttributesBlue.put(TextAttribute.FOREGROUND,Color.BLUE);
+        defaultFontBlue = new Font(defaultFontAttributesBlue);
+
+        Map<TextAttribute,Object> defaultFontAttributesGreen = createDefaultTextAttributes();
+        defaultFontAttributesGreen.put(TextAttribute.FOREGROUND,Color.GREEN);
+        defaultFontGreen = new Font(defaultFontAttributesGreen);
     }
 
     /**
@@ -240,7 +291,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         field.setFocusable(false);
         field.setOpaque(false);
         field.setBorder(BorderFactory.createEmptyBorder());
-        field.setFont(new Font(Font.DIALOG,Font.BOLD,24));
+        field.setFont(defaultFont);
 
         //Sets the frame's Z order
         paintLayerMap.put(field,zOrder);
@@ -451,6 +502,15 @@ public class GUIPlayerImpl implements GUIPlayer{
         thisPlayerLabel.setIcon(new ImageIcon(getConstructionImage(player.getID(),2).getScaledInstance(256,256,0)));
     }
 
+    private void putTradeDirectionButton(){
+        tradeDirectionButton = createButton(50,480);
+        tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Give.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
+        tradeDirectionButton.setRolloverEnabled(false);
+        tradeDirectionButton.addActionListener(tradeDirectionButtonClickedAction());
+
+        enableButton(tradeDirectionButton);
+    }
+
     private void putPlayerResourceLabels(){
         //Places the resources to the side of the player label
         int currentXOffset = 140;
@@ -464,8 +524,13 @@ public class GUIPlayerImpl implements GUIPlayer{
                 JLabel resourceBackgroundLabel = createLabel("",currentXOffset,yOffset,3);
                 resourceBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGResource.png").getScaledInstance(64,64,0)));
 
+                //Puts the resource count label for the resource
                 JTextField resourceCountLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset + 50,1);
                 resourceTextMap.put(resource,resourceCountLabel);
+
+                //Puts the resource trade label for the resource
+                JTextField resourceTradeLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset - 50,1);
+                tradeTextMap.put(resource,resourceTradeLabel);
 
                 //Creates a button for the resource
                 JButton resourceButton = createButton(currentXOffset,yOffset);
@@ -524,6 +589,12 @@ public class GUIPlayerImpl implements GUIPlayer{
                 JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
                 playerLabel.setIcon(new ImageIcon(getConstructionImage(plr.getID(),2).getScaledInstance(128, 128, 0)));
 
+                //Places the player selection label for other players
+                JLabel playerSelectionLabel = createLabel("", 35, currentYOffset, 1);
+                playerSelectionLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PlayerSelect.png").getScaledInstance(128, 128, 0)));
+                playerSelectionLabel.setVisible(false);
+                playerSelectionLabelMap.put(plr,playerSelectionLabel);
+
                 //Places the resource labels for other players
                 JLabel playerResourceLabel = createLabel("",currentXOffset,currentYOffset,1);
                 playerResourceLabel.setIcon(new ImageIcon(getResourceImage(Resource.MISC).getScaledInstance(56,56,0)));
@@ -556,6 +627,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                 //Places a button for the player
                 JButton playerButton = createButton(35,currentYOffset);
+                playerButton.addActionListener(playerButtonClickedAction(plr));
                 playerButtonMap.put(playerButton,plr);
 
                 //Stores the textboxes for future use
@@ -580,6 +652,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void putOtherElements(){
          putPlayerLabel();
+         putTradeDirectionButton();
          putPlayerResourceLabels();
          putPlayerDevelopmentLabels();
          putPlayedKnightLabel();
@@ -847,6 +920,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void mapActions(){
         mapAction(Move.CANCEL,8,cancelMove(),"Backspace","Cancel move");
         mapAction(Move.PASS,32,passTurn(),"Space","Pass the turn");
+        mapAction(Move.CONFIRM,10,confirmAction(),"Enter","Confirm Action");
         mapAction(Move.ROAD,49,requestRoadPlacement(),"1","Build a road");
         mapAction(Move.SETTLEMENT,50,requestSettlementPlacement(),"2","Build a settlement");
         mapAction(Move.CITY,51,requestCityPlacement(),"3","Build a city");
@@ -855,8 +929,97 @@ public class GUIPlayerImpl implements GUIPlayer{
         mapAction(Move.YEAR_OF_PLENTY,119,requestYearOfPlenty(),"W","Play year of planty");
         mapAction(Move.ROAD_BUILDING,101,requestRoadBuilding(),"E","Play road building");
         mapAction(Move.MONOPOLY,114,requestMonopoly(),"R","Play monopoly");
-        mapAction(Move.TRADE,97,requestBankTrade(),"A","Trade with the bank");
+        mapAction(Move.TRADE_BANK,97,requestBankTrade(),"A","Trade with the bank");
+        mapAction(Move.TRADE_PLAYER,115,requestPlayerTrade(),"S","Trade with players");
     }
+
+    /**
+     * @param toCheck checks this list for @move
+     * @param move the move being checked for
+     * @return true if toCheck is null or if it contains @move, false if neither condition is met
+     */
+    private boolean checkMoveListForMove(Set<Move> toCheck, Move move){
+        if(toCheck == null || toCheck.contains(move))return true;
+        return false;
+    }
+
+    /**
+     * Gets all possible moves assuming they are on toCheck list. A null toCheck list would count as a complete toCheck list
+     * @param toCheck
+     * @return all possible moves which are in the toCheck list
+     */
+    private Set<Move> getPossibleMoves(Set<Move> toCheck){
+        Set<Move> moves = new HashSet<>();
+
+        //Moves can only be preformed when it's your turn
+        if(thisPlayerHasTurn) {
+            //Asks if the player can pass
+            if (checkMoveListForMove(toCheck, Move.PASS) && canPass) {
+                moves.add(Move.PASS);
+            }
+
+            //Asks if the player can cancel a move
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
+                moves.add(Move.CANCEL);
+            }
+
+            //Asks if the player can confirm a move. There is currently one move which a player can confirm.
+            if(checkMoveListForMove(toCheck, Move.CONFIRM) && currentState == GUIState.PLAYER_TRADE){
+                moves.add(Move.CONFIRM);
+            }
+
+            //Asks if the player can build a road
+            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canPerformActions()) {
+                moves.add(Move.ROAD);
+            }
+
+            //Asks if the player can build a settlement
+            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && canPerformActions()) {
+                moves.add(Move.SETTLEMENT);
+            }
+
+            //Asks if the player can build a city
+            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && canPerformActions()) {
+                moves.add(Move.CITY);
+            }
+
+            //Asks if the player can build a development card
+            if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canPerformActions()) {
+                moves.add(Move.DEVELOPMENT_CARD);
+            }
+
+            //Asks if the player can play knight
+            if (checkMoveListForMove(toCheck, Move.KNIGHT) && main.canPlayDevelopmentCard(player, DevelopmentCard.KNIGHT) && canPerformActions()) {
+                moves.add(Move.KNIGHT);
+            }
+
+            //Asks if the player can play year of plenty
+            if (checkMoveListForMove(toCheck, Move.YEAR_OF_PLENTY) && main.canPlayDevelopmentCard(player, DevelopmentCard.YEAR_OF_PLENTY) && canPerformActions()) {
+                moves.add(Move.YEAR_OF_PLENTY);
+            }
+
+            //Asks if the player can play road building
+            if (checkMoveListForMove(toCheck, Move.ROAD_BUILDING) && main.canPlayDevelopmentCard(player, DevelopmentCard.ROAD_BUILDING) && canPerformActions()) {
+                moves.add(Move.ROAD_BUILDING);
+            }
+
+            //Asks if the player can play monopoly
+            if (checkMoveListForMove(toCheck, Move.MONOPOLY) && main.canPlayDevelopmentCard(player, DevelopmentCard.MONOPOLY) && canPerformActions()) {
+                moves.add(Move.MONOPOLY);
+            }
+
+            if(checkMoveListForMove(toCheck, Move.TRADE_BANK) && getPossibleTradingResources().size() != 0 && canPerformActions()){
+                moves.add(Move.TRADE_BANK);
+            }
+
+            if(checkMoveListForMove(toCheck, Move.TRADE_PLAYER) && player.getCardNumber() > 0 && canPerformActions()){
+                moves.add(Move.TRADE_PLAYER);
+            }
+        }
+
+        return moves;
+    }
+
 
     /**
      * Tells GUIPlayers to make a city
@@ -936,16 +1099,17 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * Gets the total resource count of a player
-     * @param plr the player
-     * @return the total resource count of plr
+     * Sets weather when we click a button in a player to player trade we are giving or taking a resource
+     * @param giving are we giving a resource?
      */
-    private int getPlayerResourceCount(Player plr){
-        int total = 0;
-        for(Resource resource : plr.getResources().keySet()){
-            total += plr.getResources().get(resource);
+    private void setTradeDirection(boolean giving){
+        if(giving){
+            tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Give.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
+            tradeDirectionGiving = true;
+        }else{
+            tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Take.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
+            tradeDirectionGiving = false;
         }
-        return total;
     }
 
     private void enableButton(JButton button){
@@ -1021,84 +1185,6 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
-     * @param toCheck checks this list for @move
-     * @param move the move being checked for
-     * @return true if toCheck is null or if it contains @move, false if neither condition is met
-     */
-    private boolean checkMoveListForMove(Set<Move> toCheck, Move move){
-        if(toCheck == null || toCheck.contains(move))return true;
-        return false;
-    }
-
-    /**
-     * Gets all possible moves assuming they are on toCheck list. A null toCheck list would count as a complete toCheck list
-     * @param toCheck
-     * @return all possible moves which are in the toCheck list
-     */
-    private Set<Move> getPossibleMoves(Set<Move> toCheck){
-        Set<Move> moves = new HashSet<>();
-
-        //Moves can only be preformed when it's your turn
-        if(thisPlayerHasTurn) {
-            //Asks if the player can pass
-            if (checkMoveListForMove(toCheck, Move.PASS) && canPass) {
-                moves.add(Move.PASS);
-            }
-
-            //Asks if the player can cancel a move
-            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
-                moves.add(Move.CANCEL);
-            }
-
-            //Asks if the player can build a road
-            if (checkMoveListForMove(toCheck, Move.ROAD) && main.canBuildRoad(player) && canPerformActions()) {
-                moves.add(Move.ROAD);
-            }
-
-            //Asks if the player can build a settlement
-            if (checkMoveListForMove(toCheck, Move.SETTLEMENT) && main.canBuildSettlement(player) && canPerformActions()) {
-                moves.add(Move.SETTLEMENT);
-            }
-
-            //Asks if the player can build a city
-            if (checkMoveListForMove(toCheck, Move.CITY) && main.canBuildCity(player) && canPerformActions()) {
-                moves.add(Move.CITY);
-            }
-
-            //Asks if the player can build a development card
-            if (checkMoveListForMove(toCheck, Move.DEVELOPMENT_CARD) && main.canBuyDevelopmentCard(player) && canPerformActions()) {
-                moves.add(Move.DEVELOPMENT_CARD);
-            }
-
-            //Asks if the player can play knight
-            if (checkMoveListForMove(toCheck, Move.KNIGHT) && main.canPlayDevelopmentCard(player, DevelopmentCard.KNIGHT) && canPerformActions()) {
-                moves.add(Move.KNIGHT);
-            }
-
-            //Asks if the player can play year of plenty
-            if (checkMoveListForMove(toCheck, Move.YEAR_OF_PLENTY) && main.canPlayDevelopmentCard(player, DevelopmentCard.YEAR_OF_PLENTY) && canPerformActions()) {
-                moves.add(Move.YEAR_OF_PLENTY);
-            }
-
-            //Asks if the player can play road building
-            if (checkMoveListForMove(toCheck, Move.ROAD_BUILDING) && main.canPlayDevelopmentCard(player, DevelopmentCard.ROAD_BUILDING) && canPerformActions()) {
-                moves.add(Move.ROAD_BUILDING);
-            }
-
-            //Asks if the player can play monopoly
-            if (checkMoveListForMove(toCheck, Move.MONOPOLY) && main.canPlayDevelopmentCard(player, DevelopmentCard.MONOPOLY) && canPerformActions()) {
-                moves.add(Move.MONOPOLY);
-            }
-
-            if(checkMoveListForMove(toCheck, Move.TRADE) && getPossibleTradingResources().size() != 0 && canPerformActions()){
-                moves.add(Move.TRADE);
-            }
-        }
-
-        return moves;
-    }
-
-    /**
      * Gets all the resources the player can use to trade
      * @return a list of all the resources the player can use to trade
      */
@@ -1150,13 +1236,91 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    /**
+     * Enables all trading GUI elements
+     * @param initiatingTrade is a trade being initiated?
+     */
+    private void enablePlayerTradingGUIElements(boolean initiatingTrade){
+        if(initiatingTrade){
+            playerTradeRequest = new HashMap<>();
+            playerTradeRequestReceivers = new HashSet<>();
+
+            for(Resource resource : Resource.values()) {
+                if (resource != Resource.MISC) {
+                    playerTradeRequest.put(resource, 0);
+                }
+            }
+
+            enableButton(tradeDirectionButton);
+
+            for(Player plr : players){
+                if(plr != player){
+                    playerTradeRequestReceivers.add(plr);
+                    playerSelectionLabelMap.get(plr).setVisible(true);
+                }
+            }
+
+            enableButtons(playerButtonMap.keySet());
+        }
+
+
+        for(Resource resource : Resource.values()){
+            if(resource != Resource.MISC) {
+                JTextField resourceTradeTextField = tradeTextMap.get(resource);
+
+                resourceTradeTextField.setText("0");
+                resourceTradeTextField.setVisible(true);
+                resourceTradeTextField.setFont(defaultFontBlue);
+            }
+        }
+    }
+
+    /**
+     * Disables all trading GUI elements
+     */
+    private void disablePlayerTradingGUIElements(){
+        for(Resource resource : Resource.values()){
+            if(resource != Resource.MISC) {
+                tradeTextMap.get(resource).setVisible(false);
+            }
+        }
+
+        for(Player plr : playerSelectionLabelMap.keySet()){
+            playerSelectionLabelMap.get(plr).setVisible(false);
+        }
+
+        disableButton(tradeDirectionButton);
+    }
+
+    public void receiveTradeRequest(Player sender, Map<Resource,Integer> resourcesExchanged){
+        enablePlayerTradingGUIElements(false);
+        currentState = GUIState.PLAYER_TRADE_REQUEST;
+
+        for(Resource resource : Resource.values()) {
+            if(resource != Resource.MISC) {
+                JTextField resourceText = tradeTextMap.get(resource);
+
+                int resourceQuantity = resourcesExchanged.get(resource);
+                resourceText.setText("" + Math.abs(resourceQuantity));
+
+                if(resourceQuantity < 0){
+                    resourceText.setFont(defaultFontGreen);
+                }else if(resourceQuantity > 0){
+                    resourceText.setFont(defaultFontRed);
+                }else{
+                    resourceText.setFont(defaultFontBlue);
+                }
+            }
+        }
+    }
+
     private boolean canPerformActions(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
 
     private void reloadPossibleMovesGUI(){
         reloadPossibleMovesGUI(null);
     }
 
-    //Actions
+    //Actions by keybinds
     /**
      * Passes the turn
      * @return
@@ -1185,6 +1349,11 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(canPass && currentState.isCancelable()){
                     disableAllButtons();
+
+                    if(currentState == GUIState.PLAYER_TRADE){
+                        disablePlayerTradingGUIElements();
+                    }
+
                     currentState = GUIState.NONE;
                     reloadPossibleMovesGUI();
                 }
@@ -1192,7 +1361,29 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    //Keybinds
+    /**
+     * Confirms an action
+     * @return
+     */
+    private ActionListener confirmAction(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(canPass && currentState == GUIState.PLAYER_TRADE){
+                    if(currentState == GUIState.PLAYER_TRADE){
+                        disableAllButtons();
+                        disablePlayerTradingGUIElements();
+
+                        main.trade(player,playerTradeRequest,playerTradeRequestReceivers);
+                    }
+
+                    currentState = GUIState.NONE;
+                    reloadPossibleMovesGUI();
+                }
+            }
+        };
+    }
+
     /**
      * Proscesses settlement building requests
      * @return
@@ -1350,7 +1541,25 @@ public class GUIPlayerImpl implements GUIPlayer{
                         }
 
                         currentState = GUIState.BANK_TRADE_PUT;
+                        reloadPossibleMovesGUI();
                     }
+                }
+            }
+        };
+    }
+
+    private ActionListener requestPlayerTrade(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(canPerformActions()){
+                    currentState = GUIState.PLAYER_TRADE;
+                    enableButtons(resourceButtonMap.keySet());
+                    setTradeDirection(false);
+
+                    enablePlayerTradingGUIElements(true);
+
+                    reloadPossibleMovesGUI();
                 }
             }
         };
@@ -1466,7 +1675,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                     player.removeResources(toRemove);
 
-                    if(getPlayerResourceCount(player) <= targetResourceAmount){
+                    if(player.getCardNumber() <= targetResourceAmount){
                         main.playerHasTargetResources(player);
                         currentState = GUIState.NONE;
                         disableButtons(resourceButtonMap.keySet());
@@ -1511,6 +1720,60 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.trade(player,bankTradeRequest[0],bankTradeRequest[1]);
                     disableButtons(resourceButtonMap.keySet());
                     reloadPossibleMovesGUI();
+                }else if(currentState == GUIState.PLAYER_TRADE){
+                    if(tradeDirectionGiving && -playerTradeRequest.get(resource) < player.getResources().get(resource)) {
+                        playerTradeRequest.put(resource,playerTradeRequest.get(resource) - 1);
+                    }else if(!tradeDirectionGiving){
+                        playerTradeRequest.put(resource,playerTradeRequest.get(resource) + 1);
+                    }
+
+                    JTextField resourceText = tradeTextMap.get(resource);
+                    int resourceQuantity = playerTradeRequest.get(resource);
+
+                    resourceText.setText("" + Math.abs(resourceQuantity));
+
+                    if(resourceQuantity < 0){
+                        resourceText.setFont(defaultFontRed);
+                    }else if(resourceQuantity > 0){
+                        resourceText.setFont(defaultFontGreen);
+                    }else{
+                        resourceText.setFont(defaultFontBlue);
+                    }
+                }
+                focusFrame();
+            }
+        };
+    }
+
+    private ActionListener playerButtonClickedAction(Player plr){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentState == GUIState.PLAYER_TRADE){
+                    if(playerTradeRequestReceivers.contains(plr)){
+                        playerTradeRequestReceivers.remove(plr);
+                        playerSelectionLabelMap.get(plr).setVisible(false);
+                    }else{
+                        playerTradeRequestReceivers.add(plr);
+                        playerSelectionLabelMap.get(plr).setVisible(true);
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * Whenever the trade direction button is clicked
+     * @return
+     */
+    private ActionListener tradeDirectionButtonClickedAction(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(tradeDirectionGiving){
+                    setTradeDirection(false);
+                }else{
+                    setTradeDirection(true);
                 }
                 focusFrame();
             }
@@ -1528,12 +1791,14 @@ enum GUIState{
     THIEF(false),
     DISCARD(false),
     ROAD_BUILDING_FIRST(true),
-    ROAD_BUILDING_SECOND(false),
+    ROAD_BUILDING_SECOND(true),
     YEAR_OF_PLENTY_FIRST(true),
-    YEAR_OF_PLENTY_SECOND(false),
+    YEAR_OF_PLENTY_SECOND(true),
     MONOPOLY(true),
     BANK_TRADE_PUT(true),
-    BANK_TRADE_TAKE(true);
+    BANK_TRADE_TAKE(true),
+    PLAYER_TRADE(true),
+    PLAYER_TRADE_REQUEST(false);
 
     GUIState(boolean cancelable){
         this.cancelable = cancelable;
@@ -1546,5 +1811,5 @@ enum GUIState{
 }
 
 enum Move{
-    PASS,CANCEL,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE
+    PASS,CANCEL,CONFIRM,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE_BANK,TRADE_PLAYER
 }

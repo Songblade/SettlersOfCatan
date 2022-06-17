@@ -5,6 +5,7 @@ import settlers.board.*;
 import settlers.card.DevelopmentCard;
 import settlers.card.Resource;
 
+import java.util.Map;
 import java.util.Set;
 
 public class GUIMainDummyImpl implements GUIMain {
@@ -141,4 +142,10 @@ public class GUIMainDummyImpl implements GUIMain {
     public void trade(Player player, Resource resourceGiven, Resource resourceGotten) {
 
     }
+
+    @Override
+    public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
+
+    }
+
 }
