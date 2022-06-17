@@ -229,7 +229,7 @@ public class MainTradeTest {
 
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 1);
-        assertTrue(main.canTrade(player, givings));
+        assertTrue(main.canTrade(player, givings, false));
     }
 
     // tests true if more than 1 resource
@@ -241,7 +241,7 @@ public class MainTradeTest {
 
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 1);
-        assertTrue(main.canTrade(player, givings));
+        assertTrue(main.canTrade(player, givings, false));
     }
 
     // tests false if needs 1 and has 0 or wrong
@@ -251,11 +251,11 @@ public class MainTradeTest {
 
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 1);
-        assertFalse(main.canTrade(player, givings));
+        assertFalse(main.canTrade(player, givings, false));
 
         player.addResource(Resource.WOOD);
 
-        assertFalse(main.canTrade(player, givings));
+        assertFalse(main.canTrade(player, givings, false));
     }
 
     // tests true if demands 2 and has 2
@@ -266,7 +266,7 @@ public class MainTradeTest {
 
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 2);
-        assertTrue(main.canTrade(player, givings));
+        assertTrue(main.canTrade(player, givings, false));
     }
 
     // tests false if demands 2 and has 1
@@ -278,7 +278,7 @@ public class MainTradeTest {
 
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 2);
-        assertFalse(main.canTrade(player, givings));
+        assertFalse(main.canTrade(player, givings, false));
     }
 
     // tests true if demands 1 and 1 and has both
@@ -291,7 +291,7 @@ public class MainTradeTest {
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 1);
         givings.put(Resource.WOOD, 1);
-        assertTrue(main.canTrade(player, givings));
+        assertTrue(main.canTrade(player, givings, false));
     }
 
     // tests true if demands 2 and 1 and has more
@@ -305,7 +305,7 @@ public class MainTradeTest {
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 2);
         givings.put(Resource.WOOD, 1);
-        assertTrue(main.canTrade(player, givings));
+        assertTrue(main.canTrade(player, givings, false));
     }
 
     // tests false if only has 1 of the resources
@@ -317,7 +317,7 @@ public class MainTradeTest {
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 1);
         givings.put(Resource.WOOD, 1);
-        assertFalse(main.canTrade(player, givings));
+        assertFalse(main.canTrade(player, givings, false));
     }
 
     // tests false if has both, but 1 resource not enough
@@ -331,7 +331,7 @@ public class MainTradeTest {
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 2);
         givings.put(Resource.WOOD, 1);
-        assertFalse(main.canTrade(player, givings));
+        assertFalse(main.canTrade(player, givings, false));
     }
 
     // tests true if has resources but not their turn
@@ -342,7 +342,18 @@ public class MainTradeTest {
 
         Map<Resource, Integer> givings = new HashMap<>();
         givings.put(Resource.ORE, 1);
-        assertTrue(main.canTrade(player, givings));
+        assertTrue(main.canTrade(player, givings, false));
+    }
+
+    // tests true if isRequestingPlayer and has resources in negative
+    @Test
+    public void canTradeP2PTrueNegative() {
+        player.addResource(Resource.ORE);
+        main.setTurn(player, true);
+
+        Map<Resource, Integer> givings = new HashMap<>();
+        givings.put(Resource.ORE, -1);
+        assertTrue(main.canTrade(player, givings, true));
     }
 
     // tests for trade p2p

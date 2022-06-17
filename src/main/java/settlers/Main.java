@@ -152,10 +152,14 @@ public interface Main {
      * can be traded with.
      * @param player trading or being traded with
      * @param resourcesGiven that this player would have to give as part of the trade
+     * @param isRequestingPlayer if this player is requesting the trade or accepting it
+     *                           If the player is requesting the trade, resourcesGiven values should
+     *                              be negative.
+     *                           Otherwise, they should be positive.
      * @return true if the player can make this trade, false if the player lacks the resources
      * Also returns false if the resources are empty, because you cannot donate resources
      */
-    boolean canTrade(Player player, Map<Resource, Integer> resourcesGiven);
+    boolean canTrade(Player player, Map<Resource, Integer> resourcesGiven, boolean isRequestingPlayer);
 
     /**
      * This simulates a trade with the bank, updating the Player appropriately
