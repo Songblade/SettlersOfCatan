@@ -330,9 +330,11 @@ public class GUIMainImpl implements GUIMain {
     }
 
     @Override
-    public void trade(Player player, Map<Resource, Integer> resourcesExchanged) {
-        if(main.canTrade(player,resourcesExchanged)){
-
+    public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
+        if(true){
+            for(Player plr : sendTo){
+                playerGUIs.get(plr).receiveTradeRequest(player,resourcesExchanged);
+            }
         }
     }
 }

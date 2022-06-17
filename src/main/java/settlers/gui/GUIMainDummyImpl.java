@@ -144,7 +144,7 @@ public class GUIMainDummyImpl implements GUIMain {
     }
 
     @Override
-    public void trade(Player player, Map<Resource, Integer> resourcesExchanged) {
+    public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
 
     }
 

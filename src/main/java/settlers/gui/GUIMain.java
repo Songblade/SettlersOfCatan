@@ -195,5 +195,5 @@ public interface GUIMain {
      * @param player the player who sent the request
      * @param resourcesExchanged a map of resources that would be exchanged during this trade
      */
-    void trade(Player player, Map<Resource, Integer> resourcesExchanged);
+    void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo);
 }

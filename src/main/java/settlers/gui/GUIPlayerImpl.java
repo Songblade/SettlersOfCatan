@@ -43,6 +43,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     //Label maps
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
+    private HashMap<Player,JLabel> playerSelectionLabelMap = new HashMap<>();
     private HashMap<Resource,JTextField> resourceTextMap = new HashMap<>();
     private HashMap<Resource,JTextField> tradeTextMap = new HashMap<>();
     private HashMap<DevelopmentCard,JTextField> developmentTextMap = new HashMap<>();
@@ -63,6 +64,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Edge[] roadBuildingRequest = new Edge[2];
     private Resource[] bankTradeRequest = new Resource[2];
     private HashMap<Resource, Integer> playerTradeRequest = new HashMap<>();
+    private HashSet<Player> playerTradeRequestReceivers = new HashSet<>();
 
     //Frame and image
     private JFrame frame;
@@ -586,6 +588,12 @@ public class GUIPlayerImpl implements GUIPlayer{
                 //Places the player labels for other players
                 JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
                 playerLabel.setIcon(new ImageIcon(getConstructionImage(plr.getID(),2).getScaledInstance(128, 128, 0)));
+
+                //Places the player selection label for other players
+                JLabel playerSelectionLabel = createLabel("", 35, currentYOffset, 1);
+                playerSelectionLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PlayerSelect.png").getScaledInstance(128, 128, 0)));
+                playerSelectionLabel.setVisible(false);
+                playerSelectionLabelMap.put(plr,playerSelectionLabel);
 
                 //Places the resource labels for other players
                 JLabel playerResourceLabel = createLabel("",currentXOffset,currentYOffset,1);
@@ -1234,6 +1242,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void enablePlayerTradingGUIElements(boolean initiatingTrade){
         if(initiatingTrade){
             playerTradeRequest = new HashMap<>();
+            playerTradeRequestReceivers = new HashSet<>();
 
             for(Resource resource : Resource.values()) {
                 if (resource != Resource.MISC) {
@@ -1242,6 +1251,12 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             enableButton(tradeDirectionButton);
+
+            for(Player plr : players){
+                if(plr != player){
+                    playerTradeRequestReceivers.add(plr);
+                }
+            }
         }
 
 
@@ -1270,6 +1285,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     public void receiveTradeRequest(Player sender, Map<Resource,Integer> resourcesExchanged){
         enablePlayerTradingGUIElements(false);
+        currentState = GUIState.PLAYER_TRADE_REQUEST;
 
         for(Resource resource : Resource.values()) {
             if(resource != Resource.MISC) {
@@ -1349,7 +1365,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                         disableAllButtons();
                         disablePlayerTradingGUIElements();
 
-                        main.trade(player,playerTradeRequest);
+                        main.trade(player,playerTradeRequest,new HashSet<>());
                     }
 
                     currentState = GUIState.NONE;
