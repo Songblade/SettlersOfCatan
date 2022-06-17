@@ -909,28 +909,30 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param keyId the ASCII identifier of the key
      * @param action the action to be performed whenever the key is pressed
      */
-    private void mapAction(Move move, int keyId, ActionListener action, String key, String description){
-        frame.getRootPane().registerKeyboardAction(action,KeyStroke.getKeyStroke((char) keyId),JComponent.WHEN_IN_FOCUSED_WINDOW);
-        createMoveText(move,key,description);
+    private void mapAction(Move move, int keyId, Action action, MoveDescription description){
+        //frame.getRootPane().registerKeyboardAction(action,KeyStroke.getKeyStroke((char) keyId),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke((char) keyId),description);
+        frame.getRootPane().getActionMap().put(description,action);
+        createMoveText(move,description.key,description.defaultDescription);
     }
 
     /**
      * Maps all of the frame's actions
      */
     private void mapActions(){
-        mapAction(Move.CANCEL,8,cancelMove(),"Backspace","Cancel move");
-        mapAction(Move.PASS,32,passTurn(),"Space","Pass the turn");
-        mapAction(Move.CONFIRM,10,confirmAction(),"Enter","Confirm Action");
-        mapAction(Move.ROAD,49,requestRoadPlacement(),"1","Build a road");
-        mapAction(Move.SETTLEMENT,50,requestSettlementPlacement(),"2","Build a settlement");
-        mapAction(Move.CITY,51,requestCityPlacement(),"3","Build a city");
-        mapAction(Move.DEVELOPMENT_CARD,52,buildDevelopmentCard(),"4","Buy a development card");
-        mapAction(Move.KNIGHT,113,requestKnight(),"Q","Play knight");
-        mapAction(Move.YEAR_OF_PLENTY,119,requestYearOfPlenty(),"W","Play year of planty");
-        mapAction(Move.ROAD_BUILDING,101,requestRoadBuilding(),"E","Play road building");
-        mapAction(Move.MONOPOLY,114,requestMonopoly(),"R","Play monopoly");
-        mapAction(Move.TRADE_BANK,97,requestBankTrade(),"A","Trade with the bank");
-        mapAction(Move.TRADE_PLAYER,115,requestPlayerTrade(),"S","Trade with players");
+        mapAction(Move.CANCEL,8,cancelMove(),new MoveDescription("Backspace","Cancel Move",null));
+        mapAction(Move.PASS,32,passTurn(),new MoveDescription("Space","Pass the turn",null));
+        mapAction(Move.CONFIRM,10,confirmAction(),new MoveDescription("Enter","Confirm Action",null));
+        mapAction(Move.ROAD,49,requestRoadPlacement(),new MoveDescription("1","Build a road",null));
+        mapAction(Move.SETTLEMENT,50,requestSettlementPlacement(),new MoveDescription("2","Build a settlement",null));
+        mapAction(Move.CITY,51,requestCityPlacement(),new MoveDescription("3","Build a city",null));
+        mapAction(Move.DEVELOPMENT_CARD,52,buildDevelopmentCard(),new MoveDescription("4","Buy a development card",null));
+        mapAction(Move.KNIGHT,113,requestKnight(),new MoveDescription("Q","Play knight",null));
+        mapAction(Move.YEAR_OF_PLENTY,119,requestYearOfPlenty(),new MoveDescription("W","Play year of plenty",null));
+        mapAction(Move.ROAD_BUILDING,101,requestRoadBuilding(),new MoveDescription("E","Play road building",null));
+        mapAction(Move.MONOPOLY,114,requestMonopoly(),new MoveDescription("R","Play monopoly",null));
+        mapAction(Move.TRADE_BANK,97,requestBankTrade(),new MoveDescription("A","Trade with the bank",null));
+        mapAction(Move.TRADE_PLAYER,115,requestPlayerTrade(),new MoveDescription("S","Trade with players",null));
     }
 
     /**
@@ -1325,7 +1327,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Passes the turn
      * @return
      */
-    private ActionListener passTurn(){
+    private Action passTurn(){
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1343,7 +1345,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Cancels your move
      * @return
      */
-    private ActionListener cancelMove(){
+    private Action cancelMove(){
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1365,7 +1367,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Confirms an action
      * @return
      */
-    private ActionListener confirmAction(){
+    private Action confirmAction(){
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1385,10 +1387,23 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Confirms a trade
+     * @return
+     */
+    private Action confirmTrade(){
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("trade has been confirmed");
+            }
+        };
+    }
+
+    /**
      * Proscesses settlement building requests
      * @return
      */
-    private ActionListener requestCityPlacement() {
+    private Action requestCityPlacement() {
         return new AbstractAction(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1410,7 +1425,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Proscesses settlement building requests
      * @return
      */
-    private ActionListener requestSettlementPlacement() {
+    private Action requestSettlementPlacement() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1432,7 +1447,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Proscesses road building requests
      * @return
      */
-    private ActionListener requestRoadPlacement() {
+    private Action requestRoadPlacement() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1450,7 +1465,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    private ActionListener buildDevelopmentCard() {
+    private Action buildDevelopmentCard() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1464,7 +1479,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    private ActionListener requestKnight() {
+    private Action requestKnight() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1479,7 +1494,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    private ActionListener requestYearOfPlenty() {
+    private Action requestYearOfPlenty() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1494,7 +1509,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    private ActionListener requestRoadBuilding() {
+    private Action requestRoadBuilding() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1510,7 +1525,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    private ActionListener requestMonopoly() {
+    private Action requestMonopoly() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1525,7 +1540,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    private ActionListener requestBankTrade(){
+    private Action requestBankTrade(){
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1548,7 +1563,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         };
     }
 
-    private ActionListener requestPlayerTrade(){
+    private Action requestPlayerTrade(){
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1812,4 +1827,26 @@ enum GUIState{
 
 enum Move{
     PASS,CANCEL,CONFIRM,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE_BANK,TRADE_PLAYER
+}
+
+class MoveDescription{
+    Map<GUIState,String> descriptionMap;
+    String defaultDescription;
+    String key;
+
+    MoveDescription(String key, String defaultDescription, Map<GUIState,String> descriptionMap){
+        this.key = key;
+        this.defaultDescription = defaultDescription;
+        this.descriptionMap = descriptionMap;
+    }
+
+    String getDescription(GUIState state){
+        if(descriptionMap == null || !descriptionMap.containsKey(state)){
+            return defaultDescription;
+        }else{
+            return descriptionMap.get(state);
+        }
+    }
+
+    String getKey(){return key;}
 }
