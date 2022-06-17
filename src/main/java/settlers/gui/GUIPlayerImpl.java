@@ -781,6 +781,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    /**
+     * Updates plr's development card counters
+     */
     @Override
     public void updateDevelopmentCounters(Player plr){
         if(plr.equals(player)){
@@ -793,6 +796,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    /**
+     * Updates plr's played knights counter
+     */
     public void updateKnightCounters(Player plr){
         if(plr.equals(player)){
             playedKnightsCountLabel.setText("" + plr.getKnightNumber());
@@ -973,7 +979,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             //Asks if the player can confirm a move. There is currently one move which a player can confirm.
-            if(checkMoveListForMove(toCheck, Move.CONFIRM) && currentState == GUIState.PLAYER_TRADE){
+            if(checkMoveListForMove(toCheck, Move.CONFIRM) && (currentState == GUIState.PLAYER_TRADE || currentState == GUIState.PLAYER_TRADE_REQUEST)){
                 moves.add(Move.CONFIRM);
             }
 
@@ -1360,7 +1366,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 if(canPass && currentState.isCancelable()){
                     disableAllButtons();
 
-                    if(currentState == GUIState.PLAYER_TRADE){
+                    if(currentState == GUIState.PLAYER_TRADE || currentState == GUIState.PLAYER_TRADE_REQUEST){
                         disablePlayerTradingGUIElements();
                     }
 
@@ -1385,6 +1391,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                         disablePlayerTradingGUIElements();
 
                         main.trade(player,playerTradeRequest,playerTradeRequestReceivers);
+                    }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
+                        disableAllButtons();
+                        disablePlayerTradingGUIElements();
                     }
 
                     currentState = GUIState.NONE;
@@ -1821,7 +1830,7 @@ enum GUIState{
     BANK_TRADE_PUT(true),
     BANK_TRADE_TAKE(true),
     PLAYER_TRADE(true),
-    PLAYER_TRADE_REQUEST(false);
+    PLAYER_TRADE_REQUEST(true);
 
     GUIState(boolean cancelable){
         this.cancelable = cancelable;
