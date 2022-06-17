@@ -735,6 +735,7 @@ public class MainImpl implements Main {
         Set<Edge> duplicateSet = new HashSet<>(player.getRoads());
         int firstLength = calculateRoadLength(player, adjVertices.get(0), road, duplicateSet);
         int secondLength = calculateRoadLength(player, adjVertices.get(1), road, duplicateSet);
+        //System.out.println("Calculating length of " + (firstLength + secondLength - 1) + " for " + player + " during turn of " + currentTurn);
         return firstLength + secondLength - 1; // the longest path on each side
         // both paths count this road, so we have to remove the second copy
     }
