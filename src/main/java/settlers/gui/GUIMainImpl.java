@@ -15,8 +15,9 @@ public class GUIMainImpl implements GUIMain {
     private boolean unlimitedResources = true;
 
     //Functional
-    HashSet<Player> playersWhoHaveNotDiscarded = new HashSet<>();
-    private Player tradeAcceptingPlayer = null;
+    private Set<Player> playersWhoHaveNotDiscarded = new HashSet<>();
+    private Set<Player> playersWithTradeRequests = new HashSet<>();
+    private Player playerWhoAcceptedTradeRequest = null;
 
     public GUIMainImpl(Main main) {
         this.main = main;
@@ -243,7 +244,7 @@ public class GUIMainImpl implements GUIMain {
                 Thread.sleep(1);
                 updateResourceCounters();
             }catch (InterruptedException e){
-                throw new IllegalStateException("InterrupterException was thrown: " + e);
+                throw new IllegalStateException("InterruptedException was thrown: " + e);
             }
         }
     }
@@ -329,14 +330,67 @@ public class GUIMainImpl implements GUIMain {
         updateResourceCounters();
     }
 
+    /**
+     * Clones a set of players
+     * @param set the set of players
+     * @return the clone of set
+     */
+    private Set<Player> clonePlayerSet(Set<Player> set){
+        Set<Player> output = new HashSet<>();
+
+        for(Player plr : set){
+            output.add(plr);
+        }
+
+        return set;
+    }
+
     @Override
     public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
         if(true){
+            playersWithTradeRequests = clonePlayerSet(sendTo);
+
+            //Looks at all players in sendTo and checks if they can make the proposed trade.
+            //If they can, send them the trade request.
+            //If they can't, remove them from playersWithTradeRequests
             for(Player plr : sendTo){
                 if(main.canTrade(plr,resourcesExchanged,false)) {
                     playerGUIs.get(plr).receiveTradeRequest(player, resourcesExchanged);
+                }else{
+                    playersWithTradeRequests.remove(plr);
                 }
             }
+
+            //Waits for players to accept/decline request
+            while (playersWithTradeRequests.size() > 0 && playerWhoAcceptedTradeRequest == null){
+                try {
+                    Thread.sleep(1);
+                }catch (InterruptedException e){
+                    throw new IllegalStateException("InterruptedException was thrown: " + e);
+                }
+            }
+
+            //If a player accepted the request, make the trade
+            if(playerWhoAcceptedTradeRequest != null){
+                main.trade(player,resourcesExchanged,playerWhoAcceptedTradeRequest);
+            }
+
+            //Resets playerWhoAcceptedTradeRequest
+            playerWhoAcceptedTradeRequest = null;
+        }
+    }
+
+    @Override
+    public void playerDeclinedTrade(Player player) {
+        if(playersWithTradeRequests.contains(player)){
+            playersWithTradeRequests.remove(player);
+        }
+    }
+
+    @Override
+    public void playerAcceptedTrade(Player player) {
+        if(playersWithTradeRequests.contains(player)){
+            playerWhoAcceptedTradeRequest = player;
         }
     }
 }

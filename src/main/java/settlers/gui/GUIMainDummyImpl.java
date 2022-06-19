@@ -148,4 +148,14 @@ public class GUIMainDummyImpl implements GUIMain {
 
     }
 
+    @Override
+    public void playerDeclinedTrade(Player player) {
+
+    }
+
+    @Override
+    public void playerAcceptedTrade(Player player) {
+
+    }
+
 }
