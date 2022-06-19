@@ -807,6 +807,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    public void updateFrame(){
+
+    }
+
     /**
      * Enables the die counter outline
      * @param roll the number whose color the die counter outline should display
@@ -1082,11 +1086,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * When main requests GUIPlayer to place a settlement, show all the buttons which would allow him to do so
      */
     private void requestSettlementPlacementSP(Set<Vertex> availableSpots){
-        for(JButton button : vertexButtonMap.keySet()){
-            if(availableSpots.contains(vertexButtonMap.get(button))){
-                enableButton(button);
-            }
-        }
+        enableSpecifiedButtons(vertexButtonMap.keySet(),vertexButtonMap,availableSpots);
         currentState = GUIState.SETTLEMENT;
     }
 
@@ -1311,6 +1311,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     public void receiveTradeRequest(Player sender, Map<Resource,Integer> resourcesExchanged){
         enablePlayerTradingGUIElements(false);
         currentState = GUIState.PLAYER_TRADE_REQUEST;
+        reloadPossibleMovesGUI();
 
         for(Resource resource : Resource.values()) {
             if(resource != Resource.MISC) {
@@ -1366,8 +1367,11 @@ public class GUIPlayerImpl implements GUIPlayer{
                 if(canPass && currentState.isCancelable()){
                     disableAllButtons();
 
-                    if(currentState == GUIState.PLAYER_TRADE || currentState == GUIState.PLAYER_TRADE_REQUEST){
+                    if(currentState == GUIState.PLAYER_TRADE){
                         disablePlayerTradingGUIElements();
+                    }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
+                        disablePlayerTradingGUIElements();
+                        main.playerDeclinedTrade(player);
                     }
 
                     currentState = GUIState.NONE;
@@ -1392,8 +1396,8 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                         main.trade(player,playerTradeRequest,playerTradeRequestReceivers);
                     }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
-                        disableAllButtons();
                         disablePlayerTradingGUIElements();
+                        main.playerAcceptedTrade(player);
                     }
 
                     currentState = GUIState.NONE;

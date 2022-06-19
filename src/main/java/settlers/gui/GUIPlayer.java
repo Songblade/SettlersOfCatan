@@ -64,6 +64,11 @@ public interface GUIPlayer {
     void updateKnightCounters(Player plr);
 
     /**
+     * Updates the GUIPlayer's frame
+     */
+    void updateFrame();
+
+    /**
      * Moves the thief image
      * @param hex the new location of the thief image
      */

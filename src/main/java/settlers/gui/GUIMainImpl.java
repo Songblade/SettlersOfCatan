@@ -224,9 +224,22 @@ public class GUIMainImpl implements GUIMain {
         }
     }
 
+    /**
+     * Updates all player's played knights counters
+     * @param initiater the player who triggered this method
+     */
     private void updateKnightCounters(Player initiater){
         for(Player player : playerGUIs.keySet()){
             playerGUIs.get(player).updateKnightCounters(initiater);
+        }
+    }
+
+    /**
+     * Updates all player's frames
+     */
+    private void updateFrames(){
+        for(Player player : playerGUIs.keySet()){
+            playerGUIs.get(player).updateFrame();
         }
     }
 
@@ -362,9 +375,12 @@ public class GUIMainImpl implements GUIMain {
             }
 
             //Waits for players to accept/decline request
-            while (playersWithTradeRequests.size() > 0 && playerWhoAcceptedTradeRequest == null){
+            int c = 0;
+            while (playersWithTradeRequests.size() > 0 && playerWhoAcceptedTradeRequest == null && c < 1000){
+                c++;
                 try {
                     Thread.sleep(1);
+                    updateFrames();
                 }catch (InterruptedException e){
                     throw new IllegalStateException("InterruptedException was thrown: " + e);
                 }
