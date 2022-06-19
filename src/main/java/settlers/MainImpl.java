@@ -534,6 +534,141 @@ public class MainImpl implements Main {
         if (isWinner) { // if the player has won, end the game
             endGame(player);
         }
+        // figure out if a player lost his longest road, and maybe we need to recalculate things
+        // and if so, do that
+        // I put this after endGame, just in case it matters that the player whose turn it is gets first chance
+            // to win
+        determineInterruption(player, location);
+    }
+
+    // now I need to write the rules for interrupting the longest road
+    // recalculation should only need to occur when the new settlement is connected to 2 roads that are of the
+        // player with the longest road, and this is not that player
+    // then I will have to recalculate the longest road player's longest road, and find the new value
+        // that will require calling the method on every one of their roads
+    // then I will need to figure out who has the longest road, and give them the longest road
+
+    /**
+     * This method determines if the newly built settlement interrupts a different player's road
+     * If it does, it recalculates that player's longest road, and potentially changes who has the longest road
+     * @param builder who just built a settlement
+     * @param settlement that was just built
+     */
+    private void determineInterruption(Player builder, Vertex settlement) {
+        // I need to recalculate even if the player being interrupted does not have the longest road
+        // That way, if an interruption does happen later, they can still have longest road
+        // First, I need to figure out which player was interrupted, if any
+        Player interrupted = getInterruptedPlayer(builder, settlement);
+        if (interrupted == null) { // if no player was interrupted, we are done her, and no recalculation is necessary
+            return;
+        } // from here on, we have an interrupted player who needs to be recalculated
+        // so we recalculate the road length, and set the new length
+        interrupted.setRoadLength(recalculateLongestRoad(interrupted));
+        // if the player also had the longest road, we now need to figure out who has that now
+        if (interrupted == longestRoadHolder) {
+            redetermineLongestRoad();
+        }
+    }
+
+    /**
+     * @param builder who just built a settlement, and so cannot be interrupted
+     * @param settlement that was just built
+     * @return which player was just interrupted, or null if none were
+     */
+    private Player getInterruptedPlayer(Player builder, Vertex settlement) {
+        Player interruptedPlayer = null;
+        for (Edge edge : settlement.getEdges()) {
+            // we check each edge
+            if (edge != null && edge.getPlayer() != builder) {
+                // if this is another player's road, we might have interrupted someone
+                if (interruptedPlayer == null) {
+                    // if this is the first other road we find, we store it
+                    interruptedPlayer = edge.getPlayer();
+                } else if (interruptedPlayer == edge.getPlayer()) {
+                    // if this is the second, and of the first type as the first, we are interrupting that player
+                    // and so must return it
+                    return interruptedPlayer;
+                }
+                // we don't have to worry about getting an interrupted player of one type, and then overlooking another
+                // because we know that at least 1 road belongs to this player
+                // unless this is setup phase, in which case we can't interrupt anyone anyway
+                // so of the remaining two, they either must be the same type as each other, and are interrupted
+                // or they are of different types, in which case it doesn't matter what we ignore
+                    // because they can't be interrupted anyway, only blocked
+            }
+        }
+        return null; // we didn't find an interrupted player, so no player was interrupted
+    }
+
+    /**
+     * This method is called either because the player was blocked by someone's settlement
+     * Or because this player has a loop, and we need to figure out which way of calculating gives us
+     * the longest road whenever we add a road
+     *
+     * This method does not actually change the longest road, because what needs to be done there
+     * depends on which method called this one in the first place.
+     *
+     * This method is inefficient, at O(n^2), because it needs to calculate the road length at every road
+     * in order to find the longest path through the loop, or check every branch for the longest road
+     *
+     * @param player whose longest road length needs to be recalculated
+     */
+    private int recalculateLongestRoad(Player player) {
+        int longestRoad = 0;
+        for (Edge edge : player.getRoads()) {
+            int roadNumber = calculateRoadLength(player, edge);
+            if (roadNumber > longestRoad) {
+                longestRoad = roadNumber;
+            }
+        }
+        return longestRoad;
+    }
+
+    /**
+     * This method is called after someone interrupts the path of someone who has longest road
+     * We now need to figure out who really has the longest road
+     * These are the rules:
+     *  If the person with longest road before still has or is tied for the longest road, they keep the points
+     *  If someone new now has the longest road, they get the points
+     *  If two new people are now tied for longest road, no one gets the points
+     *  If no one remaining has a road of length 5 or more (even if the previous holder has the longest),
+     *      no one gets the points
+     */
+    private void redetermineLongestRoad() {
+        Player newLongestPlayer = longestRoadHolder.getRoadLength() >= 5 ? longestRoadHolder : null;
+        // we only start planning to give the longest road holder longest road if he is still eligible
+        int longestRoadLength = longestRoadHolder.getRoadLength();
+        for (Player player : players) {
+            if (player.getRoadLength() > longestRoadHolder.getRoadLength() && player.getRoadLength() >= 5) {
+                // if no player is greater than the longest road holder, that holder must either have or
+                    // be tied for longest road. Either way, he keeps it
+                if (player.getRoadLength() > longestRoadLength) {
+                    // if this player is greater, it is the greatest we have seen so far
+                    // so that player becomes the one we give longest road to
+                    newLongestPlayer = player;
+                    longestRoadLength = player.getRoadLength();
+                } else if (player.getRoadLength() == longestRoadLength) {
+                    // if this player is equal, then there is a tied for longest road, and one not involving
+                        // the previous holder
+                    // as a result, we get rid of the player, but keep the longestRoadLength as a requirement
+                        // to beat if the last player wants longest road
+                    newLongestPlayer = null;
+                }
+            }
+        }
+        //no if statement needed, we know there was a previous holder
+        longestRoadHolder.increaseVictoryPoints(-2);
+        // give this player longest road
+        if (newLongestPlayer != null) {
+            // if someone gets the longest road now, give them the points
+            newLongestPlayer.increaseVictoryPoints(2);
+        }
+        // update in Main
+        longestRoadHolder = newLongestPlayer;
+        // if the redetermination caused a new victor, we should end the game now
+        if (longestRoadHolder != null && longestRoadHolder.getVictoryPoints() >= 10) {
+            endGame(longestRoadHolder);
+        }
     }
 
     /**
@@ -600,6 +735,7 @@ public class MainImpl implements Main {
         Set<Edge> duplicateSet = new HashSet<>(player.getRoads());
         int firstLength = calculateRoadLength(player, adjVertices.get(0), road, duplicateSet);
         int secondLength = calculateRoadLength(player, adjVertices.get(1), road, duplicateSet);
+        //System.out.println("Calculating length of " + (firstLength + secondLength - 1) + " for " + player + " during turn of " + currentTurn);
         return firstLength + secondLength - 1; // the longest path on each side
         // both paths count this road, so we have to remove the second copy
     }
@@ -899,11 +1035,15 @@ public class MainImpl implements Main {
      *
      * @param player         trading or being traded with
      * @param resourcesGiven that this player would have to give as part of the trade
+     * @param isRequestingPlayer if this player is requesting the trade or accepting it
+     *                           If the player is requesting the trade, resourcesGiven values should
+     *                              be negative.
+     *                           Otherwise, they should be positive.
      * @return true if the player can make this trade, false if the player lacks the resources
      * Also returns false if the resources are empty, because you cannot donate resources
      */
     @Override
-    public boolean canTrade(Player player, Map<Resource, Integer> resourcesGiven) {
+    public boolean canTrade(Player player, Map<Resource, Integer> resourcesGiven, boolean isRequestingPlayer) {
         if (player == null || resourcesGiven == null) {
             throw new IllegalArgumentException("null values not permitted");
         }
@@ -915,7 +1055,8 @@ public class MainImpl implements Main {
         Map<Resource, Integer> playerResources = player.getResources();
         for (Resource resource : resourcesGiven.keySet()) { // make sure that has enough for each
                 // resource
-            if (playerResources.get(resource) < resourcesGiven.get(resource)) {
+            if (!isRequestingPlayer && (playerResources.get(resource) < resourcesGiven.get(resource))
+            || isRequestingPlayer && (playerResources.get(resource) * -1 < resourcesGiven.get(resource))) {
                 return false;
             }
         }
