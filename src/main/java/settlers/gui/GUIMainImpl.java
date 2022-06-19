@@ -12,20 +12,29 @@ public class GUIMainImpl implements GUIMain {
     private Main main;
     private HashMap<Player,GUIPlayer> playerGUIs;
 
+    private GUIThreadManager threadManager;
+
     private boolean unlimitedResources = true;
 
     //Functional
     private Set<Player> playersWhoHaveNotDiscarded = new HashSet<>();
     private Set<Player> playersWithTradeRequests = new HashSet<>();
     private Player playerWhoAcceptedTradeRequest = null;
+    //This is important so we can identify when to and not to end turns after a road was placed
+    private boolean mainPhase = false;
 
     public GUIMainImpl(Main main) {
         this.main = main;
+
         playerGUIs = new HashMap();
+
         for(int i = 0; i < main.getPlayers().size(); i++){
             Player player = main.getPlayers().get(i);
             playerGUIs.put(player, new GUIPlayerImpl(this,main.getBoard(),player,main.getPlayers()));
         }
+
+        threadManager = new GUIThreadManagerImpl();
+
         //for(GUIPlayer gui : playerGUIs){
         //    gui.startSettlementTurn(main.getAvailableSettlementSpots(main.getPlayers().get(0)));
         //}
@@ -65,6 +74,10 @@ public class GUIMainImpl implements GUIMain {
 
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setRoad(player,edge);
+        }
+
+        if(!mainPhase){
+            threadManager.stopHold();
         }
 
         updateResourceCounters();
@@ -269,6 +282,8 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public void startTurn(Player player, int dieRoll){
+        mainPhase = true;
+
         //Updates dice and resources for all players
         updateResourceCounters(dieRoll);
 
@@ -292,7 +307,12 @@ public class GUIMainImpl implements GUIMain {
         //Update the resources for all players
         updateResourceCounters();
 
-        return playerGUIs.get(player).startSettlementTurn(validSpots);
+        //Starts the settlement turn
+        playerGUIs.get(player).startSettlementTurn(validSpots);
+
+        threadManager.startHold();
+
+        return playerGUIs.get(player).getLastSettlementSpot();
     }
 
     public Set<Hex> getAvailableThiefSpots(){

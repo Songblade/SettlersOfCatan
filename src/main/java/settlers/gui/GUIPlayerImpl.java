@@ -864,7 +864,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param availableSpots all available spots
      * @return the spot where the player placed his settlement
      */
-    public Vertex startSettlementTurn(Set<Vertex> availableSpots){
+    public void startSettlementTurn(Set<Vertex> availableSpots){
         lastSettlementSpot = null;
         lastRoadSpot = null;
         thisPlayerHasTurn = true;
@@ -873,7 +873,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Requests to place a settlement in settlement phase
         requestSettlementPlacementSP(availableSpots);
 
-        while(lastSettlementSpot == null){
+        /**while(lastSettlementSpot == null){
             try {
                 Thread.sleep(1);
             }catch (InterruptedException e){
@@ -882,18 +882,19 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
 
         //Requests to place a road neat to that settlement
-        requestRoadPlacementSP();
+        requestRoadPlacementSP();*/
 
-        while(lastRoadSpot == null){
+        /**while(lastRoadSpot == null){
             try {
                 Thread.sleep(1);
             }catch (InterruptedException e){
                 throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
             }
-        }
+        }*/
+    }
 
-        thisPlayerHasTurn = false;
-
+    @Override
+    public Vertex getLastSettlementSpot(){
         return lastSettlementSpot;
     }
 
@@ -1648,6 +1649,10 @@ public class GUIPlayerImpl implements GUIPlayer{
                     main.buildSettlement(player,vertex);
                     lastSettlementSpot = vertex;
                     currentState = GUIState.NONE;
+
+                    if(!mainPhase){
+                        requestRoadPlacementSP();
+                    }
                 }else if(currentState == GUIState.CITY){
                     main.buildCity(player,vertex);
                     currentState = GUIState.NONE;
@@ -1676,6 +1681,11 @@ public class GUIPlayerImpl implements GUIPlayer{
                     lastRoadSpot = edge;
                     currentState = GUIState.NONE;
                     disableButtons(edgeButtonMap.keySet());
+
+                    //If the road is not placed in the main phase, it is a turn ending move
+                    if(!mainPhase){
+                        thisPlayerHasTurn = false;
+                    }
                 }else if(currentState == GUIState.ROAD_BUILDING_FIRST){
                     roadBuildingRequest[0] = edge;
                     disableButtons(edgeButtonMap.keySet());
