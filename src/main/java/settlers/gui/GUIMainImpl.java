@@ -333,7 +333,9 @@ public class GUIMainImpl implements GUIMain {
     public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
         if(true){
             for(Player plr : sendTo){
-                playerGUIs.get(plr).receiveTradeRequest(player,resourcesExchanged);
+                if(main.canTrade(plr,resourcesExchanged,false)) {
+                    playerGUIs.get(plr).receiveTradeRequest(player, resourcesExchanged);
+                }
             }
         }
     }
