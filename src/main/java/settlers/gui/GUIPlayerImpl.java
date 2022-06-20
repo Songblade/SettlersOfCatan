@@ -814,6 +814,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(roll).getScaledInstance(dieCounterSize,dieCounterSize,0)));
     }
 
+    public void startMainPhase(){
+        mainPhase = true;
+    }
+
     /**
      * Starts Player's turn
      */
@@ -845,8 +849,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void startTurnMainPhase(){
         thisPlayerHasTurn = true;
-        mainPhase = true;
-
         reloadPossibleMovesGUI();
     }
 
@@ -944,7 +946,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Moves can only be preformed when it's your turn
         if(thisPlayerHasTurn) {
             //Asks if the player can pass
-            if (checkMoveListForMove(toCheck, Move.PASS) && mainPhase) {
+            if (checkMoveListForMove(toCheck, Move.PASS) && mainPhase && currentState.isCancelable()) {
                 moves.add(Move.PASS);
             }
 
@@ -953,9 +955,12 @@ public class GUIPlayerImpl implements GUIPlayer{
                 moves.add(Move.CANCEL);
             }
 
-            //Asks if the player can confirm a move. There is currently one move which a player can confirm.
+            //Asks if the player can confirm a move
             if(checkMoveListForMove(toCheck, Move.CONFIRM) && (currentState == GUIState.PLAYER_TRADE || currentState == GUIState.PLAYER_TRADE_REQUEST)){
+                System.out.println("currentState when confirm is allowed: " + currentState);
                 moves.add(Move.CONFIRM);
+            }else{
+                System.out.println("currentState when confirm is NOT allowed: " + currentState);
             }
 
             //Asks if the player can build a road
@@ -1342,17 +1347,18 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Cancel Attempted: ");
+
+                //Some GUIStates have extra actions which must be taken upon canceling moves
+                if(currentState == GUIState.PLAYER_TRADE){
+                    disablePlayerTradingGUIElements();
+                }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
+                    disablePlayerTradingGUIElements();
+                    main.playerDeclinedTrade(player);
+                }
+
+                //Cancels the move
                 if(mainPhase && currentState.isCancelable()){
                     disableAllButtons();
-
-                    if(currentState == GUIState.PLAYER_TRADE){
-                        disablePlayerTradingGUIElements();
-                    }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
-                        disablePlayerTradingGUIElements();
-                        main.playerDeclinedTrade(player);
-                    }
-
                     currentState = GUIState.NONE;
                     reloadPossibleMovesGUI();
                 }

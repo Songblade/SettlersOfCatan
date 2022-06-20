@@ -26,6 +26,11 @@ public interface GUIPlayer {
     Vertex getLastSettlementSpot();
 
     /**
+     * informs the GUIPlayer that the main phase of the game has started. This is important so the player can cance
+     */
+    void startMainPhase();
+
+    /**
      * Tells GUIPlayers to make a city
      * @param vertex location of the city
      * @param player controller of the city

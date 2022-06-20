@@ -261,6 +261,12 @@ public class GUIMainImpl implements GUIMain {
         }
     }
 
+    private void startMainPhase(){
+        for(Player player : playerGUIs.keySet()){
+            playerGUIs.get(player).startMainPhase();
+        }
+    }
+
     private void forcePlayersToDiscardHalfOfHand(){
 
         for(Player plr : main.getPlayers()) {
@@ -283,7 +289,11 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public void startTurn(Player player, int dieRoll){
-        mainPhase = true;
+        //Updates mainPhase if needed
+        if(!mainPhase){
+            mainPhase = true;
+            startMainPhase();
+        }
 
         //Updates dice and resources for all players
         updateResourceCounters(dieRoll);
