@@ -828,35 +828,33 @@ public class GUIPlayerImpl implements GUIPlayer{
         focusFrame();
 
         if(roll == 7){
-            thisPlayerHasTurn = true;
-            canPass = false;
-            stealPreformed = false;
-
-            currentState = GUIState.THIEF;
-            startThiefMove();
-
-            while(!stealPreformed){
-                try {
-                    Thread.sleep(1);
-                }catch (InterruptedException e){
-                    throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
-                }
-            }
+            startTurnOn7();
+        }else {
+            startTurnMainPhase();
         }
+    }
 
+    /**
+     * Used to initiate a turn when the dice rolled 7
+     */
+    private void startTurnOn7(){
+        thisPlayerHasTurn = true;
+        canPass = false;
+        stealPreformed = false;
+
+        currentState = GUIState.THIEF;
+        startThiefMove();
+    }
+
+    /**
+     * Used to initiate a turn when the dice didn't roll 7 or after the thief was moved on 7
+     */
+    private void startTurnMainPhase(){
         thisPlayerHasTurn = true;
         canPass = true;
         mainPhase = true;
 
         reloadPossibleMovesGUI();
-
-        while(thisPlayerHasTurn){
-            try {
-                Thread.sleep(1);
-            }catch (InterruptedException e){
-                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
-            }
-        }
     }
 
     /**
@@ -1190,6 +1188,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             main.playKnight(player, location, thiefRequestSpot);
         }else if(currentState == GUIState.THIEF){
             main.moveThief(player, location, thiefRequestSpot);
+            startTurnMainPhase();
         }
         stealPreformed = true;
         currentState = GUIState.NONE;
@@ -1352,6 +1351,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     currentState = GUIState.NONE;
                     thisPlayerHasTurn = false;
                     reloadPossibleMovesGUI();
+                    main.pass();
                 }
             }
         };

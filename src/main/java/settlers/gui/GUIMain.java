@@ -11,6 +11,11 @@ import java.util.Set;
 public interface GUIMain {
 
     /**
+     * Informs GUIMain that the current turn was passed, and it can return control of what happens next to Main
+     */
+    public void pass();
+
+    /**
      * Asks main if player can build a road
      * @param player
      * @return
@@ -37,7 +42,12 @@ public interface GUIMain {
      * @return
      */
     public boolean canBuyDevelopmentCard(Player player);
-
+    /**
+     * Asks main if player can play the development card card
+     * @param player
+     * @param card
+     * @return
+     */
     public boolean canPlayDevelopmentCard(Player player, DevelopmentCard card);
 
     /**

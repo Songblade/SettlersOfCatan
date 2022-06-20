@@ -40,6 +40,10 @@ public class GUIMainImpl implements GUIMain {
         //}
     }
 
+    @Override
+    public void pass(){
+        threadManager.stopHold();
+    }
 
     public boolean canBuildRoad(Player player){
         return main.getAvailableRoadSpots(player).size() > 0 && (main.playerCanBuild(player, Building.ROAD) || unlimitedResources);
@@ -294,6 +298,9 @@ public class GUIMainImpl implements GUIMain {
 
         //Starts player's turn
         playerGUIs.get(player).startTurn(dieRoll);
+
+        //Starts holding the thread
+        threadManager.startHold();
     }
 
     /**

@@ -11,6 +11,11 @@ import java.util.Set;
 public class GUIMainDummyImpl implements GUIMain {
 
     @Override
+    public void pass() {
+
+    }
+
+    @Override
     public boolean canBuildRoad(Player player) {
         return false;
     }
