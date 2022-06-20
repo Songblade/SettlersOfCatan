@@ -12,24 +12,39 @@ public class GUIMainImpl implements GUIMain {
     private Main main;
     private HashMap<Player,GUIPlayer> playerGUIs;
 
+    private GUIThreadManager threadManager;
+
     private boolean unlimitedResources = true;
 
     //Functional
-    HashSet<Player> playersWhoHaveNotDiscarded = new HashSet<>();
-    private Player tradeAcceptingPlayer = null;
+    //(playersWhoHaveNotDiscarded stores <The player who has not discarded, The quantity of cards he must have in order to move on>)
+    private Map<Player,Integer> playersWhoHaveNotDiscarded = new HashMap<>();
+    private Set<Player> playersWithTradeRequests = new HashSet<>();
+    private Player playerWhoAcceptedTradeRequest = null;
+    //This is important so we can identify when to and not to end turns after a road was placed
+    private boolean mainPhase = false;
 
     public GUIMainImpl(Main main) {
         this.main = main;
+
         playerGUIs = new HashMap();
+
         for(int i = 0; i < main.getPlayers().size(); i++){
             Player player = main.getPlayers().get(i);
             playerGUIs.put(player, new GUIPlayerImpl(this,main.getBoard(),player,main.getPlayers()));
         }
+
+        threadManager = new GUIThreadManagerImpl();
+
         //for(GUIPlayer gui : playerGUIs){
         //    gui.startSettlementTurn(main.getAvailableSettlementSpots(main.getPlayers().get(0)));
         //}
     }
 
+    @Override
+    public void pass(){
+        threadManager.stopHold();
+    }
 
     public boolean canBuildRoad(Player player){
         return main.getAvailableRoadSpots(player).size() > 0 && (main.playerCanBuild(player, Building.ROAD) || unlimitedResources);
@@ -64,6 +79,10 @@ public class GUIMainImpl implements GUIMain {
 
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setRoad(player,edge);
+        }
+
+        if(!mainPhase){
+            threadManager.stopHold();
         }
 
         updateResourceCounters();
@@ -223,9 +242,22 @@ public class GUIMainImpl implements GUIMain {
         }
     }
 
+    /**
+     * Updates all player's played knights counters
+     * @param initiater the player who triggered this method
+     */
     private void updateKnightCounters(Player initiater){
         for(Player player : playerGUIs.keySet()){
             playerGUIs.get(player).updateKnightCounters(initiater);
+        }
+    }
+
+    /**
+     * Updates all player's frames
+     */
+    private void updateFrames(){
+        for(Player player : playerGUIs.keySet()){
+            playerGUIs.get(player).updateFrame();
         }
     }
 
@@ -233,18 +265,14 @@ public class GUIMainImpl implements GUIMain {
 
         for(Player plr : main.getPlayers()) {
             if (plr.hasMoreThan7Cards()) {
-                playerGUIs.get(plr).discardUntil(plr.getCardNumber() / 2 + plr.getCardNumber() % 2);
-                playersWhoHaveNotDiscarded.add(plr);
+                int targetResourceQuantity = plr.getCardNumber() / 2 + plr.getCardNumber() % 2;
+                playerGUIs.get(plr).discardUntil(targetResourceQuantity);
+                playersWhoHaveNotDiscarded.put(plr,targetResourceQuantity);
             }
         }
 
-        while (playersWhoHaveNotDiscarded.size() > 0){
-            try {
-                Thread.sleep(1);
-                updateResourceCounters();
-            }catch (InterruptedException e){
-                throw new IllegalStateException("InterrupterException was thrown: " + e);
-            }
+        if(playersWhoHaveNotDiscarded.size() > 0) {
+            threadManager.startHold();
         }
     }
 
@@ -255,6 +283,8 @@ public class GUIMainImpl implements GUIMain {
      */
     @Override
     public void startTurn(Player player, int dieRoll){
+        mainPhase = true;
+
         //Updates dice and resources for all players
         updateResourceCounters(dieRoll);
 
@@ -265,6 +295,9 @@ public class GUIMainImpl implements GUIMain {
 
         //Starts player's turn
         playerGUIs.get(player).startTurn(dieRoll);
+
+        //Starts holding the thread
+        threadManager.startHold();
     }
 
     /**
@@ -278,7 +311,12 @@ public class GUIMainImpl implements GUIMain {
         //Update the resources for all players
         updateResourceCounters();
 
-        return playerGUIs.get(player).startSettlementTurn(validSpots);
+        //Starts the settlement turn
+        playerGUIs.get(player).startSettlementTurn(validSpots);
+
+        threadManager.startHold();
+
+        return playerGUIs.get(player).getLastSettlementSpot();
     }
 
     public Set<Hex> getAvailableThiefSpots(){
@@ -309,12 +347,21 @@ public class GUIMainImpl implements GUIMain {
     }
 
     @Override
-    public void playerHasTargetResources(Player player) {
-        if(playersWhoHaveNotDiscarded.contains(player)) {
-            playersWhoHaveNotDiscarded.remove(player);
-        }else{
-            throw new IllegalStateException("Player tried to discard resources when they couldn't");
+    public void playerDiscardedCard(Player player) {
+        if(playersWhoHaveNotDiscarded.get(player) == player.getCardNumber()) {
+            if (playersWhoHaveNotDiscarded.containsKey(player)) {
+                playersWhoHaveNotDiscarded.remove(player);
+            } else {
+                throw new IllegalStateException("Player tried to discard resources when they couldn't");
+            }
+
+            //If everyone has discarded the appropriate quantity of resources, stop the hold on threadManager
+            if (playersWhoHaveNotDiscarded.size() == 0) {
+                threadManager.stopHold();
+            }
         }
+
+        updateResourceCounters();
     }
 
     @Override
@@ -329,12 +376,70 @@ public class GUIMainImpl implements GUIMain {
         updateResourceCounters();
     }
 
+    /**
+     * Clones a set of players
+     * @param set the set of players
+     * @return the clone of set
+     */
+    private Set<Player> clonePlayerSet(Set<Player> set){
+        Set<Player> output = new HashSet<>();
+
+        for(Player plr : set){
+            output.add(plr);
+        }
+
+        return set;
+    }
+
     @Override
     public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
         if(true){
+            playersWithTradeRequests = clonePlayerSet(sendTo);
+
+            //Looks at all players in sendTo and checks if they can make the proposed trade.
+            //If they can, send them the trade request.
+            //If they can't, remove them from playersWithTradeRequests
             for(Player plr : sendTo){
-                playerGUIs.get(plr).receiveTradeRequest(player,resourcesExchanged);
+                if(main.canTrade(plr,resourcesExchanged,false)) {
+                    playerGUIs.get(plr).receiveTradeRequest(player, resourcesExchanged);
+                }else{
+                    playersWithTradeRequests.remove(plr);
+                }
             }
+
+            //Waits for players to accept/decline request
+            int c = 0;
+            while (playersWithTradeRequests.size() > 0 && playerWhoAcceptedTradeRequest == null && c < 1000){
+                c++;
+                try {
+                    Thread.sleep(1);
+                    updateFrames();
+                }catch (InterruptedException e){
+                    throw new IllegalStateException("InterruptedException was thrown: " + e);
+                }
+            }
+
+            //If a player accepted the request, make the trade
+            if(playerWhoAcceptedTradeRequest != null){
+                main.trade(player,resourcesExchanged,playerWhoAcceptedTradeRequest);
+            }
+
+            //Resets playerWhoAcceptedTradeRequest
+            playerWhoAcceptedTradeRequest = null;
+        }
+    }
+
+    @Override
+    public void playerDeclinedTrade(Player player) {
+        if(playersWithTradeRequests.contains(player)){
+            playersWithTradeRequests.remove(player);
+        }
+    }
+
+    @Override
+    public void playerAcceptedTrade(Player player) {
+        if(playersWithTradeRequests.contains(player)){
+            playerWhoAcceptedTradeRequest = player;
         }
     }
 }

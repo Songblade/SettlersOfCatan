@@ -11,6 +11,11 @@ import java.util.Set;
 public interface GUIMain {
 
     /**
+     * Informs GUIMain that the current turn was passed, and it can return control of what happens next to Main
+     */
+    public void pass();
+
+    /**
      * Asks main if player can build a road
      * @param player
      * @return
@@ -37,7 +42,12 @@ public interface GUIMain {
      * @return
      */
     public boolean canBuyDevelopmentCard(Player player);
-
+    /**
+     * Asks main if player can play the development card card
+     * @param player
+     * @param card
+     * @return
+     */
     public boolean canPlayDevelopmentCard(Player player, DevelopmentCard card);
 
     /**
@@ -167,7 +177,7 @@ public interface GUIMain {
      * Signals that the player had discarded resources down to the target amount
      * @param player the player
      */
-    public void playerHasTargetResources(Player player);
+    public void playerDiscardedCard(Player player);
 
     /**
      * Checks if this trade with the bank would work
@@ -196,4 +206,8 @@ public interface GUIMain {
      * @param resourcesExchanged a map of resources that would be exchanged during this trade
      */
     void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo);
+
+    void playerDeclinedTrade(Player player);
+
+    void playerAcceptedTrade(Player player);
 }

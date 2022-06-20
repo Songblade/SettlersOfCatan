@@ -17,7 +17,13 @@ public interface GUIPlayer {
     /**
      * Starts a settlement turn
      */
-    Vertex startSettlementTurn(Set<Vertex> availableSpots);
+    void startSettlementTurn(Set<Vertex> availableSpots);
+
+    /**
+     * Gets the last spot the player placed a settlement
+     * @return
+     */
+    Vertex getLastSettlementSpot();
 
     /**
      * Tells GUIPlayers to make a city
@@ -62,6 +68,11 @@ public interface GUIPlayer {
      * @param plr the player who played the development card
      */
     void updateKnightCounters(Player plr);
+
+    /**
+     * Updates the GUIPlayer's frame
+     */
+    void updateFrame();
 
     /**
      * Moves the thief image

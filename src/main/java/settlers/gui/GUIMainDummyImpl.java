@@ -11,6 +11,11 @@ import java.util.Set;
 public class GUIMainDummyImpl implements GUIMain {
 
     @Override
+    public void pass() {
+
+    }
+
+    @Override
     public boolean canBuildRoad(Player player) {
         return false;
     }
@@ -129,7 +134,7 @@ public class GUIMainDummyImpl implements GUIMain {
     }
 
     @Override
-    public void playerHasTargetResources(Player player) {
+    public void playerDiscardedCard(Player player) {
 
     }
 
@@ -145,6 +150,16 @@ public class GUIMainDummyImpl implements GUIMain {
 
     @Override
     public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
+
+    }
+
+    @Override
+    public void playerDeclinedTrade(Player player) {
+
+    }
+
+    @Override
+    public void playerAcceptedTrade(Player player) {
 
     }
 
