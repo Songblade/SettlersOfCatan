@@ -13,6 +13,14 @@ public interface Main {
     Board getBoard();
 
     /**
+     * Made so that GUIPlayer doesn't have to interact with Player directly
+     * @param player a resource is removed from
+     * @param resource being removed
+     * @return true if the removal was successful, false otherwise
+     */
+    boolean removePlayerResource(Player player, Resource resource);
+
+    /**
      * Returns whether or not the player has enough resources to build the project
      * And also whether or not the player has reached the maximum number of that project
      * The maximum numbers are 15 roads, 5 settlements, and 4 cities

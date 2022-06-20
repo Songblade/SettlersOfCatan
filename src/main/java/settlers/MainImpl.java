@@ -289,6 +289,18 @@ public class MainImpl implements Main {
     }
 
     /**
+     * Made so that GUIPlayer doesn't have to interact with Player directly
+     *
+     * @param player   a resource is removed from
+     * @param resource being removed
+     * @return true if the removal was successful, false otherwise
+     */
+    @Override
+    public boolean removePlayerResource(Player player, Resource resource) {
+        return removeMultipleOfOneResource(player, resource, 1);
+    }
+
+    /**
      * @return a list of the players in this game
      */
     @Override
@@ -1134,11 +1146,12 @@ public class MainImpl implements Main {
      * @param player losing resources
      * @param resource being removed
      * @param number of the resource being removed
+     * @return true if removal was successful, false otherwise
      */
-    private void removeMultipleOfOneResource(Player player, Resource resource, int number) {
+    private boolean removeMultipleOfOneResource(Player player, Resource resource, int number) {
         Map<Resource, Integer> resourcesRemoved = new HashMap<>();
         resourcesRemoved.put(resource, number);
-        player.removeResources(resourcesRemoved);
+        return player.removeResources(resourcesRemoved);
     }
 
     /**
