@@ -1056,7 +1056,7 @@ public class MainImpl implements Main {
         for (Resource resource : resourcesGiven.keySet()) { // make sure that has enough for each
                 // resource
             if (!isRequestingPlayer && (playerResources.get(resource) < resourcesGiven.get(resource))
-            || isRequestingPlayer && (playerResources.get(resource) * -1 < resourcesGiven.get(resource))) {
+            || isRequestingPlayer && (playerResources.get(resource) < resourcesGiven.get(resource) * -1)) {
                 return false;
             }
         }
