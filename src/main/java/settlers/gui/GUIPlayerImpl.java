@@ -943,10 +943,8 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Set<Move> getPossibleMoves(Set<Move> toCheck){
         Set<Move> moves = new HashSet<>();
 
-        //Moves can only be preformed when it's your turn
-        if(thisPlayerHasTurn) {
             //Asks if the player can pass
-            if (checkMoveListForMove(toCheck, Move.PASS) && mainPhase && currentState.isCancelable()) {
+            if (checkMoveListForMove(toCheck, Move.PASS) && mainPhase && thisPlayerHasTurn && currentState.isCancelable()) {
                 moves.add(Move.PASS);
             }
 
@@ -957,10 +955,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
             //Asks if the player can confirm a move
             if(checkMoveListForMove(toCheck, Move.CONFIRM) && (currentState == GUIState.PLAYER_TRADE || currentState == GUIState.PLAYER_TRADE_REQUEST)){
-                System.out.println("currentState when confirm is allowed: " + currentState);
                 moves.add(Move.CONFIRM);
-            }else{
-                System.out.println("currentState when confirm is NOT allowed: " + currentState);
             }
 
             //Asks if the player can build a road
@@ -1010,7 +1005,6 @@ public class GUIPlayerImpl implements GUIPlayer{
             if(checkMoveListForMove(toCheck, Move.TRADE_PLAYER) && player.getCardNumber() > 0 && canPerformActions()){
                 moves.add(Move.TRADE_PLAYER);
             }
-        }
 
         return moves;
     }
@@ -1328,7 +1322,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(mainPhase && currentState.isCancelable()){
+                if(mainPhase && thisPlayerHasTurn &&currentState.isCancelable()){
                     disableAllButtons();
                     currentState = GUIState.NONE;
                     thisPlayerHasTurn = false;
@@ -1389,19 +1383,6 @@ public class GUIPlayerImpl implements GUIPlayer{
                         reloadPossibleMovesGUI();
                     }
                 }
-        };
-    }
-
-    /**
-     * Confirms a trade
-     * @return
-     */
-    private Action confirmTrade(){
-        return new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("trade has been confirmed");
-            }
         };
     }
 
