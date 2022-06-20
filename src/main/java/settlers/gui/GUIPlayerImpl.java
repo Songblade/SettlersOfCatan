@@ -85,7 +85,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     //Functional
     private boolean thisPlayerHasTurn = false;
-    private boolean canPass = false;
     private boolean mainPhase = false;
     private boolean stealPreformed = false;
     private int targetResourceAmount = 0;
@@ -835,7 +834,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void startTurnOn7(){
         thisPlayerHasTurn = true;
-        canPass = false;
         stealPreformed = false;
 
         currentState = GUIState.THIEF;
@@ -847,7 +845,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void startTurnMainPhase(){
         thisPlayerHasTurn = true;
-        canPass = true;
         mainPhase = true;
 
         reloadPossibleMovesGUI();
@@ -862,7 +859,6 @@ public class GUIPlayerImpl implements GUIPlayer{
         lastSettlementSpot = null;
         lastRoadSpot = null;
         thisPlayerHasTurn = true;
-        canPass = false;
 
         //Requests to place a settlement in settlement phase
         requestSettlementPlacementSP(availableSpots);
@@ -879,7 +875,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     public void discardUntil(int target){
         focusFrame();
-        canPass = false;
         targetResourceAmount = target;
         currentState = GUIState.DISCARD;
 
@@ -949,12 +944,12 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Moves can only be preformed when it's your turn
         if(thisPlayerHasTurn) {
             //Asks if the player can pass
-            if (checkMoveListForMove(toCheck, Move.PASS) && canPass) {
+            if (checkMoveListForMove(toCheck, Move.PASS) && mainPhase) {
                 moves.add(Move.PASS);
             }
 
             //Asks if the player can cancel a move
-            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && mainPhase && currentState.isCancelable() && currentState != GUIState.NONE) {
                 moves.add(Move.CANCEL);
             }
 
@@ -1328,7 +1323,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass && currentState.isCancelable()){
+                if(mainPhase && currentState.isCancelable()){
                     disableAllButtons();
                     currentState = GUIState.NONE;
                     thisPlayerHasTurn = false;
@@ -1347,7 +1342,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass && currentState.isCancelable()){
+                System.out.println("Cancel Attempted: ");
+                if(mainPhase && currentState.isCancelable()){
                     disableAllButtons();
 
                     if(currentState == GUIState.PLAYER_TRADE){
@@ -1381,7 +1377,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
                         main.trade(player,playerTradeRequest,playerTradeRequestReceivers);
                     }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
-                        System.out.println("Trade was accepted");
                         disablePlayerTradingGUIElements();
                         main.playerAcceptedTrade(player);
                         currentState = GUIState.NONE;
