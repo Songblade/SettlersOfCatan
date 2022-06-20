@@ -188,7 +188,7 @@ public class Main2PointCardTest {
         // whoever has the second longest (!)
 
     // tests that if even after the interrupt, the original player still has longest, that player
-        // still has longest road
+        // still has longest road (!)
 
     // same as above, but the original player is now tied, yet still has it
 

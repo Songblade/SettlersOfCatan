@@ -765,7 +765,8 @@ public class MainImpl implements Main {
         // If this vertex belongs to another player, we return 0
         if (vertex.getPlayer() != null && vertex.getPlayer() != player) {
             // if there is a settlement here, and it doesn't belong to this player
-            return 0;
+            // then this vertex does count, but the road can't go further
+            return 1;
         }
         // Otherwise, we look at each edge
         dupSet.remove(road); // we already looked at it, we shouldn't look at it again if there
