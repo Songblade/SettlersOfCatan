@@ -17,11 +17,20 @@ public class GUIMainImpl implements GUIMain {
     private boolean unlimitedResources = true;
 
     //Functional
+
+    //Discard on 7 related
     //(playersWhoHaveNotDiscarded stores <The player who has not discarded, The quantity of cards he must have in order to move on>)
     private Map<Player,Integer> playersWhoHaveNotDiscarded = new HashMap<>();
+
+    //Trade related
+
+    private Map<Resource,Integer> currentTradeRequest = new HashMap<>();
     private Set<Player> playersWithTradeRequests = new HashSet<>();
-    private Player playerWhoAcceptedTradeRequest = null;
-    //This is important so we can identify when to and not to end turns after a road was placed
+    private Player playerRequestingTrade = null;
+
+    //Other
+
+    //This (mainPhase) is important so we can identify when to and not to end turns after a road was placed
     private boolean mainPhase = false;
 
     public GUIMainImpl(Main main) {
@@ -252,15 +261,6 @@ public class GUIMainImpl implements GUIMain {
         }
     }
 
-    /**
-     * Updates all player's frames
-     */
-    private void updateFrames(){
-        for(Player player : playerGUIs.keySet()){
-            playerGUIs.get(player).updateFrame();
-        }
-    }
-
     private void forcePlayersToDiscardHalfOfHand(){
 
         for(Player plr : main.getPlayers()) {
@@ -394,7 +394,9 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
         if(true){
+            playerRequestingTrade = player;
             playersWithTradeRequests = clonePlayerSet(sendTo);
+            currentTradeRequest = resourcesExchanged;
 
             //Looks at all players in sendTo and checks if they can make the proposed trade.
             //If they can, send them the trade request.
@@ -407,25 +409,9 @@ public class GUIMainImpl implements GUIMain {
                 }
             }
 
-            //Waits for players to accept/decline request
-            int c = 0;
-            while (playersWithTradeRequests.size() > 0 && playerWhoAcceptedTradeRequest == null && c < 1000){
-                c++;
-                try {
-                    Thread.sleep(1);
-                    updateFrames();
-                }catch (InterruptedException e){
-                    throw new IllegalStateException("InterruptedException was thrown: " + e);
-                }
+            if(playersWithTradeRequests.size() == 0){
+                playerGUIs.get(playerRequestingTrade).tradeRequestResponseReceived(null);
             }
-
-            //If a player accepted the request, make the trade
-            if(playerWhoAcceptedTradeRequest != null){
-                main.trade(player,resourcesExchanged,playerWhoAcceptedTradeRequest);
-            }
-
-            //Resets playerWhoAcceptedTradeRequest
-            playerWhoAcceptedTradeRequest = null;
         }
     }
 
@@ -433,13 +419,23 @@ public class GUIMainImpl implements GUIMain {
     public void playerDeclinedTrade(Player player) {
         if(playersWithTradeRequests.contains(player)){
             playersWithTradeRequests.remove(player);
+        }else{
+            throw new IllegalStateException("Player declined trade request he didn't have");
+        }
+
+        if(playersWithTradeRequests.size() == 0){
+            playerGUIs.get(playerRequestingTrade).tradeRequestResponseReceived(null);
         }
     }
 
     @Override
     public void playerAcceptedTrade(Player player) {
         if(playersWithTradeRequests.contains(player)){
-            playerWhoAcceptedTradeRequest = player;
+            main.trade(playerRequestingTrade,currentTradeRequest,player);
+            updateResourceCounters();
+            playerGUIs.get(playerRequestingTrade).tradeRequestResponseReceived(player);
+        }else{
+            throw new IllegalStateException("Player accepted trade request he didn't have");
         }
     }
 }

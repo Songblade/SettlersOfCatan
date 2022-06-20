@@ -70,11 +70,6 @@ public interface GUIPlayer {
     void updateKnightCounters(Player plr);
 
     /**
-     * Updates the GUIPlayer's frame
-     */
-    void updateFrame();
-
-    /**
      * Moves the thief image
      * @param hex the new location of the thief image
      */
@@ -92,4 +87,11 @@ public interface GUIPlayer {
      * @param resourcesExchanged the resources which will be exchanged if the request is accepted
      */
     void receiveTradeRequest(Player sender, Map<Resource,Integer> resourcesExchanged);
+
+    /**
+     * Triggered whenever all players decline a trade request sent py this GUIPlayer or a player accepts a
+     * trade request sent by this GUIPlayer
+     * @param responder the player who accepted the request. Null if no one accepted.
+     */
+    void tradeRequestResponseReceived(Player responder);
 }

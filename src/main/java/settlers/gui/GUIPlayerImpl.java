@@ -807,10 +807,6 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
-    public void updateFrame(){
-
-    }
-
     /**
      * Enables the die counter outline
      * @param roll the number whose color the die counter outline should display
@@ -870,25 +866,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         //Requests to place a settlement in settlement phase
         requestSettlementPlacementSP(availableSpots);
-
-        /**while(lastSettlementSpot == null){
-            try {
-                Thread.sleep(1);
-            }catch (InterruptedException e){
-                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
-            }
-        }
-
-        //Requests to place a road neat to that settlement
-        requestRoadPlacementSP();*/
-
-        /**while(lastRoadSpot == null){
-            try {
-                Thread.sleep(1);
-            }catch (InterruptedException e){
-                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
-            }
-        }*/
     }
 
     @Override
@@ -1331,6 +1308,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    public void tradeRequestResponseReceived(Player responder){
+        currentState = GUIState.NONE;
+        reloadPossibleMovesGUI();
+    }
+
     private boolean canPerformActions(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
 
     private void reloadPossibleMovesGUI(){
@@ -1390,21 +1372,22 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass && currentState == GUIState.PLAYER_TRADE){
                     if(currentState == GUIState.PLAYER_TRADE){
                         disableAllButtons();
                         disablePlayerTradingGUIElements();
 
+                        currentState = GUIState.PLAYER_TRADE_PENDING;
+                        reloadPossibleMovesGUI();
+
                         main.trade(player,playerTradeRequest,playerTradeRequestReceivers);
                     }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
+                        System.out.println("Trade was accepted");
                         disablePlayerTradingGUIElements();
                         main.playerAcceptedTrade(player);
+                        currentState = GUIState.NONE;
+                        reloadPossibleMovesGUI();
                     }
-
-                    currentState = GUIState.NONE;
-                    reloadPossibleMovesGUI();
                 }
-            }
         };
     }
 
@@ -1844,7 +1827,8 @@ enum GUIState{
     BANK_TRADE_PUT(true),
     BANK_TRADE_TAKE(true),
     PLAYER_TRADE(true),
-    PLAYER_TRADE_REQUEST(true);
+    PLAYER_TRADE_REQUEST(true),
+    PLAYER_TRADE_PENDING(false);
 
     GUIState(boolean cancelable){
         this.cancelable = cancelable;
