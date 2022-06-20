@@ -177,7 +177,7 @@ public interface GUIMain {
      * Signals that the player had discarded resources down to the target amount
      * @param player the player
      */
-    public void playerHasTargetResources(Player player);
+    public void playerDiscardedCard(Player player);
 
     /**
      * Checks if this trade with the bank would work

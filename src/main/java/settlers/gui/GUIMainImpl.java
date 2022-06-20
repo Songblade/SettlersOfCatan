@@ -17,7 +17,8 @@ public class GUIMainImpl implements GUIMain {
     private boolean unlimitedResources = true;
 
     //Functional
-    private Set<Player> playersWhoHaveNotDiscarded = new HashSet<>();
+    //(playersWhoHaveNotDiscarded stores <The player who has not discarded, The quantity of cards he must have in order to move on>)
+    private Map<Player,Integer> playersWhoHaveNotDiscarded = new HashMap<>();
     private Set<Player> playersWithTradeRequests = new HashSet<>();
     private Player playerWhoAcceptedTradeRequest = null;
     //This is important so we can identify when to and not to end turns after a road was placed
@@ -264,18 +265,14 @@ public class GUIMainImpl implements GUIMain {
 
         for(Player plr : main.getPlayers()) {
             if (plr.hasMoreThan7Cards()) {
-                playerGUIs.get(plr).discardUntil(plr.getCardNumber() / 2 + plr.getCardNumber() % 2);
-                playersWhoHaveNotDiscarded.add(plr);
+                int targetResourceQuantity = plr.getCardNumber() / 2 + plr.getCardNumber() % 2;
+                playerGUIs.get(plr).discardUntil(targetResourceQuantity);
+                playersWhoHaveNotDiscarded.put(plr,targetResourceQuantity);
             }
         }
 
-        while (playersWhoHaveNotDiscarded.size() > 0){
-            try {
-                Thread.sleep(1);
-                updateResourceCounters();
-            }catch (InterruptedException e){
-                throw new IllegalStateException("InterruptedException was thrown: " + e);
-            }
+        if(playersWhoHaveNotDiscarded.size() > 0) {
+            threadManager.startHold();
         }
     }
 
@@ -350,12 +347,21 @@ public class GUIMainImpl implements GUIMain {
     }
 
     @Override
-    public void playerHasTargetResources(Player player) {
-        if(playersWhoHaveNotDiscarded.contains(player)) {
-            playersWhoHaveNotDiscarded.remove(player);
-        }else{
-            throw new IllegalStateException("Player tried to discard resources when they couldn't");
+    public void playerDiscardedCard(Player player) {
+        if(playersWhoHaveNotDiscarded.get(player) == player.getCardNumber()) {
+            if (playersWhoHaveNotDiscarded.containsKey(player)) {
+                playersWhoHaveNotDiscarded.remove(player);
+            } else {
+                throw new IllegalStateException("Player tried to discard resources when they couldn't");
+            }
+
+            //If everyone has discarded the appropriate quantity of resources, stop the hold on threadManager
+            if (playersWhoHaveNotDiscarded.size() == 0) {
+                threadManager.stopHold();
+            }
         }
+
+        updateResourceCounters();
     }
 
     @Override

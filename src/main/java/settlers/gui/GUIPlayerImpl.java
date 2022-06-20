@@ -1720,9 +1720,9 @@ public class GUIPlayerImpl implements GUIPlayer{
                     toRemove.put(resource,1);
 
                     player.removeResources(toRemove);
+                    main.playerDiscardedCard(player);
 
                     if(player.getCardNumber() <= targetResourceAmount){
-                        main.playerHasTargetResources(player);
                         currentState = GUIState.NONE;
                         disableButtons(resourceButtonMap.keySet());
                     }else if(player.getResources().get(resource) == 0){
