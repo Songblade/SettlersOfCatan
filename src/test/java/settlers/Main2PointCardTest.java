@@ -181,7 +181,7 @@ public class Main2PointCardTest {
     // make sure no massive errors if you make a looping path. Ideally, it should also work (!)
 
     // make it so that when you have a loop on a stick, the entire loop is counted, no matter when
-        // you put down the stick
+        // you put down the stick (!)
 
     // the following tests are if someone interrupts the road in a different turn
     // tests that if someone blocks a longest road with a settlement, the longest road immediately goes to
