@@ -85,7 +85,6 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     //Functional
     private boolean thisPlayerHasTurn = false;
-    private boolean canPass = false;
     private boolean mainPhase = false;
     private boolean stealPreformed = false;
     private int targetResourceAmount = 0;
@@ -807,16 +806,16 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
-    public void updateFrame(){
-
-    }
-
     /**
      * Enables the die counter outline
      * @param roll the number whose color the die counter outline should display
      */
     private void enableDieCounterOutline(int roll){
         dieCounterOutline.setIcon(new ImageIcon(getNumberOutlineImage(roll).getScaledInstance(dieCounterSize,dieCounterSize,0)));
+    }
+
+    public void startMainPhase(){
+        mainPhase = true;
     }
 
     /**
@@ -839,7 +838,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void startTurnOn7(){
         thisPlayerHasTurn = true;
-        canPass = false;
         stealPreformed = false;
 
         currentState = GUIState.THIEF;
@@ -851,9 +849,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void startTurnMainPhase(){
         thisPlayerHasTurn = true;
-        canPass = true;
-        mainPhase = true;
-
         reloadPossibleMovesGUI();
     }
 
@@ -866,29 +861,9 @@ public class GUIPlayerImpl implements GUIPlayer{
         lastSettlementSpot = null;
         lastRoadSpot = null;
         thisPlayerHasTurn = true;
-        canPass = false;
 
         //Requests to place a settlement in settlement phase
         requestSettlementPlacementSP(availableSpots);
-
-        /**while(lastSettlementSpot == null){
-            try {
-                Thread.sleep(1);
-            }catch (InterruptedException e){
-                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
-            }
-        }
-
-        //Requests to place a road neat to that settlement
-        requestRoadPlacementSP();*/
-
-        /**while(lastRoadSpot == null){
-            try {
-                Thread.sleep(1);
-            }catch (InterruptedException e){
-                throw new IllegalStateException("InterruptedException was thrown. Exception: " + e);
-            }
-        }*/
     }
 
     @Override
@@ -902,7 +877,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     public void discardUntil(int target){
         focusFrame();
-        canPass = false;
         targetResourceAmount = target;
         currentState = GUIState.DISCARD;
 
@@ -969,19 +943,17 @@ public class GUIPlayerImpl implements GUIPlayer{
     private Set<Move> getPossibleMoves(Set<Move> toCheck){
         Set<Move> moves = new HashSet<>();
 
-        //Moves can only be preformed when it's your turn
-        if(thisPlayerHasTurn) {
             //Asks if the player can pass
-            if (checkMoveListForMove(toCheck, Move.PASS) && canPass) {
+            if (checkMoveListForMove(toCheck, Move.PASS) && mainPhase && thisPlayerHasTurn && currentState.isCancelable()) {
                 moves.add(Move.PASS);
             }
 
             //Asks if the player can cancel a move
-            if (checkMoveListForMove(toCheck, Move.CANCEL) && canPass && currentState.isCancelable() && currentState != GUIState.NONE) {
+            if (checkMoveListForMove(toCheck, Move.CANCEL) && mainPhase && currentState.isCancelable() && currentState != GUIState.NONE) {
                 moves.add(Move.CANCEL);
             }
 
-            //Asks if the player can confirm a move. There is currently one move which a player can confirm.
+            //Asks if the player can confirm a move
             if(checkMoveListForMove(toCheck, Move.CONFIRM) && (currentState == GUIState.PLAYER_TRADE || currentState == GUIState.PLAYER_TRADE_REQUEST)){
                 moves.add(Move.CONFIRM);
             }
@@ -1033,7 +1005,6 @@ public class GUIPlayerImpl implements GUIPlayer{
             if(checkMoveListForMove(toCheck, Move.TRADE_PLAYER) && player.getCardNumber() > 0 && canPerformActions()){
                 moves.add(Move.TRADE_PLAYER);
             }
-        }
 
         return moves;
     }
@@ -1331,6 +1302,11 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    public void tradeRequestResponseReceived(Player responder){
+        currentState = GUIState.NONE;
+        reloadPossibleMovesGUI();
+    }
+
     private boolean canPerformActions(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
 
     private void reloadPossibleMovesGUI(){
@@ -1346,7 +1322,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass && currentState.isCancelable()){
+                if(mainPhase && thisPlayerHasTurn &&currentState.isCancelable()){
                     disableAllButtons();
                     currentState = GUIState.NONE;
                     thisPlayerHasTurn = false;
@@ -1365,16 +1341,18 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass && currentState.isCancelable()){
+
+                //Some GUIStates have extra actions which must be taken upon canceling moves
+                if(currentState == GUIState.PLAYER_TRADE){
+                    disablePlayerTradingGUIElements();
+                }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
+                    disablePlayerTradingGUIElements();
+                    main.playerDeclinedTrade(player);
+                }
+
+                //Cancels the move
+                if(mainPhase && currentState.isCancelable()){
                     disableAllButtons();
-
-                    if(currentState == GUIState.PLAYER_TRADE){
-                        disablePlayerTradingGUIElements();
-                    }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
-                        disablePlayerTradingGUIElements();
-                        main.playerDeclinedTrade(player);
-                    }
-
                     currentState = GUIState.NONE;
                     reloadPossibleMovesGUI();
                 }
@@ -1390,34 +1368,21 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(canPass && currentState == GUIState.PLAYER_TRADE){
                     if(currentState == GUIState.PLAYER_TRADE){
                         disableAllButtons();
                         disablePlayerTradingGUIElements();
+
+                        currentState = GUIState.PLAYER_TRADE_PENDING;
+                        reloadPossibleMovesGUI();
 
                         main.trade(player,playerTradeRequest,playerTradeRequestReceivers);
                     }else if(currentState == GUIState.PLAYER_TRADE_REQUEST){
                         disablePlayerTradingGUIElements();
                         main.playerAcceptedTrade(player);
+                        currentState = GUIState.NONE;
+                        reloadPossibleMovesGUI();
                     }
-
-                    currentState = GUIState.NONE;
-                    reloadPossibleMovesGUI();
                 }
-            }
-        };
-    }
-
-    /**
-     * Confirms a trade
-     * @return
-     */
-    private Action confirmTrade(){
-        return new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("trade has been confirmed");
-            }
         };
     }
 
@@ -1844,7 +1809,8 @@ enum GUIState{
     BANK_TRADE_PUT(true),
     BANK_TRADE_TAKE(true),
     PLAYER_TRADE(true),
-    PLAYER_TRADE_REQUEST(true);
+    PLAYER_TRADE_REQUEST(true),
+    PLAYER_TRADE_PENDING(false);
 
     GUIState(boolean cancelable){
         this.cancelable = cancelable;
