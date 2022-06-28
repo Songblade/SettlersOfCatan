@@ -1058,7 +1058,6 @@ public class GUIPlayerImpl implements GUIPlayer{
     private void requestSettlementPlacementSP(Set<Vertex> availableSpots){
         enableSpecifiedButtons(vertexButtonMap.keySet(),vertexButtonMap,availableSpots);
         currentState = GUIState.SETTLEMENT;
-        System.out.println("state was set to " + currentState);
     }
 
     private void requestRoadPlacementSP(){
@@ -1204,7 +1203,6 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     private void reloadPossibleMovesGUI(Set<Move> movesWhichMayHaveChanged){
-        System.out.println("- RPMGUI Started");
         updatePossibleMoves(movesWhichMayHaveChanged);
 
         int currentXOffset = 1040;
@@ -1223,7 +1221,6 @@ public class GUIPlayerImpl implements GUIPlayer{
                 field.setVisible(false);
             }
         }
-        System.out.println("- RPMGUI Finished");
     }
 
     /**
@@ -1613,8 +1610,6 @@ public class GUIPlayerImpl implements GUIPlayer{
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Vertex button clicked on state: " + currentState);
-
                 if(currentState == GUIState.SETTLEMENT) {
                     main.buildSettlement(player,vertex);
                     lastSettlementSpot = vertex;
