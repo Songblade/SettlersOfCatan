@@ -319,7 +319,7 @@ public class GUIMainImpl implements GUIMain {
     @Override
     public Vertex startSetupTurn(Player player, Set<Vertex> validSpots) {
         //Update the resources for all players
-        updateResourceCounters();
+        //updateResourceCounters();
 
         //Starts the settlement turn
         playerGUIs.get(player).startSettlementTurn(validSpots);

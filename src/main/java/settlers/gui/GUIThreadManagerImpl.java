@@ -12,8 +12,9 @@ public class GUIThreadManagerImpl implements GUIThreadManager {
      */
     public void startHold(){
         if(holding)throw new IllegalStateException("startHold was called while GUIThreadManagerImpl was already holding");
-
         holding = true;
+
+        System.out.println("+ Hold Started");
 
         while (holding){
             try {
@@ -29,6 +30,7 @@ public class GUIThreadManagerImpl implements GUIThreadManager {
      */
     public void stopHold(){
         if(!holding)throw new IllegalStateException("stopHold was called while GUIThreadManagerImpl was not holding");
+        System.out.println("+ Hold Finished");
 
         holding = false;
     }
