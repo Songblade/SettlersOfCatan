@@ -488,8 +488,8 @@ public class GUIPlayerImpl implements GUIPlayer{
             int offsetX = boardOffsetX + portImageLocations[i][1];
             int offsetY =  boardOffsetY + portImageLocations[i][2];
 
-            JLabel port = createLabel(portPath, offsetX, offsetY, 2);
-            JLabel portDirection = createLabel(getPortDirectionImage(portImageLocations[i][3]),offsetX,offsetY,0);
+            JLabel port = createLabel(portPath, offsetX, offsetY, 3);
+            JLabel portDirection = createLabel(getPortDirectionImage(portImageLocations[i][3]),offsetX,offsetY,2);
 
             JLabel portImage = createLabel("", offsetX, offsetY, 1);
             portImage.setIcon(new ImageIcon(getResourceImage(board.getVertices()[portImageLocations[i][0]].getPort()).getScaledInstance(64,64,0)));
