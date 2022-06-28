@@ -405,7 +405,7 @@ public class GUIMainImpl implements GUIMain {
 
     @Override
     public void trade(Player player, Map<Resource, Integer> resourcesExchanged, Set<Player> sendTo) {
-        if(true){
+        if(main.canTrade(player,resourcesExchanged,true)){
             playerRequestingTrade = player;
             playersWithTradeRequests = clonePlayerSet(sendTo);
             currentTradeRequest = resourcesExchanged;
