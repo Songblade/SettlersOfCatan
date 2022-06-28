@@ -1686,8 +1686,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                     HashMap<Resource,Integer> toRemove = new HashMap<>();
                     toRemove.put(resource,1);
 
-                    player.removeResources(toRemove);
-                    main.playerDiscardedCard(player);
+                    main.playerDiscardedCard(player,resource);
 
                     if(player.getCardNumber() <= targetResourceAmount){
                         currentState = GUIState.NONE;

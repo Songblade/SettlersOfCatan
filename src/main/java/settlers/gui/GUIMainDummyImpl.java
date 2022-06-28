@@ -134,7 +134,7 @@ public class GUIMainDummyImpl implements GUIMain {
     }
 
     @Override
-    public void playerDiscardedCard(Player player) {
+    public void playerDiscardedCard(Player player, Resource resource) {
 
     }
 

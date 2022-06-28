@@ -357,7 +357,9 @@ public class GUIMainImpl implements GUIMain {
     }
 
     @Override
-    public void playerDiscardedCard(Player player) {
+    public void playerDiscardedCard(Player player, Resource resource) {
+        main.removePlayerResource(player,resource);
+
         if(playersWhoHaveNotDiscarded.get(player) == player.getCardNumber()) {
             if (playersWhoHaveNotDiscarded.containsKey(player)) {
                 playersWhoHaveNotDiscarded.remove(player);

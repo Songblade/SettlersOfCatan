@@ -174,10 +174,11 @@ public interface GUIMain {
     public Set<Hex> getAvailableThiefSpots();
 
     /**
-     * Signals that the player had discarded resources down to the target amount
+     * Signals that the player had discarded a resource card
      * @param player the player
+     * @param resource the resource which the player discarded
      */
-    public void playerDiscardedCard(Player player);
+    public void playerDiscardedCard(Player player, Resource resource);
 
     /**
      * Checks if this trade with the bank would work
