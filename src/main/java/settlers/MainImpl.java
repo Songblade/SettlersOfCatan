@@ -308,6 +308,22 @@ public class MainImpl implements Main {
         return Arrays.asList(players);
     }
 
+    /**
+     * @return the player with the longest road, or null if no player has it
+     */
+    @Override
+    public Player getLongestRoadPlayer() {
+        return longestRoadHolder;
+    }
+
+    /**
+     * @return the player with the largest army, or null if no player has it
+     */
+    @Override
+    public Player getLongestArmyPlayer() {
+        return largestArmyHolder;
+    }
+
 
     /**
      * I am going to refactor this method, call it canBuild, and make it check if the player has the resources

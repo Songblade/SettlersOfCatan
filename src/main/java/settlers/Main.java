@@ -188,7 +188,14 @@ public interface Main {
 
     List<Player> getPlayers();
 
-    // If we decide to implement Player to Player trading,
-    // I will add versions of canTrade() and trade() for that
+    /**
+     * @return the player with the longest road, or null if no player has it
+     */
+    Player getLongestRoadPlayer();
+
+    /**
+     * @return the player with the largest army, or null if no player has it
+     */
+    Player getLongestArmyPlayer();
 
 }
