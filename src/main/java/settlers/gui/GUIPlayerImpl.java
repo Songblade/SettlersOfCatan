@@ -71,8 +71,10 @@ public class GUIPlayerImpl implements GUIPlayer{
     private JFrame frame;
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
-    //Played knights text field (this one operates alone)
+    //Fields for bottom cards
     JTextField playedKnightsCountLabel;
+    JLabel longestRoadLabel;
+    JLabel largestArmyLabel;
 
     //Thief and die
     private JLabel thiefImage;
@@ -572,6 +574,21 @@ public class GUIPlayerImpl implements GUIPlayer{
         playedKnightsCountLabel = createText("0",xOffset + 56, yOffset + 50, 1);
     }
 
+    private void putAchievementLabels(){
+        int xOffset = 570;
+        int yOffset = 575;
+        int xDifference = 160;
+
+        JLabel longestRoadBackgroundLabel = createLabel("",xOffset,yOffset,2);
+        longestRoadBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGAchievement.png").getScaledInstance(64,64,0)));
+
+        JLabel largestArmyBackgroundLabel = createLabel("",xOffset + xDifference,yOffset,2);
+        largestArmyBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGAchievement.png").getScaledInstance(64,64,0)));
+
+        longestRoadLabel = new JLabel(new ImageIcon(getImage("")));
+        largestArmyLabel = new JLabel(new ImageIcon(getImage("")));
+    }
+
     private void putOtherPlayerLabels(){
         //Places the labels for other players
         int currentYOffset = 240;
@@ -654,6 +671,7 @@ public class GUIPlayerImpl implements GUIPlayer{
          putPlayerResourceLabels();
          putPlayerDevelopmentLabels();
          putPlayedKnightLabel();
+         putAchievementLabels();
          putOtherPlayerLabels();
          putDieCounterAssets();
     }
