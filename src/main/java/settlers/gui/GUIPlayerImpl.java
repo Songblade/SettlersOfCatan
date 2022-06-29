@@ -480,7 +480,6 @@ public class GUIPlayerImpl implements GUIPlayer{
      */
     private void putPorts(){
         String basePath = "src/main/java/settlers/gui/textures/hexes/";
-        String portPath = basePath + "Port.png";
 
         int[][] portImageLocations = {{0,-92,44,3},{1,-92,220,4},{10,0,352,4},{11,92,-44,2},{26,184,440,5},{33,276,-44,2},{42,368,352,0},{47,460,44,1},{49,460,220,0}};
 
@@ -488,7 +487,6 @@ public class GUIPlayerImpl implements GUIPlayer{
             int offsetX = boardOffsetX + portImageLocations[i][1];
             int offsetY =  boardOffsetY + portImageLocations[i][2];
 
-            JLabel port = createLabel(portPath, offsetX, offsetY, 3);
             JLabel portDirection = createLabel(getPortDirectionImage(portImageLocations[i][3]),offsetX,offsetY,2);
 
             JLabel portImage = createLabel("", offsetX, offsetY, 1);
