@@ -28,6 +28,10 @@ public class GUIMainImpl implements GUIMain {
     private Set<Player> playersWithTradeRequests = new HashSet<>();
     private Player playerRequestingTrade = null;
 
+    //Achievement related
+    private Player playerWithLongestRoad = null;
+    private Player playerWithLargestArmy = null;
+
     //Other
 
     //This (mainPhase) is important so we can identify when to and not to end turns after a road was placed
@@ -94,6 +98,8 @@ public class GUIMainImpl implements GUIMain {
             threadManager.stopHold();
         }
 
+        updateLongestRoad();
+
         updateResourceCounters();
     }
 
@@ -109,6 +115,8 @@ public class GUIMainImpl implements GUIMain {
         for(GUIPlayer gui : playerGUIs.values()){
             gui.setSettlement(player,vertex);
         }
+
+        updateLongestRoad();
 
         updateResourceCounters();
     }
@@ -146,6 +154,8 @@ public class GUIMainImpl implements GUIMain {
         updateGUISAfterThiefMove(location);
         updateDevelopmentCounters(stealer);
         updateKnightCounters(stealer);
+        updateLargestArmy();
+
         return toReturn;
     }
 
@@ -173,6 +183,8 @@ public class GUIMainImpl implements GUIMain {
             gui.setRoad(player,firstLocation);
             gui.setRoad(player,secondLocation);
         }
+
+        updateLongestRoad();
 
         updateDevelopmentCounters(player);
 
@@ -258,6 +270,30 @@ public class GUIMainImpl implements GUIMain {
     private void updateKnightCounters(Player initiater){
         for(Player player : playerGUIs.keySet()){
             playerGUIs.get(player).updateKnightCounters(initiater);
+        }
+    }
+
+    /**
+     * Updates longest road for all GUIPlayers
+     */
+    private void updateLongestRoad(){
+        if(main.getLongestRoadPlayer() != playerWithLongestRoad) {
+            playerWithLongestRoad = main.getLongestRoadPlayer();
+            for (Player player : playerGUIs.keySet()) {
+                playerGUIs.get(player).updateLongestRoad(playerWithLongestRoad);
+            }
+        }
+    }
+
+    /**
+     * Updates largest army for all GUIPlayers
+     */
+    private void updateLargestArmy(){
+        if(main.getLongestArmyPlayer() != playerWithLargestArmy) {
+            playerWithLargestArmy = main.getLongestArmyPlayer();
+            for (Player player : playerGUIs.keySet()) {
+                playerGUIs.get(player).updateLargestArmy(playerWithLargestArmy);
+            }
         }
     }
 

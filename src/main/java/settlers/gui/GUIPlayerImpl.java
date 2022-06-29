@@ -585,8 +585,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         JLabel largestArmyBackgroundLabel = createLabel("",xOffset + xDifference,yOffset,2);
         largestArmyBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGAchievement.png").getScaledInstance(64,64,0)));
 
-        longestRoadLabel = new JLabel(new ImageIcon(getImage("")));
-        largestArmyLabel = new JLabel(new ImageIcon(getImage("")));
+        longestRoadLabel = createLabel("",xOffset,yOffset,1);
+        largestArmyLabel = createLabel("",xOffset + xDifference,yOffset,1);
     }
 
     private void putOtherPlayerLabels(){
@@ -767,6 +767,20 @@ public class GUIPlayerImpl implements GUIPlayer{
         }
     }
 
+    private Image getLongestRoadImage(int plrId){
+        String basePath = "src/main/java/settlers/gui/textures/resources/";
+        String suffix = ".png";
+
+        return getImage(basePath + "LongestRoad" + getPlayerColor(plrId) + suffix);
+    }
+
+    private Image getLargestArmyImage(int plrId){
+        String basePath = "src/main/java/settlers/gui/textures/resources/";
+        String suffix = ".png";
+
+        return getImage(basePath + "LargestArmy" + getPlayerColor(plrId) + suffix);
+    }
+
     private Image getConstructionImage(int plrId, int constructionId){
         return getConstructionImage(plrId,constructionId,null);
     }
@@ -775,6 +789,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Updates the die counter. Disables the die counter outline
      * @param roll the number which die counter should display
      */
+    @Override
     public void updateDieCounter(int roll){
         dieCounter.setIcon(new ImageIcon(getNumberImage(roll).getScaledInstance(dieCounterSize,dieCounterSize,0)));
         dieCounterOutline.setIcon(new ImageIcon(getImage("")));
@@ -783,6 +798,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     /**
      * Updates resource counters of all players
      */
+    @Override
     public void updateResourceCounters(){
         //Sets this player's resource count
         for(Resource resource : resourceTextMap.keySet()){
@@ -814,12 +830,23 @@ public class GUIPlayerImpl implements GUIPlayer{
     /**
      * Updates plr's played knights counter
      */
+    @Override
     public void updateKnightCounters(Player plr){
         if(plr.equals(player)){
             playedKnightsCountLabel.setText("" + plr.getKnightNumber());
         }else{
             playerTextMap.get(plr).get("Knight").setText("" + plr.getKnightNumber());
         }
+    }
+
+    @Override
+    public void updateLongestRoad(Player plr){
+        longestRoadLabel.setIcon(new ImageIcon(getLongestRoadImage(plr.getID()).getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
+    }
+
+    @Override
+    public void updateLargestArmy(Player plr){
+        largestArmyLabel.setIcon(new ImageIcon(getLargestArmyImage(plr.getID()).getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
     }
 
     /**

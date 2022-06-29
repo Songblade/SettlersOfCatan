@@ -75,6 +75,18 @@ public interface GUIPlayer {
     void updateKnightCounters(Player plr);
 
     /**
+     * Updates the player who has the longest road achievement client side
+     * @param plr the player who has the longest road achievement
+     */
+    void updateLongestRoad(Player plr);
+
+    /**
+     * Updates the player who has the largest army achievement client side
+     * @param plr the player who has the largest army achievement
+     */
+    void updateLargestArmy(Player plr);
+
+    /**
      * Moves the thief image
      * @param hex the new location of the thief image
      */
