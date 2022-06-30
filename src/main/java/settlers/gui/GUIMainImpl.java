@@ -463,6 +463,14 @@ public class GUIMainImpl implements GUIMain {
         }
     }
 
+    private void informPlayersThatTradeResponseWasReceived(Player responder){
+        for(Player player : playersWithTradeRequests){
+            playerGUIs.get(player).tradeRequestResponseReceived(responder);
+        }
+
+        playerGUIs.get(playerRequestingTrade).tradeRequestResponseReceived(responder);
+    }
+
     @Override
     public void playerDeclinedTrade(Player player) {
         if(playersWithTradeRequests.contains(player)){
@@ -472,7 +480,7 @@ public class GUIMainImpl implements GUIMain {
         }
 
         if(playersWithTradeRequests.size() == 0){
-            playerGUIs.get(playerRequestingTrade).tradeRequestResponseReceived(null);
+            informPlayersThatTradeResponseWasReceived(null);
         }
     }
 
@@ -481,7 +489,7 @@ public class GUIMainImpl implements GUIMain {
         if(playersWithTradeRequests.contains(player)){
             main.trade(playerRequestingTrade,currentTradeRequest,player);
             updateResourceCounters();
-            playerGUIs.get(playerRequestingTrade).tradeRequestResponseReceived(player);
+            informPlayersThatTradeResponseWasReceived(player);
         }else{
             throw new IllegalStateException("Player accepted trade request he didn't have");
         }

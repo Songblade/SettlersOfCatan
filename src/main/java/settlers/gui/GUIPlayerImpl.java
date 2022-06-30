@@ -952,6 +952,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
         Map<GUIState,String> confirmDescriptionMap = new HashMap<>();
         confirmDescriptionMap.put(GUIState.PLAYER_TRADE_REQUEST,"Accept Trade Request");
+        confirmDescriptionMap.put(GUIState.PLAYER_TRADE,"Confirm Trade");
 
         mapAction(Move.CANCEL,8,cancelMove(),new MoveDescription("Backspace","Cancel Move",cancelDescriptionMap));
         mapAction(Move.PASS,32,passTurn(),new MoveDescription("Space","Pass the turn",null));
@@ -1348,6 +1349,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     public void tradeRequestResponseReceived(Player responder){
         currentState = GUIState.NONE;
         reloadPossibleMovesGUI();
+        disablePlayerTradingGUIElements();
     }
 
     private boolean canPerformActions(){return mainPhase && thisPlayerHasTurn && currentState == GUIState.NONE;}
