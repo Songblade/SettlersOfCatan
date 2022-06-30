@@ -35,6 +35,24 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 	Players may only build, buy or play development cards, trade with the bank, or propose trades to other players on their turns.
 	Turns are passed with 'space' this is the only way to end a turn.
 	Turns can not be passed while the thief is being moved on 7, or the player is awaiting responses to a trade request.
+	
+*Board*
+	The board is randomly generated each game.
+	The board consists of 19 tiles, of containing:
+		-4 wood tiles
+		-4 sheep tiles
+		-4 wheat tiles
+		-3 ore tiles
+		-3 brick tiles
+		-1 desert tile
+		
+		-2 of each number 3-6
+		-2 of each number 8-11
+		-1 number 2
+		-1 number 12
+		
+	6's and 8's can't be placed adjacent to each other.
+	The desert tile's placement is random.
 
 *Resources*
 	Your resources will be displayed on the bottom left of the window.
@@ -56,6 +74,8 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 	Development cards can be purchased using '4'
 	Players may only purchase development cards if it is their turn and there are development cards ramaining in the deck
 	Development cards may not be played on the turn they were purchased on, or when it is not the player's turn.
+	Development cards are displayed on the bottom right of the window.
+	Opponent's development card quantities are displayed to the right of their icons.
 	
 *Ports and Bank Trading*
 	Players can trade with the bank using 'A'
@@ -68,10 +88,10 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 	-Proposing the Trade-
 	
 	Players can propose to trade with other players using 'S'
-	Once the trade proposal is initiated, an icon will appear above the player's icon on the bottom left of the screen, and a blue "0" will appear above each resource icon.
+	Once the trade proposal is initiated, an icon will appear above the player's icon on the bottom left of the window, and a blue "0" will appear above each resource icon.
 	When the forementioned icon is green, selecting a resource will increase the number of that resource you will gain / decrease the number of that resource you will lose during the proposed trade.
 	When the forementioned icon is red, selecting a resource will decrease the number of that resource you will gain / increase the number of that resource you will lose during the proposed trade.
-	Red numbers above resource icons signify a loss during a trade, while green numbers above icons signify a gain during a trade.
+	Red numbers above resource icons signify a loss during a trade, while green numbers above icons signify a gain during a trade (From the requesting player's perspective).
 	
 	While proposing a trade, a player may control who he sends his trade request to.
 	To prevent a trade request from reaching a player, the requesting player may click on the player's icon, which will toggle the green outline around his icon.
@@ -81,5 +101,32 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 	Once the trade proposal is complete, the proposing player may press enter to send his trade to other players.
 	If no players can accept the trade, the proposing player's turn will resume. 
 	If at least one player can accept the trade, the proposing player will be forced to wait until his request is declined by all reciving players or accepted by a player.
-	If a trade is accepted, 
+	If a trade is accepted, the resources specified in the trade will be exchanged and requesting player's turn will be resumed.
+	
+	-Responding to the Trade-
+	Once a trade is proposed, all players who were specified on the trade's whitelist and can make the trade will recive the trade request.
+	When a trade request is recived, numbers will appear above the player's resource icons.
+	Red numbers above resource icons signify a loss during a trade, while green numbers above icons signify a gain during a trade (From the revciving player's perspective).
+	Blue zeroes above resource icons signify no loss or gain.
+	A trade request may be accepted with 'Enter' or declined with 'Backspace'.
+	If a trade request is accepted by another player before the player accepts it, the player will lose the trade request.
+	
+*Achivements*
+	Longest Road is held by the player who owns the longest chain of road tiles of at least 5 and is worth 2 victory points.
+	Largest Army is held by the player who has played the most knight cards, with a minimum of 3. It is worth 2 victory points.
+	Achivement cards and played knights are displayed at the bottom center of the window.
+	Opponent's knights are displayer to the right of their icons.
+	
+*Winning the game*
+	To win the game, you must be the first player to obtain 10 victory points
+	
+	Items which are worth victory points:
+		Settlement         - 1
+		City               - 2
+		Victory Point Card - 1
+		Longest Road       - 2
+		Largest Army       - 2
+		
+	Upon winning the game, the application will close, and Shimmy will congradulate you on your victory.
+		
 	
