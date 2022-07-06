@@ -28,7 +28,7 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 		-After the player placed his road, the turn will be passed.
 		
 *Turns*
-	During the main gamepley phase, players will take turns performing actions.
+	During the main gameplay phase, players will take turns performing actions.
 	At the beginning of a turn, the dice will be rolled.
 	Each will gain 1 resource for every settlement and 2 resources for every city adjacent to a hexagon when its number is rolled.
 	Although the die is displayed as a single number, the number displayed is actually the sum of two random 1-6 rolls. (Therefore, numbers like 6 are more common than numbers like 11)
@@ -91,6 +91,7 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 	Once the trade proposal is initiated, an icon will appear above the player's icon on the bottom left of the window, and a blue "0" will appear above each resource icon.
 	When the forementioned icon is green, selecting a resource will increase the number of that resource you will gain / decrease the number of that resource you will lose during the proposed trade.
 	When the forementioned icon is red, selecting a resource will decrease the number of that resource you will gain / increase the number of that resource you will lose during the proposed trade.
+	Clicking the formentioned icon will change it to red if it is green, and to green if it is red.
 	Red numbers above resource icons signify a loss during a trade, while green numbers above icons signify a gain during a trade (From the requesting player's perspective).
 	
 	While proposing a trade, a player may control who he sends his trade request to.
@@ -111,11 +112,11 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 	A trade request may be accepted with 'Enter' or declined with 'Backspace'.
 	If a trade request is accepted by another player before the player accepts it, the player will lose the trade request.
 	
-*Achivements*
+*Achievements*
 	Longest Road is held by the player who owns the longest chain of road tiles of at least 5 and is worth 2 victory points.
 	Largest Army is held by the player who has played the most knight cards, with a minimum of 3. It is worth 2 victory points.
-	Achivement cards and played knights are displayed at the bottom center of the window.
-	Opponent's knights are displayer to the right of their icons.
+	Achievement cards and played knights are displayed at the bottom center of the window.
+	Opponent's knights are displayed to the right of their icons.
 	
 *Winning the game*
 	To win the game, you must be the first player to obtain 10 victory points
