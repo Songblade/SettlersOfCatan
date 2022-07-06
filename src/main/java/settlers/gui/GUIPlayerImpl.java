@@ -1253,8 +1253,8 @@ public class GUIPlayerImpl implements GUIPlayer{
         int currentYOffset = 0;
         int yIncrement = 32;
 
-        for(Move move : moveTextMap.keySet()){
-            if(possibleMoves.get(move)){
+        for(Move move : Move.values()){
+            if(possibleMoves.containsKey(move) && possibleMoves.get(move)){
                 JTextField field = moveTextMap.get(move);
                 field.setText(moveDescriptionMap.get(move).key + " - " + moveDescriptionMap.get(move).getDescription(currentState));
                 field.setVisible(true);
@@ -1869,7 +1869,19 @@ enum GUIState{
 }
 
 enum Move{
-    PASS,CANCEL,CONFIRM,ROAD,SETTLEMENT,CITY,DEVELOPMENT_CARD,KNIGHT,YEAR_OF_PLENTY,ROAD_BUILDING,MONOPOLY,TRADE_BANK,TRADE_PLAYER
+    PASS,
+    CANCEL,
+    CONFIRM,
+    ROAD,
+    SETTLEMENT,
+    CITY,
+    DEVELOPMENT_CARD,
+    KNIGHT,
+    YEAR_OF_PLENTY,
+    ROAD_BUILDING,
+    MONOPOLY,
+    TRADE_BANK,
+    TRADE_PLAYER;
 }
 
 class MoveDescription{
