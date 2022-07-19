@@ -41,6 +41,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     private HashMap<Resource,JButton> invResourceButtonMap = new HashMap<>();
 
     //Label maps
+    private HashMap<Hex,JLabel> hexLabelMap = new HashMap<>();
     private HashMap<Vertex,JLabel> vertexLabelMap = new HashMap<>();
     private HashMap<Edge,JLabel> edgeLabelMap = new HashMap<>();
     private HashMap<Player,JLabel> playerSelectionLabelMap = new HashMap<>();
@@ -320,15 +321,25 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @return
      */
     private JButton createButton(int xPos, int yPos){
-        Image icon = getImage("src/main/java/settlers/gui/textures/misc/Pointer.png").getScaledInstance(standardObjectSize,standardObjectSize,0);
+        Image icon = getImage("src/main/java/settlers/gui/textures/misc/Pointer.png").getScaledInstance(standardObjectSize/2,standardObjectSize/4,0);
         JButton button = new JButton(new ImageIcon(icon));
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         disableButton(button);
-        button.setRolloverIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PointerHover.png").getScaledInstance(standardObjectSize,standardObjectSize,0)));
-        button.setBounds(xPos + standardObjectSize / 4,yPos + standardObjectSize / 4,standardObjectSize/2,standardObjectSize/2);
+        button.setRolloverIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PointerHover.png").getScaledInstance(standardObjectSize/2,standardObjectSize/4,0)));
+        button.setBounds(xPos + 3*standardObjectSize / 8,yPos + standardObjectSize/4,standardObjectSize/4,standardObjectSize/4);
 
         paintLayerMap.put(button,0);
+
+        return button;
+    }
+
+    private JButton createTradeDirectionButton(int xPos, int yPos){
+        Image icon = getImage("src/main/java/settlers/gui/textures/misc/Give.png").getScaledInstance(standardObjectSize,standardObjectSize,0);
+        JButton button = createButton(xPos,yPos);
+        button.setIcon(new ImageIcon(icon));
+        button.setBounds(xPos, yPos,standardObjectSize,standardObjectSize);
+        button.setRolloverEnabled(false);
 
         return button;
     }
@@ -361,6 +372,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
             //Creates hex interior
             JLabel hexInteriorLabel = createLabel(getHexInteriorImageByResource(hex.getResource()),xPos,yPos,3);
+            hexLabelMap.put(hex,hexInteriorLabel);
 
             //Creates hex button and adds it to the hexButtonMap
             JButton hexButton = createButton(xPos,yPos);
@@ -503,9 +515,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     private void putTradeDirectionButton(){
-        tradeDirectionButton = createButton(50,480);
-        tradeDirectionButton.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/Give.png").getScaledInstance(standardObjectSize/2,standardObjectSize/2,0)));
-        tradeDirectionButton.setRolloverEnabled(false);
+        tradeDirectionButton = createTradeDirectionButton(50,480);
         tradeDirectionButton.addActionListener(tradeDirectionButtonClickedAction());
 
         enableButton(tradeDirectionButton);
@@ -1089,11 +1099,8 @@ public class GUIPlayerImpl implements GUIPlayer{
      * @param hex the new location of the thief image
      */
     public void moveThiefImage(Hex hex){
-        for(JButton button : hexButtonMap.keySet()){
-            if(hexButtonMap.get(button).equals(hex)){
-                thiefImage.setBounds(button.getX() - standardObjectSize / 4,button.getY() - standardObjectSize / 4,standardObjectSize,standardObjectSize);
-            }
-        }
+        JLabel hexInteriorLabel = hexLabelMap.get(hex);
+        thiefImage.setBounds(hexInteriorLabel.getX(),hexInteriorLabel.getY(),standardObjectSize,standardObjectSize);
     }
 
     /**
