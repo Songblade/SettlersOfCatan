@@ -123,7 +123,7 @@ public class GUIPlayerImpl implements GUIPlayer{
         setupFonts();
 
         //Adds the thief
-        thiefImage = createLabel("src/main/java/settlers/gui/textures/hexes/Thief.png",0,0,1);
+        thiefImage = createLabel("src/main/java/settlers/gui/textures/hexes/Thief.png",0,0,2);
 
         //Adds the hexes
         putHexes();
@@ -160,7 +160,6 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
         }
 
-        System.out.println("Highest paint layer: " + max);
         return max;
     }
 
@@ -395,10 +394,10 @@ public class GUIPlayerImpl implements GUIPlayer{
             int yPos = boardOffsetY + Math.abs((row - 2) * 44) + (88 * column);
 
             //Creates hex outline
-            JLabel hexOutlineLabel = createLabel("src/main/java/settlers/gui/textures/hexes/HexagonOutline.png",xPos,yPos,3);
+            JLabel hexOutlineLabel = createLabel("src/main/java/settlers/gui/textures/hexes/HexagonOutline.png",xPos,yPos,4);
 
             //Creates hex interior
-            JLabel hexInteriorLabel = createLabel(getHexInteriorImageByResource(hex.getResource()),xPos,yPos,3);
+            JLabel hexInteriorLabel = createLabel(getHexInteriorImageByResource(hex.getResource()),xPos,yPos,4);
             hexLabelMap.put(hex,hexInteriorLabel);
 
             //Creates hex button and adds it to the hexButtonMap
@@ -412,10 +411,10 @@ public class GUIPlayerImpl implements GUIPlayer{
             }
 
             //Creates number outline
-            JLabel hexNumberOutlineLabel = createLabel(getNumberOutlineImage(hex.getNumber()),xPos,yPos,2);
+            JLabel hexNumberOutlineLabel = createLabel(getNumberOutlineImage(hex.getNumber()),xPos,yPos,3);
 
             //Creates number interior
-            JLabel hexNumberLabel = createLabel(getNumberImage(hex.getNumber()),xPos,yPos,2);
+            JLabel hexNumberLabel = createLabel(getNumberImage(hex.getNumber()),xPos,yPos,3);
         }
     }
 
@@ -423,7 +422,7 @@ public class GUIPlayerImpl implements GUIPlayer{
      * Creates an edge
      */
     private void createEdge(Edge edge, String direction, int offsetX, int offsetY){
-        JLabel edgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGray" + direction + ".png",offsetX,offsetY,3);
+        JLabel edgeLabel = createLabel("src/main/java/settlers/gui/textures/construction/RoadGray" + direction + ".png",offsetX,offsetY,4);
         JButton edgeButton = createButton(offsetX,offsetY);
 
         edgeButton.addActionListener(edgeButtonClickedAction(edge));
@@ -528,16 +527,16 @@ public class GUIPlayerImpl implements GUIPlayer{
             int offsetX = boardOffsetX + portImageLocations[i][1];
             int offsetY =  boardOffsetY + portImageLocations[i][2];
 
-            JLabel portDirection = createLabel(getPortDirectionImage(portImageLocations[i][3]),offsetX,offsetY,2);
+            JLabel portDirection = createLabel(getPortDirectionImage(portImageLocations[i][3]),offsetX,offsetY,3);
 
-            JLabel portImage = createLabel("", offsetX, offsetY, 1);
+            JLabel portImage = createLabel("", offsetX, offsetY, 2);
             portImage.setIcon(new ImageIcon(getResourceImage(board.getVertices()[portImageLocations[i][0]].getPort()).getScaledInstance(64,64,0)));
         }
     }
 
     private void putPlayerLabel(){
         //Places the label for this player
-        JLabel thisPlayerLabel = createLabel("",50,550,1);
+        JLabel thisPlayerLabel = createLabel("",50,550,2);
         thisPlayerLabel.setIcon(new ImageIcon(getConstructionImage(player.getID(),2).getScaledInstance(256,256,0)));
     }
 
@@ -555,10 +554,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         int yOffset = 550;
         for(Resource resource : Resource.values()){
             if(resource != Resource.MISC){
-                JLabel resourceLabel = createLabel("",currentXOffset,yOffset,2);
+                JLabel resourceLabel = createLabel("",currentXOffset,yOffset,3);
                 resourceLabel.setIcon(new ImageIcon(getResourceImage(resource).getScaledInstance(64,64,0)));
 
-                JLabel resourceBackgroundLabel = createLabel("",currentXOffset,yOffset,3);
+                JLabel resourceBackgroundLabel = createLabel("",currentXOffset,yOffset,4);
                 resourceBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGResource.png").getScaledInstance(64,64,0)));
 
                 //Puts the resource count label for the resource
@@ -585,10 +584,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         int xOffsetIncrement = 80;
         int yOffset = 550;
         for(DevelopmentCard development : DevelopmentCard.values()){
-            JLabel developmentLabel = createLabel("",currentXOffset,yOffset,2);
+            JLabel developmentLabel = createLabel("",currentXOffset,yOffset,3);
             developmentLabel.setIcon(new ImageIcon(getDevelopmentCardImage(development).getScaledInstance(64,64,0)));
 
-            JLabel developmentBackgroundLabel = createLabel("",currentXOffset,yOffset,3);
+            JLabel developmentBackgroundLabel = createLabel("",currentXOffset,yOffset,4);
             developmentBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGDevelopment.png").getScaledInstance(64,64,0)));
 
             JTextField developmentCountLabel = createText("0",currentXOffset + xOffsetIncrement - 24,yOffset + 50,1);
@@ -602,10 +601,10 @@ public class GUIPlayerImpl implements GUIPlayer{
         int xOffset = 650;
         int yOffset = 575;
 
-        JLabel knightLabel = createLabel("",xOffset,yOffset,2);
+        JLabel knightLabel = createLabel("",xOffset,yOffset,3);
         knightLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/PlayedKnight.png").getScaledInstance(64,64,0)));
 
-        JLabel knightBackgroundLabel = createLabel("",xOffset,yOffset,3);
+        JLabel knightBackgroundLabel = createLabel("",xOffset,yOffset,4);
         knightBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGDevelopment.png").getScaledInstance(64,64,0)));
 
         playedKnightsCountLabel = createText("0",xOffset + 56, yOffset + 50, 1);
@@ -616,14 +615,14 @@ public class GUIPlayerImpl implements GUIPlayer{
         int yOffset = 575;
         int xDifference = 160;
 
-        JLabel longestRoadBackgroundLabel = createLabel("",xOffset,yOffset,2);
+        JLabel longestRoadBackgroundLabel = createLabel("",xOffset,yOffset,3);
         longestRoadBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGAchievement.png").getScaledInstance(64,64,0)));
 
-        JLabel largestArmyBackgroundLabel = createLabel("",xOffset + xDifference,yOffset,2);
+        JLabel largestArmyBackgroundLabel = createLabel("",xOffset + xDifference,yOffset,3);
         largestArmyBackgroundLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/BGAchievement.png").getScaledInstance(64,64,0)));
 
-        longestRoadLabel = createLabel("",xOffset,yOffset,1);
-        largestArmyLabel = createLabel("",xOffset + xDifference,yOffset,1);
+        longestRoadLabel = createLabel("",xOffset,yOffset,2);
+        largestArmyLabel = createLabel("",xOffset + xDifference,yOffset,2);
     }
 
     private void putOtherPlayerLabels(){
@@ -638,17 +637,17 @@ public class GUIPlayerImpl implements GUIPlayer{
                 HashMap<String,JTextField> playerTextBoxes = new HashMap<>();
 
                 //Places the player labels for other players
-                JLabel playerLabel = createLabel("", 35, currentYOffset, 1);
+                JLabel playerLabel = createLabel("", 35, currentYOffset, 2);
                 playerLabel.setIcon(new ImageIcon(getConstructionImage(plr.getID(),2).getScaledInstance(128, 128, 0)));
 
                 //Places the player selection label for other players
-                JLabel playerSelectionLabel = createLabel("", 35, currentYOffset, 1);
+                JLabel playerSelectionLabel = createLabel("", 35, currentYOffset, 2);
                 playerSelectionLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/misc/PlayerSelect.png").getScaledInstance(128, 128, 0)));
                 playerSelectionLabel.setVisible(false);
                 playerSelectionLabelMap.put(plr,playerSelectionLabel);
 
                 //Places the resource labels for other players
-                JLabel playerResourceLabel = createLabel("",currentXOffset,currentYOffset,1);
+                JLabel playerResourceLabel = createLabel("",currentXOffset,currentYOffset,2);
                 playerResourceLabel.setIcon(new ImageIcon(getResourceImage(Resource.MISC).getScaledInstance(56,56,0)));
 
                 JLabel playerResourceBackgroundLabel = createLabel("",currentXOffset,currentYOffset,3);
@@ -658,7 +657,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 playerTextBoxes.put("Resource",playerResourceText);
 
                 //Places the development card labels for other players
-                JLabel playerDevelopmentLabel = createLabel("",currentXOffset + xOffsetIncrement,currentYOffset,1);
+                JLabel playerDevelopmentLabel = createLabel("",currentXOffset + xOffsetIncrement,currentYOffset,2);
                 playerDevelopmentLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/DMisc.png").getScaledInstance(56,56,0)));
 
                 JLabel playerDevelopmentBackgroundLabel = createLabel("",currentXOffset + xOffsetIncrement,currentYOffset,3);
@@ -668,7 +667,7 @@ public class GUIPlayerImpl implements GUIPlayer{
                 playerTextBoxes.put("Development",playerDevelopmentText);
 
                 //Places the played knight labels for other players
-                JLabel playerKnightLabel = createLabel("",currentXOffset + (2 * xOffsetIncrement),currentYOffset,1);
+                JLabel playerKnightLabel = createLabel("",currentXOffset + (2 * xOffsetIncrement),currentYOffset,2);
                 playerKnightLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/resources/PlayedKnight.png").getScaledInstance(56,56,0)));
 
                 JLabel playerKnightBackgroundLabel = createLabel("",currentXOffset + (2 * xOffsetIncrement),currentYOffset,3);
@@ -691,7 +690,7 @@ public class GUIPlayerImpl implements GUIPlayer{
 
     private void putDieCounterAssets(){
         //Creates die counter
-        dieCounter = createLabel("",64,0,1);
+        dieCounter = createLabel("",64,0,2);
         dieCounter.setSize(dieCounterSize,dieCounterSize);
 
         //Creates die counter outline
