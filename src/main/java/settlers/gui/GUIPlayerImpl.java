@@ -148,14 +148,41 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Gets the largest number in a collection of Integers
+     * @param ints a collection of Integers
+     */
+    private int getLargestInteger(Collection<Integer> ints){
+        int max = 0;
+
+        for (Integer i : ints){
+            if(i > max){
+                max = i;
+            }
+        }
+
+        System.out.println("Highest paint layer: " + max);
+        return max;
+    }
+
+    /**
      * Places GUI elements in the right Z order
      */
     private void orderPainting(){
-        for(int i = 0; i < 4; i++) {
-            for (Component component : paintLayerMap.keySet()) {
-                if(paintLayerMap.containsKey(component) && i == paintLayerMap.get(component)){
-                    frame.add(component);
-                }
+        List[] componentsByZOrder = new List[getLargestInteger(paintLayerMap.values()) + 1];
+        for(int i = 0; i < componentsByZOrder.length; i++){
+            componentsByZOrder[i] = new LinkedList<Component>();
+        }
+
+        //Sorts the components by zOrder values
+        for (Component component : paintLayerMap.keySet()) {
+            componentsByZOrder[paintLayerMap.get(component)].add(component);
+        }
+
+        //Puts the components on the frame
+        for(List list: componentsByZOrder){
+            for (Object o : list){
+                Component component = (Component) o;
+                frame.add(component);
             }
         }
     }
