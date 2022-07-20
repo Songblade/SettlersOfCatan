@@ -125,11 +125,14 @@ public class GUIPlayerImpl implements GUIPlayer{
         //Adds the thief
         thiefImage = createLabel("src/main/java/settlers/gui/textures/hexes/Thief.png",0,0,2);
 
+        //Adds the board outline
+        putBoardOutline();
+
         //Adds the hexes
         putHexes();
 
         //Adds the vertices
-        putVerticesAndRoads();
+        putVerticesAndEdges();
 
         //Adds the ports
         putPorts();
@@ -371,6 +374,15 @@ public class GUIPlayerImpl implements GUIPlayer{
     }
 
     /**
+     * Puts the board outline into the frame
+     */
+    private void putBoardOutline(){
+        JLabel boardOutlineLabel = createLabel("src/main/java/settlers/gui/textures/hexes/BoardExterior.png",0,0,0);
+        boardOutlineLabel.setIcon(new ImageIcon(getImage("src/main/java/settlers/gui/textures/hexes/BoardExterior.png").getScaledInstance(standardObjectSize*8,standardObjectSize*8,0)));
+        boardOutlineLabel.setBounds(200,-236,standardObjectSize*8,standardObjectSize*8);
+    }
+
+    /**
      * Puts all hexes onto the frame
      */
     private void putHexes(){
@@ -435,7 +447,7 @@ public class GUIPlayerImpl implements GUIPlayer{
     /**
      * Places all vertices
      */
-    private void putVerticesAndRoads(){
+    private void putVerticesAndEdges(){
         Vertex[] vertices = board.getVertices();
         int[] vertexColumnBeginningIndices = board.getVertexColumnBeginningIndices();
 
