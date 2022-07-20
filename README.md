@@ -130,4 +130,5 @@ A simulation of Settlers of Catan. It was initially made for an end-of-the-semes
 		
 	Upon winning the game, the application will close, and Shimmy will congradulate you on your victory.
 		
-	
+*Catan Rules*
+	For official Catan rules, please refer to https://www.catan.com/sites/default/files/2021-06/catan_base_rules_2020_200707.pdf
