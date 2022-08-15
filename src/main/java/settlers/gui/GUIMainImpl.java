@@ -14,7 +14,7 @@ public class GUIMainImpl implements GUIMain {
 
     private GUIThreadManager threadManager;
 
-    private boolean unlimitedResources = true;
+    private boolean unlimitedResources = false;
 
     //Functional
 

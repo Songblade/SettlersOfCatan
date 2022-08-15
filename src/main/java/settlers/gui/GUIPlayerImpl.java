@@ -1422,6 +1422,7 @@ public class GUIPlayerImpl implements GUIPlayer{
             public void actionPerformed(ActionEvent e) {
                 if(mainPhase && thisPlayerHasTurn &&currentState.isCancelable()){
                     disableAllButtons();
+                    disablePlayerTradingGUIElements();
                     currentState = GUIState.NONE;
                     thisPlayerHasTurn = false;
                     reloadPossibleMovesGUI();
